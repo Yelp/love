@@ -1,0 +1,47 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/flash.html") as flash %}
+
+{% block title %}Aliases{% endblock %}
+
+{% block body %}
+  {{ flash.display_flash_messages() }}
+  <h1>All Aliases</h1>
+  {% if aliases %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Alias</th>
+          <th>Owner</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in aliases %}
+          <tr>
+            <td>{{ a.name }}</td>
+            <td>{{ a.owner_key.get().username }}</td>
+            <td>
+              <form method="post" action="/aliases/{{a.key.id()}}/delete">
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                <input type="submit" value="Delete" class="btn btn-default" />
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No aliases have been saved yet.</p>
+  {% endif %}
+  <hr>
+  {% include theme("alias_form.html") %}
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#nav-aliases').addClass('active');
+    });
+  </script>
+{% endblock %}

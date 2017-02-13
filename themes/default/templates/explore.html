@@ -1,0 +1,105 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/love_message.html") as love_message %}
+{% import theme("parts/photobox.html") as photobox %}
+{% import theme("parts/flash.html") as flash %}
+
+{% block title %}Explore{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-md-6">
+    <h1>Explore the lovin'</h1>
+    <form class="form-explore form-inline" role="form" action="" id="explore-love-form">
+      {{ flash.display_flash_messages() }}
+      <div class="form-group">
+        <label for="explore-username" class="sr-only control-label">Username</label>
+        <input type="text" class="form-control" id="explore-username" name="user"  placeholder="hammy" autocorrect="off" autocapitalize="off" value="{{ user.username }}">
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-default">Explore</button>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-6">
+    {% if user %}
+      <div class="explore-user">
+        {{ photobox.user_icon(user) }}
+        <h1>{{ user.full_name }}</h1>
+        <p>{{ user.department }}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if user %}
+<div class="row" id="explore-messages">
+  <div class="col-md-6">
+    <h1>Love Sent</h1>
+    {% if sent_loves %}
+      <div class="content-container">
+      {% for love in sent_loves %}
+        {% set sender = love.sender_key.get() %}
+        {% set recipient = love.recipient_key.get() %}
+        {{ love_message.love(
+          sender.first_name,
+          sender.username,
+          recipient.full_name,
+          recipient.username,
+          recipient,
+          love.message,
+          love.seconds_since_epoch)
+        }}
+      {% endfor %}
+      </div>
+    {% else %}
+      <div class="well">
+        Oh no! {{ user.username }} hasn't sent any love yet.
+      </div>
+    {% endif %}
+  </div>
+  <div class="col-md-6">
+    <h1>Love Received</h1>
+    {% if received_loves %}
+      <div class="content-container">
+        {% for love in received_loves %}
+          {% set sender = love.sender_key.get() %}
+          {% set recipient = love.recipient_key.get() %}
+          {{ love_message.love(
+            sender.full_name,
+            sender.username,
+            recipient.first_name,
+            recipient.username,
+            sender,
+            love.message,
+            love.seconds_since_epoch)
+          }}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="well">
+        Oh no! {{ user.username }} hasn't received any love yet.<br>
+        <a href="/?recipients={{ user.username }}">Hook them up.</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#nav-explore').addClass('active');
+      $('#explore-username').autocomplete({
+        source: '/user/autocomplete',
+        minLength: 2,
+        delay: 200,
+        select: function(event, ui) {
+          $('#explore-username').val(ui.item.value);
+          $('#explore-username').closest('form').submit();
+        }
+      });
+    });
+  </script>
+{% endblock %}

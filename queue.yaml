@@ -1,0 +1,3 @@
+queue:
+- name: events
+  rate: 5.00/s

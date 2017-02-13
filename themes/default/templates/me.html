@@ -1,0 +1,68 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/love_message.html") as love_message %}
+
+{% block title %}My Love{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-md-6">
+    <h1>Love Received</h1>
+    {% if received_loves %}
+      <div class="content-container">
+      {% for love in received_loves %}
+        {% set sender = love.sender_key.get() %}
+        {% set recipient = love.recipient_key.get() %}
+        {{ love_message.love(
+          sender.full_name,
+          sender.username,
+          'you',
+          '',
+          sender,
+          love.message,
+          love.seconds_since_epoch,
+          love.secret)
+        }}
+      {% endfor %}
+      </div>
+    {% else %}
+      <div class="well">
+        Oh no! You haven't received any love yet!<br>
+        <a href="/">Give and ye shall receive!</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="col-md-6">
+    <h1>Love Sent</h1>
+    {% if sent_loves %}
+      <div class="content-container">
+      {% for love in sent_loves %}
+        {% set sender = love.sender_key.get() %}
+        {% set recipient = love.recipient_key.get() %}
+        {{ love_message.love(
+          'You',
+          '',
+          recipient.full_name,
+          recipient.username,
+          recipient,
+          love.message,
+          love.seconds_since_epoch,
+          love.secret)
+        }}
+      {% endfor %}
+      </div>
+    {% else %}
+      <div class="well">
+        Oh no! You haven't sent any love yet. <a href="/">Get on it!</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $('#nav-me').addClass('active');
+  </script>
+{% endblock %}

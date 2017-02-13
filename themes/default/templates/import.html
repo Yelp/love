@@ -1,0 +1,27 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/flash.html") as flash %}
+
+{% block title %}Import employees{% endblock %}
+
+{% block body %}
+  {{ flash.display_flash_messages() }}
+
+  <h1>Import employees</h1>
+
+  {% if import_file_exists %}
+    <p>Great, we have found an <strong>employees.csv</strong> file. Let‘s import that!</p>
+    {% include theme("import_employees_form.html") %}
+    <em>
+        Note: Once you hit the <strong>Import</strong> button the import will be kicked off and handled
+        in the background. Depending on how many employees you are importing this process can take a few seconds.
+        When the import finishes successfully you will see the imported employees
+        <a href="/employees">here</a>.
+    </em>
+  {% else %}
+    <p>
+        Oh, we couldn‘t find an <strong>employees.csv</strong> file. Please read the instructions
+        in the README on what options you have to import employee data.
+    </p>
+  {% endif %}
+{% endblock %}

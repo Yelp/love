@@ -1,0 +1,58 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/flash.html") as flash %}
+{% import theme("parts/photobox.html") as photobox %}
+
+{% block title %}Employees{% endblock %}
+
+{% block body %}
+  {{ flash.display_flash_messages() }}
+  <h1>Employees</h1>
+  {% if pagination_result.collection %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Photo</th>
+          <th>Username</th>
+          <th>Name</th>
+          <th>Department</th>
+          <th>Terminated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for employee in pagination_result.collection %}
+          <tr>
+            <td>{{ photobox.user_icon(employee) }}</td>
+            <td>{{ employee.username }}</td>
+            <td>{{ employee.full_name }}</td>
+            <td>{{ employee.department }}</td>
+            <td>{{ employee.terminated }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="pagination-result">
+      {% if pagination_result.prev %}
+        <a href="/employees?prev_cursor={{ pagination_result.prev_cursor }}">&laquo; Previous</a>
+      {% else %}
+        &laquo; Previous
+      {% endif %}
+      |
+      {% if pagination_result.next %}
+        <a href="/employees?next_cursor={{ pagination_result.next_cursor }}">Next &raquo;</a>
+      {% else %}
+        Next &raquo;
+      {% endif %}
+    </div>
+  {% else %}
+    <p>Oops, there are no employees yet. Let‘s <a href="/employees/import">import</a> some.</p>
+  {% endif %}
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#nav-employees').addClass('active');
+    });
+  </script>
+{% endblock %}

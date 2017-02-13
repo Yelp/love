@@ -1,0 +1,9 @@
+# If you want to regularly import user data from S3
+# please uncomment the lines below and adjust to your needs
+# For more documentation hop over to https://cloud.google.com/appengine/docs/python/config/cron
+
+# cron:
+# - description: daily employee load
+#   url: /tasks/employees/load/s3
+#   schedule: every day 03:00
+#   timezone: US/Pacific

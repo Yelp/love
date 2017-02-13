@@ -1,0 +1,9 @@
+{% import theme("parts/avatar.html") as avatar %}
+
+{% macro user_icon(user) %}
+<div class="love-photos pull-left">
+    <a href="/explore?user={{ user.username }}">
+      <img class="media-object img-circle" src="{{ avatar.avatar_url_for(user) }}" alt="{{ user.full_name }}" width="40" height="40">
+    </a>
+</div>
+{% endmacro %}

@@ -1,0 +1,51 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/love_message.html") as love_message %}
+{% import theme("parts/flash.html") as flash %}
+
+{% block title %}API Keys{% endblock %}
+
+{% block body %}
+  <h1>Existing Keys</h1>
+  {{ flash.display_flash_messages() }}
+  {% if keys %}
+    <form class="form-inline" method="post" action="/remove_keys">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for key in keys %}
+            <tr>
+              <td>{{ key.access_key }}</td>
+              <td>{{ key.description }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </form>
+  {% else %}
+    No API keys have been created yet. :[
+  {% endif %}
+  <hr>
+  <h1>Add an API Key</h1>
+  <form class="form-inline" method="post" action="/keys/create" role="form">
+    <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label class="sr-only" for="description">Key description</label>
+      <input type="input" class="form-control" placeholder="Key description" name="description">
+    </div>
+    <button type="submit" class="btn btn-default">Add</button>
+  </form>
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#nav-keys').addClass('active');
+    });
+  </script>
+{% endblock %}

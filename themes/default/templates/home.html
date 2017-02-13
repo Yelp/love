@@ -1,0 +1,66 @@
+{% extends theme("layout.html") %}
+
+{% block title %}Send Love{% endblock %}
+
+{% block body %}
+    {% include theme("love_form.html") %}
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#nav-send').addClass('active');
+      $('#secret-love-label').tooltip();
+      $('input[name="recipients"]').focus();
+      if ($('input[name="recipients"]').val() != '') {
+        var messageText = $('textarea[name="message"]').val();
+        $('textarea[name="message"]').focus().val('').val(messageText);
+      }
+      $('#love-error').hide();
+      // code heavily sampled from http://jqueryui.com/autocomplete/#multiple-remote
+      $('input[name="recipients"]')
+        // don't navigate away from the field on tab when selecting an item
+        .bind('keydown', function(event) {
+          if (event.keyCode === $.ui.keyCode.TAB &&
+              $(this).autocomplete().menu.active) {
+            event.preventDefault();
+          }
+        })
+        .autocomplete({
+          source: function(request, response) {
+            $.getJSON('/user/autocomplete', {
+              term: extractLast(request.term)
+            }, response);
+          },
+          search: function() {
+            // set minLength before attempting autocomplete
+            var term = extractLast(this.value);
+            if (term.length < 2) {
+              return false;
+            }
+          },
+          focus: function() {
+            return false;
+          },
+          select: function(event, ui) {
+            var terms = split( this.value );
+            // remove the current input
+            terms.pop();
+            // add the selected item
+            terms.push( ui.item.value );
+            // add placeholder to get the comma-and-space at the end
+            terms.push('');
+            this.value = terms.join(', ');
+            return false;
+          }
+        });
+
+      function split( val ) {
+        return val.split( /,\s*/ );
+      }
+      function extractLast( term ) {
+        return split(term).pop();
+      }
+    });
+  </script>
+{% endblock %}

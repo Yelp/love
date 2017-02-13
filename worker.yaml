@@ -1,0 +1,23 @@
+application: yelplove
+module: worker
+version: 1-0-0
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /tasks/.*
+  script: main.app
+  login: admin
+  secure: always
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*~$
+- ^(.*/)?\..*$
+- ^YelpLove.egg-info(/.*)?$
+- ^google_appengine(/.*)?$
+- ^tmp(/.*)?$
+- ^virtualenv_.*$

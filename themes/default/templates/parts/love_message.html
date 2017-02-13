@@ -1,0 +1,21 @@
+{% import theme("parts/photobox.html") as photobox %}
+
+{% macro love(sender_name, sender_username, recipient_name, recipient_username, icon_user, message, ts, secret) %}
+<div class="love-message-container">
+    {{ photobox.user_icon(icon_user) }}
+    <div class="love-message">
+        {{ message }}
+        {% if secret %}
+            <span class="badge">SECRET</span>
+        {% endif %}
+    </div>
+    <div class="love-byline">
+        {% set display_sender_link = (icon_user.username == sender_username) %}
+        {% set display_recipient_link = (icon_user.username == recipient_username) %}
+        <strong>{% if display_sender_link %}<a href="/explore?user={{ sender_username }}">{% endif %}{{ sender_name }}</a></strong>
+        loved
+        <strong>{% if display_recipient_link %}<a href="/explore?user={{ recipient_username }}">{% endif %}{{ recipient_name }}</a></strong>
+        <span class="nicetime">{{ ts * 1000 }}</span>
+    </div>
+</div>
+{% endmacro %}

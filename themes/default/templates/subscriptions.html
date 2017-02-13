@@ -1,0 +1,103 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/flash.html") as flash %}
+
+{% block title %}Subscriptions{% endblock %}
+
+{% block body %}
+  {{ flash.display_flash_messages() }}
+  <h1>All Subscriptions</h1>
+  {% if subscriptions %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Active</th>
+          <th>Event</th>
+          <th>Owner</th>
+          <th>URL</th>
+          <th>Secret</th>
+          <th>&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in subscriptions %}
+          <tr>
+            <td>
+            {% if s.active %}
+              Yes
+            {% else %}
+              No
+            {% endif %}
+            </td>
+            <td>{{ s.event }}</td>
+            <td>{{ s.owner_key.get().username }}</td>
+            <td>{{ s.request_url }}</td>
+            <td>{{ s.secret }}</td>
+            <td>
+              <form method="post" action="/subscriptions/{{s.key.id()}}/delete">
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                <input type="submit" value="Delete" class="btn btn-default" />
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Nobody is using webhooks yet. :[</p>
+  {% endif %}
+  <hr>
+  {% include theme("subscription_form.html") %}
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#nav-subscriptions').addClass('active');
+
+      var errors = [];
+      $('#subscribe-error').hide();
+
+      $('#secret').val(randomString());
+
+      $('.subscription-form').submit(function(event) {
+        event.preventDefault();
+
+        var errors = validateSubscriptionForm();
+        if (errors.length === 0) {
+          this.submit();
+        }
+        else {
+          populateErrors(errors);
+        }
+      });
+
+      var validateSubscriptionForm = function() {
+        $('.alert').hide();
+
+        var errors = [];
+        if ($('#request_url').val() === "") {
+          errors.push("Please provide a URL.")
+        }
+
+        return errors;
+      };
+
+      var populateErrors = function(errors) {
+        $('#subscribe-error').html("");
+        for(e in errors) {
+          $('#subscribe-error').html($('#subscribe-error').html() + errors[e] + "<br>");
+        }
+        $('#subscribe-error').show();
+      };
+
+      function randomString() {
+        return token() + token();
+      };
+
+      function token() {
+        return Math.random().toString(36).substr(2);
+      };
+    });
+  </script>
+{% endblock %}

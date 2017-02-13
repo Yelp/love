@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ theme_static('img/favicon.png') }}">
+    <link rel="stylesheet" href="{{ theme_static('css/bootstrap.min.css') }}" media="screen">
+    <link rel="stylesheet" href="{{ theme_static('css/style.css') }}" media="screen">
+    <title>{% block title %}{% endblock %} | {{ config.APP_NAME }}</title>
+  </head>
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top love-header" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/"><img src="{{ theme_static('img/logo.png') }}" height="32" alt="{{ config.APP_NAME }}" /></a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav" id="feature-tabs">
+            <li id="nav-send"><a href="/">Send Love</a></li>
+            <li id="nav-me"><a href="/me">My Love</a></li>
+            <li id="nav-explore"><a href="/explore">Explore</a></li>
+            <li id="nav-leaderboard"><a href="/leaderboard">Leaderboard</a></li>
+          </ul>
+
+          {% if is_admin() %}
+            <ul class="nav navbar-nav navbar-right">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li id="nav-employees"><a href="/employees">Employees</a></li>
+                  <li id="nav-aliases"><a href="/aliases">Aliases</a></li>
+                  <li id="nav-keys"><a href="/keys">API Keys</a></li>
+                  <li id="nav-subscriptions"><a href="/subscriptions">Subscriptions</a></li>
+                </ul>
+              </li>
+            </ul>
+          {% endif %}
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+    <div class="container love-container">
+      {% block body %}{% endblock %}
+      <div class="row">
+        <div class="col-md-12 footer">
+          <p>Made with <a href="https://github.com/Yelp/love">&#9829;</a> at <a href="https://www.yelp.com/">Yelp</a>.</p>
+        </div>
+      </div>
+    </div>
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+    <script src="{{ theme_static('js/jquery-ui-1.10.4.custom.min.js') }}"></script>
+    <script src="{{ theme_static('js/linkify.js') }}"></script>
+    <script src="{{ theme_static('js/main.js') }}"></script>
+    {% block javascript %}{% endblock %}
+  </body>
+</html>

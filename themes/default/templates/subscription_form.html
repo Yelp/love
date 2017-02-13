@@ -1,0 +1,36 @@
+<h1>Add Subscription</h1>
+<p>
+  We’ll POST Json to the URL below with details of any subscribed event.
+</p>
+<form role="form" action="/subscriptions/create" method="post" class="subscription-form">
+  <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+  <div class="alert alert-danger" id="subscribe-error"></div>
+
+  <div class="form-group">
+    <label>Select Event</label>
+    <select class="form-control" id="event" name="event">
+      {% for event in events %}
+        <option value="{{ event }}">{{ event }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="request_url">Payload URL</label>
+    <input type="text" class="form-control" id="request_url" name="request_url" placeholder="http://" autocorrect="off" autocapitalize="off" value="">
+  </div>
+
+  <div class="form-group">
+    <label for="secret">Secret</label>
+    <input type="text" class="form-control" id="secret" name="secret" placeholder="optional" autocorrect="off" autocapitalize="off" value="">
+  </div>
+
+  <div class="checkbox">
+    <span class="help-block help-block-right">We will deliver event details when this hook is triggered.</span>
+    <label><input type="checkbox" name="active" value="true" checked>Active</label>
+  </div>
+
+  <div class="form-group">
+      <button type="submit" class="btn btn-lg btn-default">Subscribe</button>
+  </div>
+</form>

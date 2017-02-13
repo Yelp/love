@@ -1,0 +1,271 @@
+h2 {
+    font-weight: bold;
+    color: #777;
+}
+
+.form-control {
+    padding: 8px 10px 4px;
+    height: 40px;
+}
+
+.active {
+    font-weight: bold;
+}
+
+.content-container {
+    margin-top: 20px;
+}
+
+#send-love-form .checkbox {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.love-container {
+    padding: 60px 15px;
+}
+
+.love-header {
+    background-image: url('/_themes/default/img/star_header_bg.png');
+    height: 60px;
+    padding-top: 8px;
+}
+
+.love-title {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.love-message-container {
+    margin-bottom: 20px;
+    clear: left;
+}
+
+.love-message {
+    margin-left: 60px;
+}
+
+.love-byline {
+    margin-left: 60px;
+    color: #999;
+    font-size: 16px;
+}
+
+.love-byline a {
+    color: #999;
+}
+
+.love-photos {
+    margin-right: 20px;
+}
+
+.navbar-brand {
+    padding: 0;
+    padding-left: 15px;
+    margin-right: 10px;
+    margin-top: 4px;
+}
+
+.navbar-right {
+    font-size: 80%;
+}
+
+.navbar-collapse.collapse.in {
+    margin-top: 4px;
+    background-color: #333;
+    opacity: 0.8;
+}
+
+.label-default {
+    padding-top: 8px;
+    background-color: #969696;
+}
+
+.help-block-right {
+    float: right;
+    margin: 6px 0 0;
+    font-size: 70%;
+}
+
+.help-block-left {
+    float: left;
+    margin: 6px 0 0;
+    font-size: 70%;
+}
+
+.help-block-below {
+    margin-top: 6px;
+    margin-bottom: 12px;
+}
+
+h4 {
+    margin-top: 0px;
+    margin-bottom: 2px;
+}
+
+#send-love-form input,
+#send-love-form textarea {
+     font-size: 24px;
+}
+
+#suggestions-container {
+    height: 200px;
+    text-align: right;
+    margin-top: 80px;
+    background-image: url("/_themes/default/img/rocket.png");
+    background-repeat: no-repeat;
+    background-size: 140px;
+    background-position: 0 0;
+}
+
+.btn {
+    padding: 8px 16px 6px;
+    background: linear-gradient(#ea050b, #c41200);
+    text-shadow: 0 -1px 1px #b80806;
+    border: 1px solid #a50508;
+}
+
+.btn-lg {
+    font-size: 24px;
+}
+
+#love-message-filter {
+    margin-top: 20px;
+}
+
+#explore-messages {
+    margin-top: 30px;
+}
+
+h4 {
+    font-size: 20px;
+}
+
+.form-explore input {
+    font-size: 24px;
+}
+
+.form-explore button {
+    font-size: 20px;
+    padding: 2px 12px;
+}
+
+.explore-user {
+    margin-top: 20px;
+}
+
+.explore-user h1,
+.explore-user p {
+    margin-left: 60px;
+}
+
+.dept {
+    font-size: 16px;
+    color: gray;
+}
+
+.num-loves {
+    float:right;
+}
+
+.num-loved {
+    float:right;
+}
+
+.leaderboard-filter {
+    text-align: right;
+    margin-top: 16px;
+}
+
+.leaderboard-filter #department {
+    width: 200px;
+}
+
+.footer {
+    margin-top: 50px;
+    text-align: center;
+    font-size: 16px;
+    padding-top: 30px;
+    border-top: 1px solid #ddd;
+}
+
+.ui-autocomplete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    float: left;
+    display: none;
+    min-width: 160px;
+    _width: 160px;
+    padding: 4px 0;
+    margin: 2px 0 0 0;
+    list-style: none;
+    background-color: #ffffff;
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-style: solid;
+    border-width: 1px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+}
+
+.ui-autocomplete .ui-menu-item > a.ui-corner-all {
+    display: block;
+    padding: 3px 15px;
+    clear: both;
+    font-weight: normal;
+    line-height: 18px;
+    color: #555555;
+    white-space: nowrap;
+}
+
+.ui-autocomplete .ui-menu-item > a.ui-corner-all &.ui-state-hover, &.ui-state-active {
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #0088cc;
+    border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -moz-border-radius: 0px;
+    background-image: none;
+}
+
+.ui-state-focus {
+    background-color: #fac0ba;
+}
+
+.ui-helper-hidden-accessible {
+    display: none;
+}
+
+.subscription-form input,
+.subscription-form select,
+.subscription-form textarea {
+    font-size: 24px;
+}
+
+.subscription-form .form-group .checkbox {
+    margin-top: 0;
+}
+
+.radio-group label {
+    margin-right: 30px;
+    font-weight: normal;
+}
+
+.alias-form input {
+    font-size: 24px;
+}
+
+.pagination-result {
+    text-align: center;
+}
