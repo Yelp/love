@@ -4,4 +4,6 @@ python:
 # command to install dependencies
 install: "pip install tox"
 # command to run tests
-script: make test
+script:
+  - cp config-example.py config.py
+  - make test
