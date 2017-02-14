@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Yelp/love.svg?branch=master)](https://travis-ci.org/Yelp/love)
+
 ![Yelp Love](yelplove-medium.png)
 
 # Yelp Love
