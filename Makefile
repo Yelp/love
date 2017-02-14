@@ -21,7 +21,7 @@ lib: requirements.txt
 	pip install -r requirements.txt -t lib
 
 test: google_appengine
-    # reset database before each test run
+	# reset database before each test run
 	rm -f /tmp/nosegae.sqlite3
 	tox
 
