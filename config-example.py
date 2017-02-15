@@ -5,7 +5,7 @@ APP_NAME = 'Yelp Love'
 
 APP_BASE_URL = 'https://PROJECT_ID.appspot.com/'
 
-LOVE_SENDER_EMAIL = 'Yelp Love <love@PROJECT_ID.appspot.com>'
+LOVE_SENDER_EMAIL = 'Yelp Love <love@PROJECT_ID.appspotmail.com>'
 
 # Flask's secret key, used to encrypt the session cookie.
 # Set this to any random string and make sure not to share this!
