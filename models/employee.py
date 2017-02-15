@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import base64
 import functools
+import md5
 
 from google.appengine.ext import ndb
 from google.appengine.api import users
@@ -77,6 +79,14 @@ class Employee(ndb.Model, Pagination):
         self.photo_url = d.get('photo_url')
         self.department = d.get('department')
         self.meta_department = get_meta_department(self.department)
+
+    def get_photo_url(self):
+        """
+        Even though we have photo_url, the best place to find photos is Gravatar.
+        """
+        email = '{user}@{domain}'.format(user=self.username, domain=config.DOMAIN)
+        hash = base64.b16encode(md5.md5(email).digest()).lower()
+        return '//gravatar.com/avatar/{hash}?s=200'.format(hash=hash)
 
     @property
     def full_name(self):
