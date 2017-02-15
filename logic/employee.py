@@ -155,23 +155,6 @@ def _update_employees(employee_dicts):
         current_usernames.add(d['username'])
     ndb.put_multi(all_employees)
 
-    # Figure out if there are any employees in the DB that aren't in the S3
-    # dump. These are terminated employees, and we need to mark them as such.
-    usernames_to_employees = dict(
-        (employee.username, employee)
-        for employee
-        in Employee.query()
-    )
-    db_usernames = set(usernames_to_employees.keys())
-
-    terminated_usernames = db_usernames - current_usernames
-    terminated_employees = []
-    for u in terminated_usernames:
-        employee = usernames_to_employees[u]
-        employee.terminated = True
-        terminated_employees.append(employee)
-    ndb.put_multi(terminated_employees)
-
     logging.info('Done.')
 
 
