@@ -1,15 +1,19 @@
+PYTHON=python2
+PIP=pip2
+TOX=tox2
+
 .PHONY: all test clean run-dev deploy deploy_with_dispatch deploy_build
 
 all: test
 
 run-dev: config.py lib
-	dev_appserver.py dispatch.yaml app.yaml worker.yaml
+	$(PYTHON) google_appengine/dev_appserver.py dispatch.yaml app.yaml worker.yaml
 
 deploy: deploy_build
-	appcfg.py --no_cookies update app.yaml worker.yaml
+	$(PYTHON) google_appengine/appcfg.py --no_cookies update app.yaml worker.yaml
 
 deploy_with_dispatch: deploy_build
-	appcfg.py --no_cookies update app.yaml worker.yaml dispatch.yaml
+	$(PYTHON) google_appengine/appcfg.py update_dispatch .
 
 deploy_build: config.py clean lib test
 	@echo "\033[31mHave you bumped the app version? Hit ENTER to continue, CTRL-C to abort.\033[0m"
@@ -18,12 +22,12 @@ deploy_build: config.py clean lib test
 lib: requirements.txt
 	mkdir -p lib
 	rm -rf lib/*
-	pip install -r requirements.txt -t lib
+	$(PIP) install -r requirements.txt -t lib
 
 test: google_appengine
 	# reset database before each test run
 	rm -f /tmp/nosegae.sqlite3
-	tox
+	$(TOX)
 
 clean:
 	find . -name '*.pyc' -delete
