@@ -7,7 +7,7 @@ TOX=tox2
 all: test
 
 run-dev: config.py lib
-	$(PYTHON) google_appengine/dev_appserver.py dispatch.yaml app.yaml worker.yaml
+	dev_appserver.py dispatch.yaml app.yaml worker.yaml
 
 deploy: deploy_build
 	$(PYTHON) google_appengine/appcfg.py --no_cookies update app.yaml worker.yaml
