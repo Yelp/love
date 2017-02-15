@@ -1,6 +1,6 @@
 application: cwrulove
 module: default
-version: 1-0-0
+version: 1-0-2
 runtime: python27
 api_version: 1
 threadsafe: true
