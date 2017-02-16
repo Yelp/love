@@ -132,14 +132,10 @@ version of worker.yaml. This version number is specific to the worker module and
 is independent of the main app version.
 
 When you bumped versions in the appropriate files you can deploy your changes by running
-<code>make deploy</code>. If you have modified [dispatch.yaml](dispatch.yaml), you need to
-use the <code>make deploy_with_dispatch</code> command instead.
+<code>make deploy</code>.
 
 Once your code has been uploaded to Google, you must activate the newly deployed version
 in the [Developer Console](https://console.developers.google.com/). Then you're done!
-
-If you've modified cron.yaml you have to run <code>appcfg.py update_cron <i>app-directory</i></code>
-in order for your changes to take effect. For more information checkout [https://cloud.google.com/appengine/docs/python/config/cron](https://cloud.google.com/appengine/docs/python/config/cron).
 
 ## API
 

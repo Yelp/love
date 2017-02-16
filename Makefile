@@ -2,7 +2,7 @@ PYTHON=python2
 PIP=pip2
 TOX=tox2
 
-.PHONY: all test clean run-dev deploy deploy_with_dispatch deploy_build
+.PHONY: all test clean run-dev deploy deploy_build
 
 all: test
 
@@ -10,10 +10,15 @@ run-dev: config.py lib
 	dev_appserver.py dispatch.yaml app.yaml worker.yaml
 
 deploy: deploy_build
+	# If you are running into permission issues and see a message like this:
+	# You do not have permission to modify this app (app_id=u'foobar').
+	# then try adding --no_cookies to the commands below
 	$(PYTHON) google_appengine/appcfg.py update app.yaml worker.yaml
-
-deploy_with_dispatch: deploy_build
 	$(PYTHON) google_appengine/appcfg.py update_dispatch .
+	$(PYTHON) google_appengine/appcfg.py update_queues .
+	$(PYTHON) google_appengine/appcfg.py update_indexes .
+	# If you are using cron.yaml uncomment the line below
+	# $(PYTHON) google_appengine/appcfg.py update_cron .
 
 deploy_build: config.py clean lib test
 	@echo "\033[31mHave you bumped the app version? Hit ENTER to continue, CTRL-C to abort.\033[0m"
