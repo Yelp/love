@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import base64
+import hashlib
 import functools
 
 from google.appengine.ext import ndb
@@ -77,6 +79,24 @@ class Employee(ndb.Model, Pagination):
         self.photo_url = d.get('photo_url')
         self.department = d.get('department')
         self.meta_department = get_meta_department(self.department)
+
+    def get_gravatar(self):
+        """Creates gravatar URL from email address."""
+        m = hashlib.md5()
+        m.update(self.user.email())
+        encoded_hash = base64.b16encode(m.digest()).lower()
+        return '//gravatar.com/avatar/{}?s=200'.format(encoded_hash)
+
+    def get_photo_url(self):
+        """Return an avatar photo URL (depending on Gravatar config). This still could
+        be empty, in which case the theme needs to provide an alternate photo.
+        """
+        if config.GRAVATAR == 'always':
+            return self.get_gravatar()
+        elif config.GRAVATAR == 'backup' and not self.photo_url:
+            return self.get_gravatar()
+        else:
+            return self.photo_url
 
     @property
     def full_name(self):

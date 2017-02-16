@@ -49,3 +49,27 @@ class EmployeeTest(unittest.TestCase):
     def test_full_name(self):
         employee = create_employee(first_name='Foo', last_name='Bar')
         self.assertEqual('Foo Bar', employee.full_name)
+
+    @mock.patch('models.employee.config')
+    def test_gravatar_backup(self, mock_config):
+        mock_config.GRAVATAR = 'backup'
+        employee = create_employee(photo_url='')
+        self.assertEqual(employee.get_gravatar(), employee.get_photo_url())
+        employee = create_employee(photo_url='http://example.com/example.jpg')
+        self.assertEqual(employee.photo_url, employee.get_photo_url())
+
+    @mock.patch('models.employee.config')
+    def test_gravatar_always(self, mock_config):
+        mock_config.GRAVATAR = 'always'
+        employee = create_employee(photo_url='')
+        self.assertEqual(employee.get_gravatar(), employee.get_photo_url())
+        employee = create_employee(photo_url='http://example.com/example.jpg')
+        self.assertEqual(employee.get_gravatar(), employee.get_photo_url())
+
+    @mock.patch('models.employee.config')
+    def test_gravatar_disabled(self, mock_config):
+        mock_config.GRAVATAR = 'disabled'
+        employee = create_employee(photo_url='')
+        self.assertEqual(employee.photo_url, employee.get_photo_url())
+        employee = create_employee(photo_url='http://example.com/example.jpg')
+        self.assertEqual(employee.photo_url, employee.get_photo_url())
