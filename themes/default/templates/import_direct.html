@@ -1,0 +1,24 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/flash.html") as flash %}
+
+{% block title %}Import employees{% endblock %}
+
+{% block body %}
+  {{ flash.display_flash_messages() }}
+
+  <h1>Import employee directly</h1>
+
+  <form role="form" action="/employees/direct" method="post">
+      <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}" >
+      <label for="username" >User to import</label>
+      <input name="username" type="text" class="form-control" placeholder="smb196" autocapitalize="off">
+      <label for="first_name" >First Name</label>
+      <input name="first_name" type="text" class="form-control" placeholder="Darwin" >
+      <label for="last_name" >Last Name</label>
+      <input name="last_name" type="text" class="form-control" placeholder="Stoppelman" >
+      <label for="department" >Department</label>
+      <input name="department" type="text" class="form-control">
+      <button type="submit" class="btn btn-lg btn-default" >Import</button>
+  </form>
+{% endblock %}

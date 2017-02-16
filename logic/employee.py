@@ -38,6 +38,10 @@ def load_employees_from_csv():
     rebuild_index()
 
 
+def direct_load_employee(d):
+    _update_employees([d])
+
+
 def _get_employee_info_from_csv():
     logging.info('Reading employees from csv file...')
     employees = csv.DictReader(open(csv_import_file()))

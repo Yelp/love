@@ -329,3 +329,27 @@ def import_employees():
     flash('We started importing employee data in the background. Refresh the page to see it.', 'info')
     taskqueue.add(url='/tasks/employees/load/csv', method='GET')
     return redirect(url_for('employees'))
+
+
+@app.route('/employees/direct', methods=['GET'])
+@admin_required
+def direct_import_form():
+    return render_template('import_direct.html')
+
+
+@app.route('/employees/direct', methods=['POST'])
+@csrf_protect
+@admin_required
+def direct_import():
+    # WARNING: this is admin_required, and we're not protecting against things
+    # like injection. Be very aware.
+    employee_dict = dict(
+        username=request.form.get('username').strip().lower(),
+        first_name=request.form.get('first_name').strip(),
+        last_name=request.form.get('last_name').strip(),
+        department=request.form.get('department').strip(),
+        photo_url='',
+    )
+    logic.employee.direct_load_employee(employee_dict)
+    flash('Employee added!')
+    return render_template('import_direct.html')
