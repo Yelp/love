@@ -10,7 +10,7 @@ run-dev: config.py lib
 	dev_appserver.py dispatch.yaml app.yaml worker.yaml
 
 deploy: deploy_build
-	$(PYTHON) google_appengine/appcfg.py --no_cookies update app.yaml worker.yaml
+	$(PYTHON) google_appengine/appcfg.py update app.yaml worker.yaml
 
 deploy_with_dispatch: deploy_build
 	$(PYTHON) google_appengine/appcfg.py update_dispatch .
