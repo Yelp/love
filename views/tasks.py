@@ -12,18 +12,22 @@ from main import app
 from models import Love
 
 
+# All tasks that are to be executed by cron need to use HTTP GET
+# see https://cloud.google.com/appengine/docs/python/config/cron
 @app.route('/tasks/employees/load/s3', methods=['GET'])
 def load_employees_from_s3():
     logic.employee.load_employees()
     return Response(status=200)
 
 
-@app.route('/tasks/employees/load/csv', methods=['GET'])
+# This task has a web UI to trigger it, so let's use POST
+@app.route('/tasks/employees/load/csv', methods=['POST'])
 def load_employees_from_csv():
     logic.employee.load_employees_from_csv()
     return Response(status=200)
 
 
+# One-off tasks are much easier to trigger using GET
 @app.route('/tasks/employees/combine', methods=['GET'])
 def combine_employees():
     old_username, new_username = request.args['old'], request.args['new']
