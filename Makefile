@@ -8,8 +8,8 @@ run-dev: config.py lib
 deploy: deploy_build
 	appcfg.py --no_cookies update app.yaml worker.yaml
 
-deploy_with_dispatch: deploy_build
-	appcfg.py --no_cookies update app.yaml worker.yaml dispatch.yaml
+deploy_dispatch: deploy_build
+	appcfg.py --no_cookies update_dispatch .
 
 deploy_build: config.py clean lib test
 	@echo "\033[31mHave you bumped the app version? Hit ENTER to continue, CTRL-C to abort.\033[0m"

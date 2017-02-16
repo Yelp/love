@@ -132,8 +132,8 @@ version of worker.yaml. This version number is specific to the worker module and
 is independent of the main app version.
 
 When you bumped versions in the appropriate files you can deploy your changes by running
-<code>make deploy</code>. If you have modified [dispatch.yaml](dispatch.yaml), you need to
-use the <code>make deploy_with_dispatch</code> command instead.
+<code>make deploy</code>. If you have modified [dispatch.yaml](dispatch.yaml), you additionally
+need to use the <code>make deploy_dispatch</code> command to update the routing entries.
 
 Once your code has been uploaded to Google, you must activate the newly deployed version
 in the [Developer Console](https://console.developers.google.com/). Then you're done!
