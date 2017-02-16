@@ -82,9 +82,8 @@ class Employee(ndb.Model, Pagination):
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""
-        email = '{user}@{domain}'.format(user=self.username, domain=config.DOMAIN)
         m = hashlib.md5()
-        m.update(email)
+        m.update(self.user.email())
         encoded_hash = base64.b16encode(m.digest()).lower()
         return '//gravatar.com/avatar/{}?s=200'.format(encoded_hash)
 
