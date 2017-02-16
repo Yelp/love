@@ -85,7 +85,7 @@ class Employee(ndb.Model, Pagination):
         m = hashlib.md5()
         m.update(self.user.email())
         encoded_hash = base64.b16encode(m.digest()).lower()
-        return '//gravatar.com/avatar/{}?s=200'.format(encoded_hash)
+        return 'https://gravatar.com/avatar/{}?s=200'.format(encoded_hash)
 
     def get_photo_url(self):
         """Return an avatar photo URL (depending on Gravatar config). This still could
