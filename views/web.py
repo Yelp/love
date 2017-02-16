@@ -327,7 +327,7 @@ def import_employees_form():
 @admin_required
 def import_employees():
     flash('We started importing employee data in the background. Refresh the page to see it.', 'info')
-    taskqueue.add(url='/tasks/employees/load/csv', method='GET')
+    taskqueue.add(url='/tasks/employees/load/csv')
     return redirect(url_for('employees'))
 
 
