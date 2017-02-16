@@ -44,7 +44,7 @@ class LoadEmployeesTestCase(LoggedInAdminBaseTest):
 
     @mock.patch('logic.employee.load_employees_from_csv', autospec=True)
     def test_load_employees_from_csv(self, mock_load_employees_from_csv):  # noqa
-        response = self.app.get('/tasks/employees/load/csv')
+        response = self.app.post('/tasks/employees/load/csv')
 
         self.assertEqual(response.status_int, 200)
         mock_load_employees_from_csv.assert_called_with()
