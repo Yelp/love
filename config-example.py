@@ -27,4 +27,4 @@ S3_BUCKET = 'employees'
 # * 'always' - prefers Gravatar over the Employee.photo_url
 # * 'backup' - use Gravatar when photo_url is empty
 # * anything else - disabled
-GRAVATAR = 'always'
+GRAVATAR = 'backup'
