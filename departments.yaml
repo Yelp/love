@@ -1,7 +1,11 @@
 Student:
   - Student
+  - Undergrad
+  - Grad Student
 Faculty:
   - Faculty
+Staff:
+  - Staff
 Alumni:
   - Alumni
 Other:
