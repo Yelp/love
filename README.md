@@ -18,6 +18,8 @@ help fix that bug? Send them love!
 * [Manual or automated synchronization](#import-employee-data) between Yelp Love and your employee data
 * Admin section to manage aliases and API keys
 
+To get an idea what Yelp Love looks like go and check out the [screenshots](/screenshots).
+
 ## Installation
 
 Yelp Love runs on [Google App Engine](https://appengine.google.com/).
@@ -219,6 +221,19 @@ curl "https://project_id.appspot.com/api/autocomplete?term=ha&api_key=secret"
   }
 ]
 ```
+
+## Original Authors and Contributors
+
+* [adamrothman](https://github.com/adamrothman)
+* [amartinezfonts](https://github.com/amartinezfonts)
+* [benasher44](https://github.com/benasher44)
+* [jetze](https://github.com/jetze)
+* [KurtisFreedland](https://github.com/KurtisFreedland)
+* [mesozoic](https://github.com/mesozoic)
+* [michalczapko](https://github.com/michalczapko)
+* [wuhuwei](https://github.com/wuhuwei)
+
+For more info check out the [Authors](AUTHORS.md) file.
 
 ## License
 
