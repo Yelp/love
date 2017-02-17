@@ -168,7 +168,7 @@ def leaderboard():
         sub_departments=logic.department.META_DEPARTMENT_MAP,
         selected_dept=department,
         selected_timespan=timespan,
-        org_title = config.ORG_TITLE,
+        org_title=config.ORG_TITLE,
     )
 
 
