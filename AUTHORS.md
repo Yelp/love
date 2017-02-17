@@ -11,6 +11,8 @@
 
 # Contributors
 * Alex Levy [mesozoic](https://github.com/mesozoic)
+* Anthony Sottile [asottile](https://github.com/asottile)
 * Jenny Lemmnitz [jetze](https://github.com/jetze)
 * Kurtis Freedland [KurtisFreedland](https://github.com/KurtisFreedland)
 * Michał Czapko [michalczapko](https://github.com/michalczapko)
+* Stephen Brennan [brenns10](https://github.com/brenns10)
