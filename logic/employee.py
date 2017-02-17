@@ -11,7 +11,6 @@ from google.appengine.ext import ndb
 
 import config
 from errors import NoSuchEmployee
-from logic import chunk
 from logic.secret import get_secret
 from logic.toggle import set_toggle_state
 from models import Employee
@@ -103,13 +102,39 @@ def _get_employee_info_from_s3():
     return employee_dicts
 
 
-def _index_employees(employees):
+def paged_employees(page_size):
+    """
+    Iterate over employees in chunks of page_size. But instead of simply chunking them in
+    memory, the query actually returns page_size amount each time.
+    """
+    cursor = None
+    query = Employee.query(Employee.terminated == False)  # noqa
+    (results, cursor, more) = query.fetch_page(page_size)
+
+    while True:
+        # an empty list means no more results
+        if not results:
+            return
+
+        # queue up the next page asynchronously
+        future = query.fetch_page_async(page_size, start_cursor=cursor)
+
+        yield results
+
+        # when more is False, no more results are available
+        if not more:
+            return
+
+        # get the next page from the future
+        (results, cursor, more) = future.get_result()
+
+
+def _index_employees():
     logging.info('Indexing employees...')
     index = search.Index(name=INDEX_NAME)
-    index_put_futures = []
     # According to appengine, put can handle a maximum of 200 documents,
     # and apparently batching is more efficient
-    for chunk_of_200 in chunk(employees, 200):
+    for chunk_of_200 in paged_employees(200):
         documents = []
         for employee in chunk_of_200:
             if employee is not None:
@@ -126,9 +151,11 @@ def _index_employees(employees):
                     search.TextField(name='substrings', value=substrings),
                 ])
                 documents.append(doc)
-        index_put_futures.append(index.put_async(documents))
-    for index_put_future in index_put_futures:
-        index_put_future.get_result()
+        results = index.put_async(documents).get_result()
+        del results
+        del chunk_of_200
+        del documents
+        logging.info('Chunk!')
     logging.info('Done.')
 
 
@@ -141,23 +168,27 @@ def _update_employees(employee_dicts):
     """
     logging.info('Updating employees...')
 
-    all_employees, new_employees = [], []
-    current_usernames = set()
+    employees = []
     for d in employee_dicts:
         existing_employee = Employee.query(Employee.username == d['username']).get()
         if existing_employee is None:
             new_employee = Employee.create_from_dict(d, persist=False)
-            all_employees.append(new_employee)
-            new_employees.append(new_employee)
+            employees.append(new_employee)
         else:
             existing_employee.update_from_dict(d)
             # If the user is in the S3 dump, then the user is no longer
             # terminated.
             existing_employee.terminated = False
-            all_employees.append(existing_employee)
+            employees.append(existing_employee)
 
-        current_usernames.add(d['username'])
-    ndb.put_multi(all_employees)
+        # write to db every 500 employees so we save memory
+        if len(employees) == 500:
+            ndb.put_multi(employees)
+            del employees
+            employees = []
+
+    if employees:
+        ndb.put_multi(employees)
 
     logging.info('Done.')
 
@@ -268,6 +299,5 @@ def load_employees():
 
 
 def rebuild_index():
-    active_employees_future = Employee.query(Employee.terminated == False).fetch_async()  # noqa
     _clear_index()
-    _index_employees(active_employees_future.get_result())
+    _index_employees()
