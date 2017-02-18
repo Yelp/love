@@ -357,3 +357,22 @@ def direct_import():
     logic.employee.direct_load_employee(employee_dict)
     flash('Employee added!')
     return render_template('import_direct.html')
+
+
+@app.errorhandler(500)
+def internal_server_error(exc):
+    # in general we don't want to give out a "support email" all the time
+    support_email = None
+    title = "Internal Error"
+    if type(exc) is NoSuchEmployee:
+        # this is an error we know and can address, so showing an email is ok.
+        support_email = config.SUPPORT_EMAIL
+        message = (
+            "We couldn't find your {app_name} account. If you're logged in "
+            "with a @{domain} account, then this is probably an error on our "
+            "end. Contact us and we'll sort it out for you!"
+        ).format(app_name=config.APP_NAME, domain=config.DOMAIN)
+    else:
+        message = "Something went wrong. Sorry about that!"
+    return render_template('error.html', title=title, message=message,
+                           support_email=support_email)
