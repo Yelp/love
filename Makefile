@@ -1,7 +1,3 @@
-PYTHON=python2
-PIP=pip2
-TOX=tox2
-
 .PHONY: all test clean run-dev deploy deploy_build
 
 all: test
@@ -13,12 +9,12 @@ deploy: deploy_build
 	# If you are running into permission issues and see a message like this:
 	# You do not have permission to modify this app (app_id=u'foobar').
 	# then try adding --no_cookies to the commands below
-	$(PYTHON) google_appengine/appcfg.py update app.yaml worker.yaml
-	$(PYTHON) google_appengine/appcfg.py update_dispatch .
-	$(PYTHON) google_appengine/appcfg.py update_queues .
-	$(PYTHON) google_appengine/appcfg.py update_indexes .
+	appcfg.py update app.yaml worker.yaml
+	appcfg.py update_dispatch .
+	appcfg.py update_queues .
+	appcfg.py update_indexes .
 	# If you are using cron.yaml uncomment the line below
-	# $(PYTHON) google_appengine/appcfg.py update_cron .
+	# appcfg.py update_cron .
 
 deploy_build: config.py clean lib test
 	@echo "\033[31mHave you bumped the app version? Hit ENTER to continue, CTRL-C to abort.\033[0m"
@@ -27,12 +23,12 @@ deploy_build: config.py clean lib test
 lib: requirements.txt
 	mkdir -p lib
 	rm -rf lib/*
-	$(PIP) install -r requirements.txt -t lib
+	pip install -r requirements.txt -t lib
 
 test: google_appengine
 	# reset database before each test run
 	rm -f /tmp/nosegae.sqlite3
-	$(TOX)
+	tox
 
 clean:
 	find . -name '*.pyc' -delete
