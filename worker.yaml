@@ -11,6 +11,10 @@ handlers:
   login: admin
   secure: always
 
+libraries:
+- name: ssl
+  version: 2.7.11
+
 skip_files:
 - ^(.*/)?#.*#$
 - ^(.*/)?.*/RCS/.*$
