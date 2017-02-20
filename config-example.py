@@ -9,6 +9,11 @@ LOVE_SENDER_EMAIL = 'Yelp Love <love@PROJECT_ID.appspotmail.com>'
 
 # We can use the 'appengine' email API or the 'sendgrid' API. Pick one here.
 EMAIL_BACKEND = 'appengine'
+# If you have EMAIL_BACKEND = 'sendgrid', you'll need to set the SENDGRID_API_KEY
+# secret using the Secret Model. This is documented in the README in the discussion
+# on "JSON via Amazon S3". You'll also need to add the sendgrid module to your
+# requirements.txt. Note that you don't need it in your requirements if you don't
+# have it chosen!
 
 # Flask's secret key, used to encrypt the session cookie.
 # Set this to any random string and make sure not to share this!
