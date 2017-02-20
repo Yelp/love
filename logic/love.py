@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from google.appengine.api import taskqueue
-from google.appengine.api.mail import EmailMessage
 
 import config
 import logic.alias
 import logic.department
+import logic.email
 import logic.event
 from errors import TaintedLove
 from logic.toggle import get_toggle_state
@@ -45,7 +45,7 @@ def recent_received_love(employee_key, start_dt=None, end_dt=None, include_secre
     return query.fetch_async(limit) if type(limit) is int else query.fetch_async()
 
 
-def send_email(l):
+def send_love_email(l):
     """Send an email notifying the recipient of l about their love."""
     sender_future = l.sender_key.get_async()
     recipient_future = l.recipient_key.get_async()
@@ -63,17 +63,16 @@ def send_email(l):
     sender = sender_future.get_result()
     recipient = recipient_future.get_result()
 
-    email = EmailMessage()
-    email.sender = config.LOVE_SENDER_EMAIL
-    email.to = recipient.user.email()
-    email.subject = u'Love from {}'.format(sender.full_name)
+    from_ = config.LOVE_SENDER_EMAIL
+    to = recipient.user.email()
+    subject = u'Love from {}'.format(sender.full_name)
 
-    email.body = u'"{}"\n\n{}'.format(
+    body = u'"{}"\n\n{}'.format(
         l.message,
         '(Sent secretly)' if l.secret else ''
     )
 
-    email.html = render_template(
+    html = render_template(
         'email.html',
         love=l,
         sender=sender,
@@ -81,7 +80,7 @@ def send_email(l):
         recent_love_and_lovers=[(love, love.sender_key.get()) for love in recent_love[:3]]
     )
 
-    email.send()
+    logic.email.send_email(from_, to, subject, html, body)
 
 
 def get_love(sender_username=None, recipient_username=None, limit=None):
