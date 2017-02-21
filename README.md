@@ -108,7 +108,7 @@ Checkout [cron.yaml](cron.yaml) for further details.
 ### Prerequisites
 
 Before you can run Yelp Love on your local machine please install the [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads). You can get it from Google directly or use
-your favorite packet mananger.
+your favorite packet manager.
 
 ### Running the application locally
 
