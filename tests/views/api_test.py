@@ -76,6 +76,7 @@ class AutocompleteTest(_ApiKeyRequiredTestCase):
 
 
 class GetLoveTest(_ApiKeyRequiredTestCase):
+
     def setUp(self):
         super(GetLoveTest, self).setUp()
         create_employee(username='alice')

@@ -36,7 +36,7 @@ class LovesentNotifier(object):
                 'email': receiver.user.email(),
             },
             'message': self.love.message,
-            'timestamp': self.love.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            'timestamp': self.love.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
         }
 
     def _subscriptions(self):
