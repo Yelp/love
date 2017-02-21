@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import re
-
 from google.appengine.api.mail import EmailMessage
 
+from util.email import get_name_and_email
 import config
 import logic.secret
 
@@ -10,17 +9,6 @@ if config.EMAIL_BACKEND == 'sendgrid':
     # a bit of a hack here so that we can avoid adding dependencies unless
     # the user wants them
     import sendgrid
-
-
-def get_name_and_email(email_string):
-    """Take a string that is either 'Name <email>' or just an email address
-    and return a two tuple (email, name). If there is just an email, returns
-    None for the name."""
-    match = re.match(r'(.*) <(.*)>', email_string)
-    if match:
-        return match.group(2), match.group(1)
-    else:
-        return email_string, None
 
 
 def send_appengine_email(sender, recipient, subject, body_html, body_text):
