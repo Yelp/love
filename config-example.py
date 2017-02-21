@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copy this file to config.py and change the settings. Don't forget to specify your own SECRET_KEY.
 
 # The app name will be used in several places.

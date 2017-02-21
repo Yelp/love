@@ -136,6 +136,7 @@ class LoggedOutTest(YelpLoveTestCase):
 
 class AdminResourcesTest(LoggedInUserBaseTest):
     # Managing API Keys
+
     def test_keys(self):
         self.assertRequiresAdmin(
             self.app.get('/keys', expect_errors=True),
@@ -241,6 +242,7 @@ class HomepageTest(LoggedInUserBaseTest):
     """
     Testing the homepage
     """
+
     def test_index(self):
         response = self.app.get('/')
 
@@ -385,6 +387,7 @@ class AliasesTestCase(LoggedInAdminBaseTest):
     """
     Testing /aliases
     """
+
     def test_listing_aliases(self):
         response = self.app.get('/aliases')
 

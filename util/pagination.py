@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from collections import namedtuple
 
 from google.appengine.datastore.datastore_query import Cursor
