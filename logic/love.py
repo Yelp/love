@@ -67,12 +67,12 @@ def send_love_email(l):
     to = recipient.user.email()
     subject = u'Love from {}'.format(sender.full_name)
 
-    body = u'"{}"\n\n{}'.format(
+    body_text = u'"{}"\n\n{}'.format(
         l.message,
         '(Sent secretly)' if l.secret else ''
     )
 
-    html = render_template(
+    body_html = render_template(
         'email.html',
         love=l,
         sender=sender,
@@ -80,7 +80,7 @@ def send_love_email(l):
         recent_love_and_lovers=[(love, love.sender_key.get()) for love in recent_love[:3]]
     )
 
-    logic.email.send_email(from_, to, subject, html, body)
+    logic.email.send_email(from_, to, subject, body_html, body_text)
 
 
 def get_love(sender_username=None, recipient_username=None, limit=None):
