@@ -1,6 +1,6 @@
-application: yelplove
+application: cwrulove
 module: worker
-version: 1-0-0
+version: 1-0-2
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -10,6 +10,10 @@ handlers:
   script: main.app
   login: admin
   secure: always
+
+libraries:
+- name: ssl
+  version: 2.7.11
 
 skip_files:
 - ^(.*/)?#.*#$

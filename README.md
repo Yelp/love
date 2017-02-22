@@ -2,7 +2,7 @@
 
 ![Yelp Love](yelplove-medium.png)
 
-# Yelp Love
+# ~~Yelp~~ CWRU Love
 
 Yelp Love lets you show others your appreciation for something they've done.
 Did they make you laugh in your darkest hour? Did they save your ass? Did they

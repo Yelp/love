@@ -37,3 +37,9 @@ S3_BUCKET = 'employees'
 # * 'backup' - use Gravatar when photo_url is empty
 # * anything else - disabled
 GRAVATAR = 'backup'
+
+ORG_TITLE = "Company"
+
+# On error pages a "support contact" email can be listed.
+# None suppresses the link.
+SUPPORT_EMAIL = None

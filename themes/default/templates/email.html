@@ -101,7 +101,16 @@
                 </p>
               </td>
             </tr>
-          </table>
+            {% if config.SUPPORT_EMAIL %}
+            <tr style="margin: 0;padding: 0;">
+              <td align="center" style="margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;">
+                <p style="margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;margin-bottom: 10px;font-weight: normal;font-size: 14px;line-height: 1.4;">
+                  Questions? Abusive behavior? <a href="mailto:{{ config.SUPPORT_EMAIL }}" style="margin: 0;padding: 0;color: #3b65a7;">Contact Us</a>
+                </p>
+              </td>
+            </tr>
+            {% endif %}
+         </table>
         </div><!-- /content -->
 
     </td>

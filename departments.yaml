@@ -1,8 +1,12 @@
-Department A:
-- Team A1
-- Team A2
-Department B:
-- Team B1
-- Team B2
+Student:
+  - Student
+  - Undergrad
+  - Grad Student
+Faculty:
+  - Faculty
+Staff:
+  - Staff
+Alumni:
+  - Alumni
 Other:
-- Other
+  - Other
