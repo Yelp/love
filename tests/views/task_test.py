@@ -22,7 +22,7 @@ class EmailLoveTestCase(LoggedInAdminBaseTest):
         self.recipient.key.delete()
         self.sender.key.delete()
 
-    @mock.patch('logic.love.send_email', autospec=True)
+    @mock.patch('logic.love.send_love_email', autospec=True)
     def test_send_love_email(self, mock_send_email):  # noqa
         response = self.app.post(
             '/tasks/love/email',

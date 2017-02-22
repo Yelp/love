@@ -50,7 +50,7 @@ def rebuild_index():
 def email_love():
     love_id = int(request.form['id'])
     love = ndb.Key(Love, love_id).get()
-    logic.love.send_email(love)
+    logic.love.send_love_email(love)
     return Response(status=200)
 
 
