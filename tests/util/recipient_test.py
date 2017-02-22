@@ -5,6 +5,7 @@ from util.recipient import sanitize_recipients
 
 
 class SanitizeRecipientsTest(unittest.TestCase):
+
     def _test_sanitization(self, input_recipients, expected_recipients):
         sanitized_recipients = sanitize_recipients(input_recipients)
         self.assertEqual(

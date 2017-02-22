@@ -55,6 +55,7 @@ class NotificationRequest(object):
 
 
 class JSONContent(object):
+
     def __init__(self, payload):
         self.content_type = CONTENT_TYPE_JSON
         self.payload = json.dumps(payload)
