@@ -13,3 +13,4 @@ lib
 tmp
 import/*.csv
 import/*.json
+venv
