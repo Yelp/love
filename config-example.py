@@ -29,4 +29,4 @@ S3_BUCKET = 'employees'
 # * anything else - disabled
 GRAVATAR = 'backup'
 
-ORG_TITLE = "All Company"
+ORG_TITLE = 'All Company'
