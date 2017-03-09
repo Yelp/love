@@ -37,3 +37,5 @@ S3_BUCKET = 'employees'
 # * 'backup' - use Gravatar when photo_url is empty
 # * anything else - disabled
 GRAVATAR = 'backup'
+
+ORG_TITLE = 'All Company'

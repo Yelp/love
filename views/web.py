@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import os.path
+
+import config
+
 from datetime import datetime
 from datetime import timedelta
 
@@ -165,6 +168,7 @@ def leaderboard():
         sub_departments=logic.department.META_DEPARTMENT_MAP,
         selected_dept=department,
         selected_timespan=timespan,
+        org_title=config.ORG_TITLE,
     )
 
 
