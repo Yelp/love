@@ -3,8 +3,8 @@ import mock
 import os
 import unittest
 
-from flask.ext.themes2 import Themes, load_themes_from
-from flask.ext.webtest import TestApp
+from flask_themes2 import Themes, load_themes_from
+from flask_webtest import TestApp
 
 import main
 from testing.factories import create_employee
