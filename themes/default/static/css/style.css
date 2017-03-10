@@ -269,3 +269,8 @@ h4 {
 .pagination-result {
     text-align: center;
 }
+
+.alert-success a {
+    color: #468847;
+    text-decoration: underline;
+}

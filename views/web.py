@@ -7,10 +7,12 @@ from datetime import datetime
 from datetime import timedelta
 
 from flask import abort
+from flask import current_app
 from flask import flash
 from flask import redirect
 from flask import request
 from flask import url_for
+from markupsafe import Markup
 
 import logic.alias
 import logic.department
@@ -34,6 +36,7 @@ from models import Subscription
 from util.decorators import admin_required
 from util.decorators import csrf_protect
 from util.decorators import user_required
+from util.markup import explore_links
 from util.recipient import sanitize_recipients
 from util.render import render_template
 from views import common
@@ -214,7 +217,14 @@ def love():
     try:
         logic.love.send_loves(recipients, message, secret=secret)
 
-        flash('{}ove sent to {}!'.format('Secret l' if secret else 'L', recipients_display_str))
+        links = explore_links(recipients, current_app.app_context())
+        flash(
+            Markup('{initial}ove sent to {recipients}!'.format(
+                initial='Secret l' if secret else 'L',
+                recipients=', '.join(links),
+            ))
+        )
+
         return redirect(url_for('home'))
     except TaintedLove as exc:
         if exc.is_error:
