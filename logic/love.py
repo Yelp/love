@@ -139,12 +139,17 @@ def send_loves(recipients, message, sender_username=None, secret=False):
     if len(recipients) != len(unique_recipients):
         raise TaintedLove(u'Sorry, you are trying to send love to a user multiple times.')
 
+    # Only raise an error if the only recipient is the sender.
+    if sender_username in unique_recipients:
+        unique_recipients.remove(sender_username)
+        if len(unique_recipients) == 0:
+            raise TaintedLove(u'You can love yourself, but not on {}!'.format(
+                config.APP_NAME
+            ))
+
     # validate all recipients before carrying out any Love transactions
     recipient_keys = []
     for recipient_username in unique_recipients:
-        if sender_username == recipient_username:
-            raise TaintedLove(u'You can love yourself, but not on {}!'.format(config.APP_NAME))
-
         recipient_key = Employee.query(
             Employee.username == recipient_username,
             Employee.terminated == False
