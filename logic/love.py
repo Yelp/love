@@ -163,6 +163,8 @@ def send_loves(recipients, message, sender_username=None, secret=False):
     for recipient_key in recipient_keys:
         _send_love(recipient_key, message, sender_key, secret)
 
+    return unique_recipients
+
 
 def _send_love(recipient_key, message, sender_key, secret):
     """Send love and do associated bookkeeping."""
