@@ -212,9 +212,11 @@ def love():
         return redirect(url_for('home', recipients=recipients_display_str))
 
     try:
-        logic.love.send_loves(recipients, message, secret=secret)
+        real_recipients = logic.love.send_loves(recipients, message, secret=secret)
+        # actual recipients may have the sender stripped from the list
+        real_display_str = ', '.join(real_recipients)
 
-        flash('{}ove sent to {}!'.format('Secret l' if secret else 'L', recipients_display_str))
+        flash('{}ove sent to {}!'.format('Secret l' if secret else 'L', real_display_str))
         return redirect(url_for('home'))
     except TaintedLove as exc:
         if exc.is_error:

@@ -66,7 +66,7 @@ def api_send_loves():
     message = request.form.get('message')
 
     try:
-        send_loves(recipients, message, sender_username=sender)
+        recipients = send_loves(recipients, message, sender_username=sender)
         recipients_display_str = ', '.join(recipients)
         return make_response(
             u'Love sent to {}!'.format(recipients_display_str),
