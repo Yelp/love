@@ -43,16 +43,24 @@ class SendLovesTest(unittest.TestCase):
                 sender_username='wwu',
             )
 
-    def test_sender_is_recipient(self):
-        with self.assertRaises(TaintedLove):
-            logic.love.send_loves(
-                set(['bob', 'alice']),
-                'hallo',
-                sender_username='alice',
-            )
+    def test_sender_is_a_recipient(self):
+        logic.love.send_loves(
+            set(['bob', 'alice']),
+            self.message,
+            sender_username='alice',
+        )
 
         loves_for_bob = logic.love.get_love('alice', 'bob').get_result()
-        self.assertEqual(loves_for_bob, [])
+        self.assertEqual(len(loves_for_bob), 1)
+        self.assertEqual(loves_for_bob[0].message, self.message)
+
+    def test_sender_is_only_recipient(self):
+        with self.assertRaises(TaintedLove):
+            logic.love.send_loves(
+                set(['alice']),
+                self.message,
+                sender_username='alice',
+            )
 
     def test_invalid_recipient(self):
         with self.assertRaises(TaintedLove):

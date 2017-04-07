@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
 from flask import Flask
-from flask.ext.themes2 import Themes
+from flask_themes2 import Themes
 
 import config
 from util.auth import is_admin

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from flask.ext.themes2 import render_theme_template
+from flask_themes2 import render_theme_template
 from flask.helpers import make_response
 
 import config
