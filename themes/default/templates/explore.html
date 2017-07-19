@@ -91,6 +91,7 @@
   <script type="text/javascript">
     $(document).ready(function() {
       $('#nav-explore').addClass('active');
+      $('input[name="user"]').focus();
       $('#explore-username').autocomplete({
         source: '/user/autocomplete',
         minLength: 2,
