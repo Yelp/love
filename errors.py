@@ -21,6 +21,9 @@ class UnknownEvent(Exception):
     pass
 
 
+class NoSuchLoveLink(Exception):
+    pass
+
 class TaintedLove(Exception):
 
     def __init__(self, user_message, is_error=True):
