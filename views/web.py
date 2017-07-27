@@ -2,6 +2,7 @@
 import os.path
 
 import config
+import logging
 
 from datetime import datetime
 from datetime import timedelta
@@ -17,6 +18,7 @@ import logic.department
 import logic.employee
 import logic.event
 import logic.love
+import logic.love_link
 import logic.love_count
 import logic.subscription
 from errors import NoSuchEmployee
@@ -86,6 +88,14 @@ def me_or_explore(user):
         return redirect(url_for('me'))
     else:
         return redirect(url_for('explore', user=username))
+
+
+@app.route('/l/<string:hash_key>', methods=['GET'])
+@user_required
+def love_link(hash_key):
+    loveLink = logic.love_link.get_love_link(hash_key)
+    logging.info(loveLink)
+    return redirect(url_for('home') + '?recipient={}&message={}'.format(loveLink.recipient_list, loveLink.message))
 
 
 @app.route('/explore', methods=['GET'])
