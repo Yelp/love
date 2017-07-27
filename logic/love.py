@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-import logging
 from google.appengine.api import taskqueue
 
 import config
@@ -8,14 +7,12 @@ import logic.alias
 import logic.department
 import logic.email
 import logic.event
-import random
-import string
+
 from errors import TaintedLove
 from logic.toggle import get_toggle_state
 from models import Employee
 from models import Love
 from models import LoveCount
-from models import LoveLink
 from models.toggle import LOVE_SENDING_ENABLED
 from util.render import render_template
 
@@ -168,26 +165,7 @@ def send_loves(recipients, message, sender_username=None, secret=False):
     for recipient_key in recipient_keys:
         _send_love(recipient_key, message, sender_key, secret)
 
-    # Generate love link
-    logging.info(unique_recipients)
-    if not secret:
-        create_love_link(','.join(map(str, unique_recipients)), message)
-
     return unique_recipients
-
-
-def create_love_link(recipients, message):
-    logging.info('Creating love link')
-    hash_key = ''.join(random.choice(string.lowercase) for x in range(10))
-    new_love_link = LoveLink(
-        hash_key=hash_key,
-        recipient_list=recipients,
-        message=message,
-    )
-    logging.info(new_love_link)
-    new_love_link.put()
-
-    return hash_key
 
 
 def _send_love(recipient_key, message, sender_key, secret):
