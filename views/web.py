@@ -233,7 +233,7 @@ def love():
         else:
             logging.info(real_recipients)
             hash_key = create_love_link(','.join(map(str, real_recipients)), message)
-            return redirect(url_for('sent', recipients=recipients_display_str, message=message, hash=hash_key))
+            return redirect(url_for('sent', recipients=recipients_display_str, message=message, link_id=hash_key))
 
     except TaintedLove as exc:
         if exc.is_error:
