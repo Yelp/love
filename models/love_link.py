@@ -3,6 +3,8 @@ from time import mktime
 
 from google.appengine.ext import ndb
 
+import config
+
 
 class LoveLink(ndb.Model):
     """Models an instance of a Love Link."""
@@ -14,3 +16,7 @@ class LoveLink(ndb.Model):
     @property
     def seconds_since_epoch(self):
         return int(mktime(self.timestamp.timetuple()))
+
+    @property
+    def url(self):
+        return config.APP_BASE_URL + 'l/' + self.hash_key

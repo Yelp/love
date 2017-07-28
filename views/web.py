@@ -22,6 +22,7 @@ import logic.love_link
 import logic.love_count
 import logic.subscription
 from errors import NoSuchEmployee
+from errors import NoSuchLoveLink
 from errors import TaintedLove
 from google.appengine.api import taskqueue
 from logic import TIMESPAN_LAST_WEEK
@@ -196,18 +197,27 @@ def leaderboard():
 @user_required
 def sent():
     link_id = request.args.get('link_id', None)
-
     if not link_id:
         return redirect(url_for('home'))
 
-    link = config.APP_BASE_URL + 'l/' + link_id
+    try:
+        # unfortunately this is failing to pull the love link model after the
+        # redirect from the /love POST. idk if this is some eventual
+        # consistency thing, or because the hask_key isn't indexed or something
+        # will look into this closer tmr
+        loveLink = logic.love_link.get_love_link(link_id)
 
-    return render_template(
-        'sent.html',
-        current_time=datetime.utcnow(),
-        current_user=Employee.get_current_employee(),
-        link=link,
-    )
+        return render_template(
+            'sent.html',
+            current_time=datetime.utcnow(),
+            current_user=Employee.get_current_employee(),
+            recipients=loveLink.recipient_list,
+            message=loveLink.message,
+            url=loveLink.url,
+        )
+    except NoSuchLoveLink:
+        logging.info('Love link not found!')
+        return redirect(url_for('home'))
 
 
 @app.route('/keys', methods=['GET'])
@@ -238,7 +248,6 @@ def love():
     recipients = sanitize_recipients(request.form.get('recipients'))
     message = request.form.get('message').strip()
     secret = (request.form.get('secret') == 'true')
-    link_id = request.form.get('link_id')
 
     if not recipients:
         flash('Enter a name, lover.', 'error')
