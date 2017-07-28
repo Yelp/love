@@ -200,11 +200,13 @@ def sent():
     if not link_id:
         return redirect(url_for('home'))
 
+    link = config.APP_BASE_URL + 'l/' + link_id
+
     return render_template(
         'sent.html',
         current_time=datetime.utcnow(),
         current_user=Employee.get_current_employee(),
-        link=url_for('l/' + link_id),
+        link=link,
     )
 
 
