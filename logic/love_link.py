@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 import random
 import string
 
 from errors import NoSuchLoveLink
 from models import LoveLink
+
+from google.appengine.ext import ndb
 
 
 def get_love_link(hash_key):
@@ -32,3 +35,15 @@ def create_love_link(recipients, message):
 
     return link_id
 
+
+def love_links_cleanup():
+    """
+    Deletes love links that are more than a month (30 days) old.
+    """
+    earliest = datetime.datetime.now() - datetime.timedelta(days=30)
+    love_links_keys = LoveLink.query(LoveLink.timestamp <= earliest).fetch(keys_only=True)
+    logging.info('Preparing to delete love links older than {}.'.format(str(earliest)))
+    ndb.delete_multi(love_links_keys)
+    logging.info('Love links older than {} were deleted.'.format(str(earliest)))
+
+    return

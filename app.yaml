@@ -1,4 +1,4 @@
-application: yelplove
+application: yelp-love-175018
 module: default
 version: 1-0-0
 runtime: python27
