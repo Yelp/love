@@ -14,15 +14,21 @@ def get_love_link(hash_key):
     return loveLink
 
 
+def generate_link_id():
+    link_id = ''.join(random.choice(string.ascii_letters) for _ in range(5))
+    return link_id
+
+
 def create_love_link(recipients, message):
     logging.info('Creating love link')
-    hash_key = ''.join(random.choice(string.lowercase) for x in range(10))
+    link_id = generate_link_id()
     new_love_link = LoveLink(
-        hash_key=hash_key,
+        hash_key=link_id,
         recipient_list=recipients,
         message=message,
     )
     logging.info(new_love_link)
     new_love_link.put()
 
-    return hash_key
+    return link_id
+
