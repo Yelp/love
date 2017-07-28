@@ -157,6 +157,8 @@ def leaderboard():
     utc_week_start, _ = utc_week_limits(utc_now)
 
     top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(utc_week_start, dept=department)
+    logging.info(top_lovers)
+    logging.info(top_lovees)
 
     top_lover_dicts = [
         {
@@ -167,6 +169,8 @@ def leaderboard():
         in top_lovers
     ]
 
+    logging.info(top_lover_dicts)
+
     top_loved_dicts = [
         {
             'employee': employee_key.get_async(),
@@ -175,6 +179,8 @@ def leaderboard():
         for employee_key, received_count
         in top_lovees
     ]
+
+    logging.info(top_loved_dicts)
 
     # get results for the futures set up previously
     map(to_the_future, top_lover_dicts)
