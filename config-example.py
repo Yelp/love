@@ -29,7 +29,7 @@ THEME = 'default'
 DOMAIN = 'example.com'
 
 # Name of the S3 bucket used to import employee data from a file named employees.json
-# Check out /import/employees.json to see how this file should look like.
+# Check out /import/employees.json.example to see how this file should look like.
 S3_BUCKET = 'employees'
 
 # When do we use Gravatar? Options are:
