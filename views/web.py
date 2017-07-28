@@ -91,12 +91,21 @@ def me_or_explore(user):
         return redirect(url_for('explore', user=username))
 
 
-@app.route('/l/<string:hash_key>', methods=['GET'])
+@app.route('/l/<string:link_id>', methods=['GET'])
 @user_required
-def love_link(hash_key):
-    loveLink = logic.love_link.get_love_link(hash_key)
-    logging.info(loveLink)
-    return redirect(url_for('home') + '?recipient={}&message={}'.format(loveLink.recipient_list, loveLink.message))
+def love_link(link_id):
+    loveLink = logic.love_link.get_love_link(link_id)
+    recipients = loveLink.recipient_list
+    message = loveLink.message
+
+    return render_template(
+        'love_link.html',
+        current_time=datetime.utcnow(),
+        current_user=Employee.get_current_employee(),
+        recipients=recipients,
+        message=message,
+        link_id=link_id,
+    )
 
 
 @app.route('/explore', methods=['GET'])
@@ -227,6 +236,7 @@ def love():
     recipients = sanitize_recipients(request.form.get('recipients'))
     message = request.form.get('message').strip()
     secret = (request.form.get('secret') == 'true')
+    link_id = request.form.get('link_id')
 
     if not recipients:
         flash('Enter a name, lover.', 'error')
