@@ -206,12 +206,18 @@ def sent():
         # consistency thing, or because the hask_key isn't indexed or something
         # will look into this closer tmr
         loveLink = logic.love_link.get_love_link(link_id)
+        recipients = sanitize_recipients(loveLink.recipient_list)
+        loved = [
+            Employee.get_key_for_username(recip).get()
+            for recip in recipients
+        ]
 
         return render_template(
             'sent.html',
             current_time=datetime.utcnow(),
             current_user=Employee.get_current_employee(),
             recipients=loveLink.recipient_list,
+            loved=loved,
             message=loveLink.message,
             url=loveLink.url,
         )

@@ -1,0 +1,6 @@
+{% import theme("parts/avatar.html") as avatar %}
+
+<div class="facetile">
+  <img class="media-object face" src="{{ avatar.avatar_url_for(user) }}" alt="{{ user.full_name }}" width="40" height="40">
+  <div class="name">{{ user.username }}</div>
+</div>

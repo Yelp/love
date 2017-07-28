@@ -1,6 +1,10 @@
+{% import theme("parts/facetile.html") as facetile %}
+
 <label>Recipients:</label>
-<div class="well">
-  {{ recipients }}
+<div>
+{% for lov in loved %}
+  {{ facetile.face_icon(lov) }}
+{% endfor %}
 </div>
 
 <label>Message:</label>
