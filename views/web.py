@@ -239,17 +239,17 @@ def love():
         return redirect(url_for('home', recipients=recipients_display_str))
 
     try:
-        real_recipients, hash = logic.love.send_loves(recipients, message, secret=secret)
+        real_recipients = logic.love.send_loves(recipients, message, secret=secret)
         # actual recipients may have the sender stripped from the list
         real_display_str = ', '.join(real_recipients)
+        logging.info(real_recipients)
 
         if secret:
             flash('Secret love sent to {}!'.format(real_display_str))
             return redirect(url_for('home'))
         else:
-            logging.info(real_recipients)
-            hash_key = create_love_link(','.join(map(str, real_recipients)), message)
-            return redirect(url_for('sent', recipients=recipients_display_str, message=message, link_id=hash_key))
+            hash_key = create_love_link(real_display_str, message)
+            return redirect(url_for('sent', link_id=hash_key))
 
     except TaintedLove as exc:
         if exc.is_error:
