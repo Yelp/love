@@ -5,7 +5,9 @@ import random
 import string
 
 from errors import NoSuchLoveLink
+from errors import NoSuchEmployee
 from models import LoveLink
+from models import Employee
 
 from google.appengine.ext import ndb
 
@@ -34,6 +36,19 @@ def create_love_link(recipients, message):
     new_love_link.put()
 
     return new_love_link
+
+
+def add_recipient(hash_key, recipient):
+    loveLink = LoveLink.query(LoveLink.hash_key == hash_key).get()
+    if (loveLink is None):
+        raise NoSuchLoveLink("Couldn't Love Link with id {}".format(hash_key))
+
+    employee = Employee.get_key_for_username(recipient)
+    if employee is None:
+        raise NoSuchEmployee('Couldn\'t find this user')
+
+    loveLink.recipient_list += ', ' + recipient
+    loveLink.put()
 
 
 def love_links_cleanup():
