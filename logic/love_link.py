@@ -33,7 +33,7 @@ def create_love_link(recipients, message):
     logging.info(new_love_link)
     new_love_link.put()
 
-    return link_id
+    return new_love_link
 
 
 def love_links_cleanup():
