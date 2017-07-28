@@ -183,6 +183,22 @@ def leaderboard():
     )
 
 
+@app.route('/sent', methods=['GET'])
+@user_required
+def sent():
+    link_id = request.args.get('link_id', None)
+
+    if not link_id:
+        return redirect(url_for('home'))
+
+    return render_template(
+        'sent.html',
+        current_time=datetime.utcnow(),
+        current_user=Employee.get_current_employee(),
+        link=url_for('l/' + link_id),
+    )
+
+
 @app.route('/keys', methods=['GET'])
 @admin_required
 def keys():
