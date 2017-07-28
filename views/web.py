@@ -248,6 +248,7 @@ def love():
     recipients = sanitize_recipients(request.form.get('recipients'))
     message = request.form.get('message').strip()
     secret = (request.form.get('secret') == 'true')
+    link_id = request.form.get('link_id')
 
     if not recipients:
         flash('Enter a name, lover.', 'error')
@@ -269,7 +270,7 @@ def love():
             flash('Secret love sent to {}!'.format(real_display_str))
             return redirect(url_for('home'))
         else:
-            hash_key = create_love_link(real_display_str, message)
+            hash_key = link_id if link_id else create_love_link(real_display_str, message)
             return redirect(url_for('sent', link_id=hash_key))
 
     except TaintedLove as exc:
