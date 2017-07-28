@@ -95,15 +95,22 @@ def me_or_explore(user):
 @user_required
 def love_link(link_id):
     loveLink = logic.love_link.get_love_link(link_id)
-    recipients = loveLink.recipient_list
+    recipients_str = loveLink.recipient_list
     message = loveLink.message
+
+    recipients = sanitize_recipients(recipients_str)
+    loved = [
+        Employee.get_key_for_username(recipient).get()
+        for recipient in recipients
+    ]
 
     return render_template(
         'love_link.html',
         current_time=datetime.utcnow(),
         current_user=Employee.get_current_employee(),
-        recipients=recipients,
+        recipients=recipients_str,
         message=message,
+        loved=loved,
         link_id=link_id,
     )
 
