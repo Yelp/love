@@ -1,5 +1,5 @@
 {% macro avatar_url_for(employee) -%}
-    {% if employee.get_photo_url() -%}
+    {% if employee and employee.get_photo_url() -%}
         {{ employee.get_photo_url() }}
     {%- else -%}
         {{ theme_static('img/user_medium_square.png', external=True) }}
