@@ -6,21 +6,21 @@
         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
         <label for="recipients">Send love to</label>
         <input type="text" class="form-control" name="recipients" placeholder="hammy" autocorrect="off" autocapitalize="off" readonly {% if recipients %} value="{{ recipients }}" {% endif %}>
-        </div>
-        <div class="form-group">
+      </div>
+      <div class="form-group">
         <textarea class="form-control" rows="3" name="message" placeholder="Welcome to the lovefest." maxlength="140" readonly>{% if message %}{{ message }}{% endif %}</textarea>
-        </div>
+      </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-lg btn-default">Send Love</button>
-            <div class="checkbox">
-            <label>
-                <input name="secret" type="checkbox" value="true"> Send in secret <span id="secret-love-label" data-placement="right" data-toggle="tooltip" class="small" title="Your recipient will see this love, but it will not be public to others.">(?)</a>
-            </label>
+      <div class="form-group">
+        <button type="submit" class="btn btn-lg btn-default">Send Love</button>
+        <div class="checkbox">
+          <label>
+            <input name="secret" type="checkbox" value="true"> Send in secret <span id="secret-love-label" data-placement="right" data-toggle="tooltip" class="small" title="Your recipient will see this love, but it will not be public to others.">(?)</a>
+          </label>
         </div>
         <input name="link_id" type="hidden" value="{{ link_id }}">
       </div>
-    </div>
+    </form>
 
     <div id="suggestions-container">
         <div ><h3><span class="label label-default">Who made me laugh in my darkest hour?</span></h3></div>
