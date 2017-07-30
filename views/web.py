@@ -22,6 +22,7 @@ import logic.love_link
 import logic.love_count
 import logic.subscription
 from errors import NoSuchEmployee
+from errors import NoSuchLoveLink
 from errors import TaintedLove
 from google.appengine.api import taskqueue
 from logic import TIMESPAN_LAST_WEEK
@@ -94,25 +95,29 @@ def me_or_explore(user):
 @app.route('/l/<string:link_id>', methods=['GET'])
 @user_required
 def love_link(link_id):
-    loveLink = logic.love_link.get_love_link(link_id)
-    recipients_str = loveLink.recipient_list
-    message = loveLink.message
+    try:
+        loveLink = logic.love_link.get_love_link(link_id)
+        recipients_str = loveLink.recipient_list
+        message = loveLink.message
 
-    recipients = sanitize_recipients(recipients_str)
-    loved = [
-        Employee.get_key_for_username(recipient).get()
-        for recipient in recipients
-    ]
+        recipients = sanitize_recipients(recipients_str)
+        loved = [
+            Employee.get_key_for_username(recipient).get()
+            for recipient in recipients
+        ]
 
-    return render_template(
-        'love_link.html',
-        current_time=datetime.utcnow(),
-        current_user=Employee.get_current_employee(),
-        recipients=recipients_str,
-        message=message,
-        loved=loved,
-        link_id=link_id,
-    )
+        return render_template(
+            'love_link.html',
+            current_time=datetime.utcnow(),
+            current_user=Employee.get_current_employee(),
+            recipients=recipients_str,
+            message=message,
+            loved=loved,
+            link_id=link_id,
+        )
+    except NoSuchLoveLink:
+        flash('Sorry, that link ({}) is no longer valid.'.format(link_id), 'error')
+        return redirect(url_for('home'))
 
 
 @app.route('/explore', methods=['GET'])
