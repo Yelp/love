@@ -6,7 +6,7 @@
 {% block body %}
 <div class="row">
   <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
-    <h1>Love Sent!</h1>
+    <h1>Love sent!</h1>
     <label>Recipients:</label>
     <div>
     {% for lovee in loved %}
@@ -20,6 +20,7 @@
     </div>
 
     <h1>Share the love</h1>
+    <p>Send out your unique link so that others can join the lovefest!</p>
     <div class="form-inline">
       <a href="{{ url }}" class="link">{{ url }}</a>
       <button type="submit" class="btn btn-default copybtn">Copy</button>
@@ -48,11 +49,10 @@
           var successful = document.execCommand('copy');
           var msg = successful ? 'successful' : 'unsuccessful';
         } catch (err) {
-          console.log('Oops, unable to copy');
+          console.log('Unable to copy to clipboard');
         }
 
-        // Remove the selections - NOTE: Should use
-        // removeRange(range) when it is supported
+        // Remove the selections
         window.getSelection().removeAllRanges();
       });
     });
