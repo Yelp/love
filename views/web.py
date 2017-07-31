@@ -278,7 +278,7 @@ def love():
 
         if secret:
             flash('Secret love sent to {}!'.format(real_display_str))
-            return redirect(url_for('home', message=message))
+            return redirect(url_for('home', message=message, recipients=real_display_str))
         else:
             hash_key = link_id if link_id else create_love_link(real_display_str, message).hash_key
             return redirect(url_for('sent', message=message, recipients=real_display_str, link_id=hash_key))
