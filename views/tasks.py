@@ -68,7 +68,7 @@ def notify_subscribers():
     return Response(status=200)
 
 
-@app.route('/tasks/lovelinks/cleanup', methods=['GET'])
+@app.route('/tasks/lovelinks/cleanup', methods=['POST'])
 def lovelinks_cleanup():
     logic.love_link.love_links_cleanup()
     return Response(status=200)
