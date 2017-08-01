@@ -4,8 +4,8 @@ import logging
 import random
 import string
 
+import logic.alias
 from errors import NoSuchLoveLink
-from errors import NoSuchEmployee
 from models import LoveLink
 from models import Employee
 
@@ -43,9 +43,9 @@ def add_recipient(hash_key, recipient):
     if (loveLink is None):
         raise NoSuchLoveLink("Couldn't Love Link with id {}".format(hash_key))
 
-    employee = Employee.get_key_for_username(recipient)
-    if employee is None:
-        raise NoSuchEmployee('Couldn\'t find this user')
+    # check that user exists, get_key_for_username throws an exception if not
+    recipient_username = logic.alias.name_for_alias(recipient)
+    Employee.get_key_for_username(recipient_username)
 
     loveLink.recipient_list += ', ' + recipient
     loveLink.put()
