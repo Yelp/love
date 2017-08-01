@@ -3,6 +3,7 @@ import mock
 
 from webtest.app import AppError
 
+import config
 import logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
@@ -40,6 +41,9 @@ class LoggedOutTest(YelpLoveTestCase):
 
     def test_autocomplete(self):
         self.assertRequiresLogin(self.app.get('/user/autocomplete'))
+
+    def test_sent(self):
+        self.assertRequiresLogin(self.app.get('/sent'))
 
     def test_create_key(self):
         csrf_token = self.addCsrfTokenToSession()
@@ -267,6 +271,32 @@ class HomepageTest(LoggedInUserBaseTest):
             'hi',
         )
         self.assertHasCsrf(response.forms['send-love-form'], response.session)
+
+
+class SentTest(LoggedInUserBaseTest):
+    """
+    Testing the sent page
+    """
+
+    def setUp(self):
+        super(SentTest, self).setUp()
+        self.recipient = create_employee(username='janedoe')
+
+    def tearDown(self):
+        self.recipient.key.delete()
+        super(SentTest, self).tearDown()
+
+    def test_missing_args_is_redirect(self):
+        response = self.app.get('/sent')
+
+        self.assertEqual(response.status_int, 302)
+
+    def test_sent_with_args(self):
+        response = self.app.get('/sent', dict(recipients='janedoe', message='hi', link_id='cn23sx'))
+        self.assertIsNotNone(response.context['current_time'])
+        self.assertEqual(response.context['current_user'], self.current_user)
+        self.assertIsNotNone(response.context['loved'])
+        self.assertEqual(response.context['url'], config.APP_BASE_URL + 'l/cn23sx')
 
 
 class SendLoveTest(LoggedInUserBaseTest):
