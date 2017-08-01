@@ -19,4 +19,4 @@ class LoveLink(ndb.Model):
 
     @property
     def url(self):
-        return config.APP_BASE_URL + 'l/' + self.hash_key
+        return config.APP_BASE_URL + '/l/' + self.hash_key
