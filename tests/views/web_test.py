@@ -3,7 +3,6 @@ import mock
 
 from webtest.app import AppError
 
-import config
 import logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
@@ -292,12 +291,15 @@ class SentTest(LoggedInUserBaseTest):
 
         self.assertEqual(response.status_int, 302)
 
-    def test_sent_with_args(self):
+    @mock.patch('views.web.config')
+    def test_sent_with_args(self, mock_config):
+        mock_config.APP_BASE_URL = 'http://foo.io'
+
         response = self.app.get('/sent', dict(recipients='janedoe', message='hi', link_id='cn23sx'))
         self.assertIsNotNone(response.context['current_time'])
         self.assertEqual(response.context['current_user'], self.current_user)
         self.assertIsNotNone(response.context['loved'])
-        self.assertEqual(response.context['url'], config.APP_BASE_URL + 'l/cn23sx')
+        self.assertEqual(response.context['url'], 'http://foo.io/l/cn23sx')
 
 
 class LoveLinkTest(LoggedInUserBaseTest):
