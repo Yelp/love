@@ -1,5 +1,0 @@
-cron:
- - description: old love links cleanup
-   url: /tasks/lovelinks/cleanup
-   schedule: every day 02:00
-   timezone: US/Pacific
