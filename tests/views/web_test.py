@@ -8,6 +8,7 @@ import logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 from testing.factories import create_love
+from testing.factories import create_love_link
 from testing.factories import create_subscription
 from testing.util import LoggedInAdminBaseTest
 from testing.util import LoggedInUserBaseTest
@@ -297,6 +298,35 @@ class SentTest(LoggedInUserBaseTest):
         self.assertEqual(response.context['current_user'], self.current_user)
         self.assertIsNotNone(response.context['loved'])
         self.assertEqual(response.context['url'], config.APP_BASE_URL + 'l/cn23sx')
+
+
+class LoveLinkTest(LoggedInUserBaseTest):
+    """
+    Testing the sent page
+    """
+
+    def setUp(self):
+        super(LoveLinkTest, self).setUp()
+        self.recipient = create_employee(username='janedoe')
+        self.link = create_love_link('lOvEr', 'i love you!', 'janedoe')
+
+    def tearDown(self):
+        self.recipient.key.delete()
+        super(LoveLinkTest, self).tearDown()
+
+    def test_bad_hash(self):
+        response = self.app.get('/l/badId')
+
+        self.assertEqual(response.status_int, 302)
+
+    def test_good_hash(self):
+        response = self.app.get('/l/lOvEr')
+        self.assertIsNotNone(response.context['current_time'])
+        self.assertEqual(response.context['current_user'], self.current_user)
+        self.assertIsNotNone(response.context['loved'])
+        self.assertEqual(response.context['recipients'], 'janedoe')
+        self.assertEqual(response.context['message'], 'i love you!')
+        self.assertEqual(response.context['link_id'], 'lOvEr')
 
 
 class SendLoveTest(LoggedInUserBaseTest):
