@@ -1,0 +1,60 @@
+{% extends theme("layout.html") %}
+{% import theme("parts/facetile.html") as facetile %}
+
+{% block title %}Love Sent{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
+    <h1>Love sent!</h1>
+    <label>Recipients:</label>
+    <div>
+    {% for lovee in loved %}
+      {{ facetile.face_icon(lovee) }}
+    {% endfor %}
+    </div>
+
+    <label>Message:</label>
+    <div class="well">
+      {{ message }}
+    </div>
+
+    <h1>Share the love</h1>
+    <p>You can use the link below to have others join this lovefest!</p>
+    <div class="form-inline">
+      <a href="{{ url }}" class="link">{{ url }}</a>
+      <button type="submit" class="btn btn-default copybtn">Copy</button>
+    </div>
+
+    <div id="suggestions-container">
+        <div ><h3><span class="label label-default">Who made me laugh in my darkest hour?</span></h3></div>
+        <div style="margin-right: 30px"><h3><span class="label label-default">Who saved my ass?</span></h3></div>
+        <div style="margin-right: 60px;"><h3><span class="label label-default">Who's my hero this week?</span></h3></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      var copyBtn = document.querySelector('.copybtn');
+      copyBtn.addEventListener('click', function(event) {
+        var linkText = document.querySelector('.link');
+        var range = document.createRange();
+        range.selectNode(linkText);
+        window.getSelection().addRange(range);
+
+        try {
+          var successful = document.execCommand('copy');
+          var msg = successful ? 'successful' : 'unsuccessful';
+        } catch (err) {
+          console.log('Unable to copy to clipboard');
+        }
+
+        // Remove the selections
+        window.getSelection().removeAllRanges();
+      });
+    });
+  </script>
+{% endblock %}

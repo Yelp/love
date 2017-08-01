@@ -5,6 +5,7 @@ from flask import request
 from errors import TaintedLove
 from logic.love import get_love
 from logic.love import send_loves
+from logic.love_link import create_love_link
 from main import app
 from models import Employee
 from util.decorators import api_key_required
@@ -68,8 +69,9 @@ def api_send_loves():
     try:
         recipients = send_loves(recipients, message, sender_username=sender)
         recipients_display_str = ', '.join(recipients)
+        link_url = create_love_link(recipients_display_str, message).url
         return make_response(
-            u'Love sent to {}!'.format(recipients_display_str),
+            u'Love sent to {}! Share: {}'.format(recipients_display_str, link_url),
             LOVE_CREATED_STATUS_CODE,
             {}
         )

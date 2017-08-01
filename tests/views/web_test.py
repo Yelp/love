@@ -7,6 +7,7 @@ import logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 from testing.factories import create_love
+from testing.factories import create_love_link
 from testing.factories import create_subscription
 from testing.util import LoggedInAdminBaseTest
 from testing.util import LoggedInUserBaseTest
@@ -40,6 +41,9 @@ class LoggedOutTest(YelpLoveTestCase):
 
     def test_autocomplete(self):
         self.assertRequiresLogin(self.app.get('/user/autocomplete'))
+
+    def test_sent(self):
+        self.assertRequiresLogin(self.app.get('/sent'))
 
     def test_create_key(self):
         csrf_token = self.addCsrfTokenToSession()
@@ -267,6 +271,64 @@ class HomepageTest(LoggedInUserBaseTest):
             'hi',
         )
         self.assertHasCsrf(response.forms['send-love-form'], response.session)
+
+
+class SentTest(LoggedInUserBaseTest):
+    """
+    Testing the sent page
+    """
+
+    def setUp(self):
+        super(SentTest, self).setUp()
+        self.recipient = create_employee(username='janedoe')
+
+    def tearDown(self):
+        self.recipient.key.delete()
+        super(SentTest, self).tearDown()
+
+    def test_missing_args_is_redirect(self):
+        response = self.app.get('/sent')
+
+        self.assertEqual(response.status_int, 302)
+
+    @mock.patch('views.web.config')
+    def test_sent_with_args(self, mock_config):
+        mock_config.APP_BASE_URL = 'http://foo.io'
+
+        response = self.app.get('/sent', dict(recipients='janedoe', message='hi', link_id='cn23sx'))
+        self.assertIsNotNone(response.context['current_time'])
+        self.assertEqual(response.context['current_user'], self.current_user)
+        self.assertIsNotNone(response.context['loved'])
+        self.assertEqual(response.context['url'], 'http://foo.io/l/cn23sx')
+
+
+class LoveLinkTest(LoggedInUserBaseTest):
+    """
+    Testing the sent page
+    """
+
+    def setUp(self):
+        super(LoveLinkTest, self).setUp()
+        self.recipient = create_employee(username='janedoe')
+        self.link = create_love_link('lOvEr', 'i love you!', 'janedoe')
+
+    def tearDown(self):
+        self.recipient.key.delete()
+        super(LoveLinkTest, self).tearDown()
+
+    def test_bad_hash(self):
+        response = self.app.get('/l/badId')
+
+        self.assertEqual(response.status_int, 302)
+
+    def test_good_hash(self):
+        response = self.app.get('/l/lOvEr')
+        self.assertIsNotNone(response.context['current_time'])
+        self.assertEqual(response.context['current_user'], self.current_user)
+        self.assertIsNotNone(response.context['loved'])
+        self.assertEqual(response.context['recipients'], 'janedoe')
+        self.assertEqual(response.context['message'], 'i love you!')
+        self.assertEqual(response.context['link_id'], 'lOvEr')
 
 
 class SendLoveTest(LoggedInUserBaseTest):

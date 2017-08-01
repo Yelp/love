@@ -136,6 +136,15 @@ is independent of the main app version.
 When you bumped versions in the appropriate files you can deploy your changes by running
 <code>make deploy</code>.
 
+If you are seeing the following error:
+```
+Error 404: --- begin server output ---
+This application does not exist (project_id=u'PROJECT-ID'). To create an App Engine application in this project, run "gcloud app create" in your console.
+```
+
+This is because GAE is no longer automatically initialized, you must run `gcloud app create` using the **Google Cloud Shell** (not your terminal...I know...confusing) before deploying on App Engine for the first time. See the screenshot below:
+![GAE cloud shell](https://i.stack.imgur.com/TcUrm.png)
+
 Once your code has been uploaded to Google, you must activate the newly deployed version
 in the [Developer Console](https://console.developers.google.com/). Then you're done!
 

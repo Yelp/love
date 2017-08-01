@@ -1,0 +1,8 @@
+{% import theme("parts/avatar.html") as avatar %}
+
+{% macro face_icon(user) %}
+<div class="facetile">
+  <img class="media-object face" src="{{ avatar.avatar_url_for(user) }}" alt="{{ user.full_name }}" width="100" height="100">
+  <div class="name">{{ user.username }}</div>
+</div>
+{% endmacro %}

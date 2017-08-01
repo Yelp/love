@@ -269,3 +269,27 @@ h4 {
 .pagination-result {
     text-align: center;
 }
+
+.facetile {
+    display: inline-block;
+    position: relative;
+}
+
+.facetile .name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: #fff;
+  font-size: 14px;
+  padding-left: 5px;
+  text-shadow:
+    2px 0 0 black,
+    0 2px 0 black,
+    -2px 0 0 black,
+    0 -2px 0 black,
+    2px 2px 0 black,
+    2px -2px 0 black,
+    -2px 2px 0 black,
+    -2px -2px 0 #000;
+}

@@ -8,6 +8,7 @@ import logic.employee
 import logic.notifier
 import logic.love
 import logic.love_count
+import logic.love_link
 from main import app
 from models import Love
 
@@ -64,4 +65,10 @@ def rebuild_love_count():
 def notify_subscribers():
     notifier = logic.notifier.notifier_for_event(request.json['event'])(**request.json['options'])
     notifier.notify()
+    return Response(status=200)
+
+
+@app.route('/tasks/lovelinks/cleanup', methods=['GET'])
+def lovelinks_cleanup():
+    logic.love_link.love_links_cleanup()
     return Response(status=200)

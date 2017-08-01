@@ -7,6 +7,7 @@ import logic.alias
 import logic.department
 import logic.email
 import logic.event
+
 from errors import TaintedLove
 from logic.toggle import get_toggle_state
 from models import Employee
@@ -136,6 +137,7 @@ def send_loves(recipients, message, sender_username=None, secret=False):
         raise TaintedLove(u'Sorry, {} is not a valid user.'.format(sender_username))
 
     unique_recipients = set([logic.alias.name_for_alias(name) for name in recipients])
+
     if len(recipients) != len(unique_recipients):
         raise TaintedLove(u'Sorry, you are trying to send love to a user multiple times.')
 
@@ -175,7 +177,6 @@ def _send_love(recipient_key, message, sender_key, secret):
         secret=(secret is True),
     )
     new_love.put()
-
     LoveCount.update(new_love)
 
     # Send email asynchronously
