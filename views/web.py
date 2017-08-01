@@ -2,7 +2,6 @@
 import os.path
 
 import config
-import logging
 
 from datetime import datetime
 from datetime import timedelta
@@ -274,7 +273,6 @@ def love():
         real_recipients = logic.love.send_loves(recipients, message, secret=secret)
         # actual recipients may have the sender stripped from the list
         real_display_str = ', '.join(real_recipients)
-        logging.info(real_recipients)
 
         if secret:
             flash('Secret love sent to {}!'.format(real_display_str))
@@ -288,6 +286,8 @@ def love():
             flash(exc.user_message, 'error')
         else:
             flash(exc.user_message)
+
+        return redirect(url_for('home', recipients=recipients_display_str, message=message))
 
 
 @app.route('/user/autocomplete', methods=['GET'])
