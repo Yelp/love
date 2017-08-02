@@ -11,7 +11,7 @@ class LoveLinkTest(unittest.TestCase):
 
     @mock.patch('models.love_link.config')
     def test_url(self, mock_config):
-        mock_config.APP_BASE_URL = 'http://foo.io'
+        mock_config.APP_BASE_URL = 'http://foo.io/'
 
         link = create_love_link(hash_key='lOvEr')
         self.assertEqual('http://foo.io/l/lOvEr', link.url)

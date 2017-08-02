@@ -293,7 +293,7 @@ class SentTest(LoggedInUserBaseTest):
 
     @mock.patch('views.web.config')
     def test_sent_with_args(self, mock_config):
-        mock_config.APP_BASE_URL = 'http://foo.io'
+        mock_config.APP_BASE_URL = 'http://foo.io/'
 
         response = self.app.get('/sent', dict(recipients='janedoe', message='hi', link_id='cn23sx'))
         self.assertIsNotNone(response.context['current_time'])
