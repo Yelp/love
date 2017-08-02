@@ -225,7 +225,7 @@ def sent():
         current_user=Employee.get_current_employee(),
         message=message,
         loved=loved,
-        url='{0}/l/{1}'.format(config.APP_BASE_URL, link_id),
+        url='{0}l/{1}'.format(config.APP_BASE_URL, link_id),
     )
 
 
