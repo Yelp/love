@@ -279,17 +279,38 @@ h4 {
   position: absolute;
   bottom: 0;
   left: 0;
+  padding-left: 5px;
   width: 100%;
   color: #fff;
-  font-size: 14px;
-  padding-left: 5px;
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   text-shadow:
-    2px 0 0 black,
-    0 2px 0 black,
-    -2px 0 0 black,
-    0 -2px 0 black,
-    2px 2px 0 black,
-    2px -2px 0 black,
-    -2px 2px 0 black,
-    -2px -2px 0 #000;
+    /* first layer at 1px */
+    -1px -1px 0px #000,
+     0px -1px 0px #000,
+     1px -1px 0px #000,
+    -1px  0px 0px #000,
+     1px  0px 0px #000,
+    -1px  1px 0px #000,
+     0px  1px 0px #000,
+     1px  1px 0px #000,
+    /* second layer at 2px */
+    -2px -2px 0px #000,
+    -1px -2px 0px #000,
+     0px -2px 0px #000,
+     1px -2px 0px #000,
+     2px -2px 0px #000,
+     2px -1px 0px #000,
+     2px  0px 0px #000,
+     2px  1px 0px #000,
+     2px  2px 0px #000,
+     1px  2px 0px #000,
+     0px  2px 0px #000,
+    -1px  2px 0px #000,
+    -2px  2px 0px #000,
+    -2px  1px 0px #000,
+    -2px  0px 0px #000,
+    -2px -1px 0px #000;
 }
