@@ -38,6 +38,7 @@ clean:
 google_appengine:
 	mkdir -p tmp
 	wget -O tmp/google_appengine.zip 'https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.40.zip' --no-check-certificate
+	echo 'f88b532ae7e23ab88290e939882a61140cb2a82a  tmp/google_appengine.zip' | shasum --check -
 	unzip tmp/google_appengine.zip
 
 venv:
