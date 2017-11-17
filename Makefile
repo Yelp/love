@@ -2,28 +2,28 @@
 
 all: test
 
-run-dev: config.py lib google_appengine
-	google_appengine/dev_appserver.py dispatch.yaml app.yaml worker.yaml
+run-dev: config.py lib
+	dev_appserver.py dispatch.yaml app.yaml worker.yaml
 
-deploy: deploy_build google_appengine
+deploy: deploy_build
 	# If you are running into permission issues and see a message like this:
 	# You do not have permission to modify this app (app_id=u'foobar').
 	# then try adding --no_cookies to the commands below
-	google_appengine/appcfg.py update app.yaml worker.yaml
-	google_appengine/appcfg.py update_dispatch .
-	google_appengine/appcfg.py update_queues .
-	google_appengine/appcfg.py update_indexes .
+	appcfg.py update app.yaml worker.yaml
+	appcfg.py update_dispatch .
+	appcfg.py update_queues .
+	appcfg.py update_indexes .
 	# If you are using cron.yaml uncomment the line below
-	# google_appengine/appcfg.py update_cron .
+	# appcfg.py update_cron .
 
 deploy_build: config.py clean lib test
 	@echo "\033[31mHave you bumped the app version? Hit ENTER to continue, CTRL-C to abort.\033[0m"
 	@read ignored
 
-lib: requirements.txt venv
+lib: requirements.txt
 	mkdir -p lib
 	rm -rf lib/*
-	venv/bin/pip install -r requirements.txt -t lib
+	pip install -r requirements.txt -t lib
 
 test: google_appengine
 	# reset database before each test run
@@ -37,9 +37,5 @@ clean:
 
 google_appengine:
 	mkdir -p tmp
-	wget -O tmp/google_appengine.zip 'https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.63.zip' --no-check-certificate
-	echo '1ecce0c6f192bd0e02649dfa9dd07e124c9eaaee  tmp/google_appengine.zip' | shasum --check -
+	wget -O tmp/google_appengine.zip 'https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.40.zip' --no-check-certificate
 	unzip tmp/google_appengine.zip
-
-venv:
-	virtualenv -p python2.7 $@
