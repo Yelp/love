@@ -1,10 +1,6 @@
-[![Build Status](https://travis-ci.org/Yelp/love.svg?branch=master)](https://travis-ci.org/Yelp/love)
+# CareGuide Love
 
-![Yelp Love](yelplove-medium.png)
-
-# Yelp Love
-
-Yelp Love lets you show others your appreciation for something they've done.
+CareGuide Love lets you show others your appreciation for something they've done.
 Did they make you laugh in your darkest hour? Did they save your ass? Did they
 help fix that bug? Send them love!
 
@@ -15,15 +11,13 @@ help fix that bug? Send them love!
 * Viewing the most recent 20 loves sent or received by any user
 * Leaderboard with the top 20 users who sent and received love
 * [API](#api) that allows external applications to send and retrieve love data
-* [Manual or automated synchronization](#import-employee-data) between Yelp Love and your employee data
+* [Manual or automated synchronization](#import-employee-data) between CareGuide Love and your employee data
 * Admin section to manage aliases and API keys
-
-To get an idea what Yelp Love looks like go and check out the [screenshots](/screenshots).
 
 ## Installation
 
-Yelp Love runs on [Google App Engine](https://appengine.google.com/).
-In order to install Yelp Love you will need a Google account and the
+CareGuide Love runs on [Google App Engine](https://appengine.google.com/).
+In order to install CareGuide Love you will need a Google account and the
 [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads).
 We recommend installing this via Homebrew if you don't already have it:
 ```
@@ -65,7 +59,7 @@ URL, normally [https://project_id.appspot.com](https://project_id.appspot.com).
 
 Create a file employees.csv in the import directory, add all your employee data,
 and deploy it. We‘ve put an example csv file in that directory so you can get an
-idea of which fields Yelp Love requires for an employee.
+idea of which fields CareGuide Love requires for an employee.
 
 Once the CSV file is deployed point your browser to
 [https://project_id.appspot.com/employees/import](https://project_id.appspot.com/employees/import).
@@ -75,7 +69,7 @@ and follow the instructions.
 
 Create a file employees.json, add all your employee data, and save it in an S3 bucket.
 We‘ve put an example JSON file in the import directory so you can get an idea of which
-fields Yelp Love requires for an employee.
+fields CareGuide Love requires for an employee.
 
 The S3 bucket name must be configured in config.py.
 
@@ -107,14 +101,14 @@ Checkout [cron.yaml](cron.yaml) for further details.
 
 ### Prerequisites
 
-Before you can run Yelp Love on your local machine please install the [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads). You can get it from Google directly or use
+Before you can run CareGuide Love on your local machine please install the [Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads). You can get it from Google directly or use
 your favorite packet manager.
 
 ### Running the application locally
 
-* Check out the application code: <code>git clone git@github.com:Yelp/love.git</code>
+* Check out the application code: <code>git clone git@github.com:CareGuide/love.git</code>
 * Follow the [Prepare for deployment](#prepare-for-deployment) section
-* Run the app: <code>make run-dev</code> will start both [Yelp Love](http://localhost:8080) as well as the [Admin server](http://localhost:8000)
+* Run the app: <code>make run-dev</code> will start both [CareGuide Love](http://localhost:8080) as well as the [Admin server](http://localhost:8000)
 * Follow the [CSV import](#csv) section to locally import user data
 * Make your changes
 
@@ -150,7 +144,7 @@ in the [Developer Console](https://console.developers.google.com/). Then you're 
 
 ## API
 
-Yelp Love also ships with an API which will be available under [https://project_id.appspot.com/api](https://project_id.appspot.com/api).
+CareGuide Love also ships with an API which will be available under [https://project_id.appspot.com/api](https://project_id.appspot.com/api).
 All data of successful GET requests is sent as JSON.
 
 ### Authentication
@@ -246,10 +240,4 @@ For more info check out the [Authors](AUTHORS.md) file.
 
 ## License
 
-Yelp Love is licensed under the [MIT license](LICENSE).
-
-## Contributing
-
-Everyone is encouraged to contribute to Yelp Love by forking the
-[Github repository](http://github.com/Yelp/love) and making a pull request or
-opening an issue.
+CareGuide Love is licensed under the [MIT license](LICENSE).

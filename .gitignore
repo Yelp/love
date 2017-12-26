@@ -7,7 +7,7 @@
 .project
 .pydevproject
 .tox
-YelpLove.egg-info
+cg_love.egg-info
 config.py
 google_appengine
 lib
@@ -15,3 +15,4 @@ tmp
 import/*.csv
 import/*.json
 venv
+setup.cfg
