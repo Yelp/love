@@ -16,7 +16,7 @@ app.jinja_env.globals['config'] = config
 app.jinja_env.globals['csrf_token'] = generate_csrf_token
 app.jinja_env.globals['is_admin'] = is_admin
 
-Themes(app, app_identifier='yelplove')
+Themes(app, app_identifier='cg-love')
 
 # if debug property is present, let's use it
 try:

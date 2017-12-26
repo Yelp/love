@@ -15,7 +15,7 @@ def get_test_app():
     def test_loader(app):
         return load_themes_from(os.path.join(os.path.dirname(__file__), '../themes/'))
 
-    Themes(main.app, app_identifier='yelplove', loaders=[test_loader])
+    Themes(main.app, app_identifier='cg-love', loaders=[test_loader])
 
     return TestApp(main.app)
 

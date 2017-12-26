@@ -1,6 +1,6 @@
-application: yelplove
+application: cg-love
 module: worker
-version: 1-0-0
+version: 1-1-0
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -17,7 +17,7 @@ skip_files:
 - ^(.*/)?.*\.py[co]$
 - ^(.*/)?.*~$
 - ^(.*/)?\..*$
-- ^YelpLove.egg-info(/.*)?$
+- ^cg_love.egg-info(/.*)?$
 - ^google_appengine(/.*)?$
 - ^tmp(/.*)?$
 - ^virtualenv_.*$
