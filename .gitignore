@@ -1,5 +1,6 @@
 *.pyc
 *.so
+*.swp
 *.sublime-*
 .DS_Store
 .idea

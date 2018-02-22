@@ -17,15 +17,18 @@ import logic.department
 import logic.employee
 import logic.event
 import logic.love
+import logic.love_link
 import logic.love_count
 import logic.subscription
 from errors import NoSuchEmployee
+from errors import NoSuchLoveLink
 from errors import TaintedLove
 from google.appengine.api import taskqueue
 from logic import TIMESPAN_LAST_WEEK
 from logic import TIMESPAN_THIS_WEEK
 from logic import to_the_future
 from logic import utc_week_limits
+from logic.love_link import create_love_link
 from main import app
 from models import AccessKey
 from models import Alias
@@ -86,6 +89,34 @@ def me_or_explore(user):
         return redirect(url_for('me'))
     else:
         return redirect(url_for('explore', user=username))
+
+
+@app.route('/l/<string:link_id>', methods=['GET'])
+@user_required
+def love_link(link_id):
+    try:
+        loveLink = logic.love_link.get_love_link(link_id)
+        recipients_str = loveLink.recipient_list
+        message = loveLink.message
+
+        recipients = sanitize_recipients(recipients_str)
+        loved = [
+            Employee.get_key_for_username(recipient).get()
+            for recipient in recipients
+        ]
+
+        return render_template(
+            'love_link.html',
+            current_time=datetime.utcnow(),
+            current_user=Employee.get_current_employee(),
+            recipients=recipients_str,
+            message=message,
+            loved=loved,
+            link_id=link_id,
+        )
+    except NoSuchLoveLink:
+        flash('Sorry, that link ({}) is no longer valid.'.format(link_id), 'error')
+        return redirect(url_for('home'))
 
 
 @app.route('/explore', methods=['GET'])
@@ -172,6 +203,32 @@ def leaderboard():
     )
 
 
+@app.route('/sent', methods=['GET'])
+@user_required
+def sent():
+    link_id = request.args.get('link_id', None)
+    recipients_str = request.args.get('recipients', None)
+    message = request.args.get('message', None)
+
+    if not link_id or not recipients_str or not message:
+        return redirect(url_for('home'))
+
+    recipients = sanitize_recipients(recipients_str)
+    loved = [
+        Employee.get_key_for_username(recipient).get()
+        for recipient in recipients
+    ]
+
+    return render_template(
+        'sent.html',
+        current_time=datetime.utcnow(),
+        current_user=Employee.get_current_employee(),
+        message=message,
+        loved=loved,
+        url='{0}l/{1}'.format(config.APP_BASE_URL, link_id),
+    )
+
+
 @app.route('/keys', methods=['GET'])
 @admin_required
 def keys():
@@ -200,6 +257,7 @@ def love():
     recipients = sanitize_recipients(request.form.get('recipients'))
     message = request.form.get('message').strip()
     secret = (request.form.get('secret') == 'true')
+    link_id = request.form.get('link_id')
 
     if not recipients:
         flash('Enter a name, lover.', 'error')
@@ -216,8 +274,13 @@ def love():
         # actual recipients may have the sender stripped from the list
         real_display_str = ', '.join(real_recipients)
 
-        flash('{}ove sent to {}!'.format('Secret l' if secret else 'L', real_display_str))
-        return redirect(url_for('home'))
+        if secret:
+            flash('Secret love sent to {}!'.format(real_display_str))
+            return redirect(url_for('home'))
+        else:
+            hash_key = link_id if link_id else create_love_link(real_display_str, message).hash_key
+            return redirect(url_for('sent', message=message, recipients=real_display_str, link_id=hash_key))
+
     except TaintedLove as exc:
         if exc.is_error:
             flash(exc.user_message, 'error')

@@ -18,4 +18,10 @@ app.jinja_env.globals['is_admin'] = is_admin
 
 Themes(app, app_identifier='yelplove')
 
+# if debug property is present, let's use it
+try:
+    app.debug = config.DEBUG
+except AttributeError:
+    app.debug = False
+
 import views

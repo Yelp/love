@@ -114,7 +114,7 @@ class SendLoveTest(_ApiKeyRequiredTestCase):
             'api_key': api_key,
         }
         response = self.app.post('/api/love', form_values)
-        self.assertEqual(response.body, 'Love sent to bob!')
+        self.assertTrue('Love sent to bob! Share:' in response.body)
         return response
 
 

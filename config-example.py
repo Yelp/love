@@ -23,6 +23,9 @@ SECRET_KEY = 'YOUR_SECRET_HERE'
 # Use default theme
 THEME = 'default'
 
+# Set to True if you'd like to see Tracebacks on localhost
+DEBUG = True
+
 # Every employee needs a reference to a Google Account. This reference is based on the users
 # Google Account email address and created when employee data is imported: we take the *username*
 # and this DOMAIN

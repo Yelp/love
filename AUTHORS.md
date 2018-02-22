@@ -17,3 +17,7 @@
 * Michał Czapko [michalczapko](https://github.com/michalczapko)
 * Prayag Verma [pra85](https://github.com/pra85)
 * Stephen Brennan [brenns10](https://github.com/brenns10)
+* Wayne Crasta [waynecrasta](https://github.com/waynecrasta)
+* Dennis Coldwell [dencold](https://github.com/dencold)
+* Andrew Lau [ajlau](https://github.com/ajlau)
+* Alina Rada [transcedentalia](https://github.com/transcedentalia)

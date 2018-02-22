@@ -269,3 +269,48 @@ h4 {
 .pagination-result {
     text-align: center;
 }
+
+.facetile {
+    display: inline-block;
+    position: relative;
+}
+
+.facetile .name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding-left: 5px;
+  width: 100%;
+  color: #fff;
+  font-size: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  text-shadow:
+    /* first layer at 1px */
+    -1px -1px 0px #000,
+     0px -1px 0px #000,
+     1px -1px 0px #000,
+    -1px  0px 0px #000,
+     1px  0px 0px #000,
+    -1px  1px 0px #000,
+     0px  1px 0px #000,
+     1px  1px 0px #000,
+    /* second layer at 2px */
+    -2px -2px 0px #000,
+    -1px -2px 0px #000,
+     0px -2px 0px #000,
+     1px -2px 0px #000,
+     2px -2px 0px #000,
+     2px -1px 0px #000,
+     2px  0px 0px #000,
+     2px  1px 0px #000,
+     2px  2px 0px #000,
+     1px  2px 0px #000,
+     0px  2px 0px #000,
+    -1px  2px 0px #000,
+    -2px  2px 0px #000,
+    -2px  1px 0px #000,
+    -2px  0px 0px #000,
+    -2px -1px 0px #000;
+}

@@ -7,3 +7,12 @@
 #   url: /tasks/employees/load/s3
 #   schedule: every day 03:00
 #   timezone: US/Pacific
+#
+# Uncomment the following section if you'd like your love_links automatically 
+# cleaned up after they have been around for more than 30 days.
+#
+# cron:
+# - description: old love links cleanup
+#   url: /tasks/lovelinks/cleanup
+#   schedule: every day 02:00
+#   timezone: US/Pacific
