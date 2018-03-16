@@ -20,6 +20,7 @@ import logic.love
 import logic.love_link
 import logic.love_count
 import logic.subscription
+import logic.office
 from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
 from errors import TaintedLove
@@ -159,6 +160,7 @@ def explore():
 def leaderboard():
     timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
     department = request.args.get('department', None)
+    office = request.args.get('office', None)
 
     # If last week, we need to subtract *before* getting the week limits to
     # avoid being off by one hour on weeks that include a DST transition
@@ -167,7 +169,11 @@ def leaderboard():
         utc_now -= timedelta(days=7)
     utc_week_start, _ = utc_week_limits(utc_now)
 
-    top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(utc_week_start, dept=department)
+    top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(
+        utc_week_start,
+        dept=department,
+        office=office
+    )
 
     top_lover_dicts = [
         {
@@ -197,9 +203,12 @@ def leaderboard():
         top_lovers=top_lover_dicts,
         departments=logic.department.META_DEPARTMENTS,
         sub_departments=logic.department.META_DEPARTMENT_MAP,
+        offices=logic.office.OFFICES,
         selected_dept=department,
-        selected_timespan=timespan,
+        selected_timespan=timespan,selected_office=office,
         org_title=config.ORG_TITLE,
+        teams_title=config.TEAMS_TITLE,
+        offices_title=config.OFFICES_TITLE
     )
 
 

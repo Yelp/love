@@ -22,6 +22,7 @@ class EmployeeTest(unittest.TestCase):
             first_name='John',
             last_name='Doe',
             department='Accounting',
+            office='San Francisco',
             photos=[]
         )
         employee = Employee.create_from_dict(employee_dict)

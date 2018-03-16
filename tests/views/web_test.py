@@ -549,8 +549,10 @@ class LeaderboardTest(LoggedInUserBaseTest):
         self.assertIsNotNone(response.context['top_lovers'])
         self.assertIsNotNone(response.context['departments'])
         self.assertIsNotNone(response.context['sub_departments'])
+        self.assertIsNotNone(response.context['offices'])
         self.assertIsNone(response.context['selected_dept'])
         self.assertIsNotNone(response.context['selected_timespan'])
+        self.assertIsNone(response.context['selected_office'])
 
 
 class ExploreTest(LoggedInUserBaseTest):

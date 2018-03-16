@@ -9,7 +9,7 @@ from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
 
 
-def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
+def top_lovers_and_lovees(utc_week_start, dept=None, office=None, limit=20):
     """Synchronously return a list of (employee key, sent love count) and a list of
     (employee key, received love count), each sorted in descending order of love sent
     or received.
@@ -22,9 +22,15 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
         if c.sent_count == 0:
             continue
         employee_key = c.key.parent()
-        if dept:
-            employee = employee_key.get()
+        employee = employee_key.get()
+        if dept and office:
+            if (employee.meta_department == dept or employee.department == dept) and employee.office == office:
+                lovers.append((employee_key, c.sent_count))
+        elif dept:
             if employee.meta_department == dept or employee.department == dept:
+                lovers.append((employee_key, c.sent_count))
+        elif office:
+            if employee.office == office:
                 lovers.append((employee_key, c.sent_count))
         else:
             lovers.append((employee_key, c.sent_count))
@@ -37,9 +43,15 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
         if c.received_count == 0:
             continue
         employee_key = c.key.parent()
-        if dept:
-            employee = employee_key.get()
+        employee = employee_key.get()
+        if dept and office:
+            if (employee.meta_department == dept or employee.department == dept) and employee.office == office:
+                lovees.append((employee_key, c.received_count))
+        elif dept:
             if employee.meta_department == dept or employee.department == dept:
+                lovees.append((employee_key, c.received_count))
+        elif office:
+            if employee.office == office:
                 lovees.append((employee_key, c.received_count))
         else:
             lovees.append((employee_key, c.received_count))

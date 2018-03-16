@@ -39,6 +39,7 @@ class Employee(ndb.Model, Pagination):
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     user = ndb.UserProperty()
     username = ndb.StringProperty()
+    office = ndb.StringProperty(indexed=False)
 
     @classmethod
     def get_current_employee(cls):
@@ -79,6 +80,7 @@ class Employee(ndb.Model, Pagination):
         self.photo_url = d.get('photo_url')
         self.department = d.get('department')
         self.meta_department = get_meta_department(self.department)
+        self.office = d.get('office')
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""
