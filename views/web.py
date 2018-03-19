@@ -205,7 +205,7 @@ def leaderboard():
         sub_departments=logic.department.META_DEPARTMENT_MAP,
         offices=logic.office.OFFICES,
         selected_dept=department,
-        selected_timespan=timespan,selected_office=office,
+        selected_timespan=timespan, selected_office=office,
         org_title=config.ORG_TITLE,
         teams_title=config.TEAMS_TITLE,
         offices_title=config.OFFICES_TITLE
