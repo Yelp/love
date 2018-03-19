@@ -7,6 +7,7 @@ def create_employee(
     department='Engineering',
     first_name='John',
     last_name='Doe',
+    office='San Francisco',
     photo_url=None,
 ):
 
@@ -18,5 +19,6 @@ def create_employee(
         'department': department,
         'first_name': first_name,
         'last_name': last_name,
+        'office': office,
         'photo_url': photo_url,
     })
