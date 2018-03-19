@@ -23,16 +23,11 @@ def top_lovers_and_lovees(utc_week_start, dept=None, office=None, limit=20):
             continue
         employee_key = c.key.parent()
         employee = employee_key.get()
-        if dept and office:
-            if (employee.meta_department == dept or employee.department == dept) and employee.office == office:
-                lovers.append((employee_key, c.sent_count))
-        elif dept:
-            if employee.meta_department == dept or employee.department == dept:
-                lovers.append((employee_key, c.sent_count))
-        elif office:
-            if employee.office == office:
-                lovers.append((employee_key, c.sent_count))
-        else:
+        if (
+            not dept or (employee.meta_department == dept or employee.department == dept)
+        ) and (
+            not office or employee.office.startswith(office)
+        ):
             lovers.append((employee_key, c.sent_count))
 
     received = sorted(sent, key=lambda c: c.received_count, reverse=True)
@@ -44,19 +39,14 @@ def top_lovers_and_lovees(utc_week_start, dept=None, office=None, limit=20):
             continue
         employee_key = c.key.parent()
         employee = employee_key.get()
-        if dept and office:
-            if (employee.meta_department == dept or employee.department == dept) and employee.office == office:
-                lovees.append((employee_key, c.received_count))
-        elif dept:
-            if employee.meta_department == dept or employee.department == dept:
-                lovees.append((employee_key, c.received_count))
-        elif office:
-            if employee.office == office:
-                lovees.append((employee_key, c.received_count))
-        else:
+        if (
+            not dept or (employee.meta_department == dept or employee.department == dept)
+        ) and (
+            not office or employee.office.startswith(office)
+        ):
             lovees.append((employee_key, c.received_count))
 
-    return (lovers, lovees)
+    return lovers, lovees
 
 
 def rebuild_love_count():
