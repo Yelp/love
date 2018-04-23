@@ -3,15 +3,19 @@ from flask import make_response
 from flask import request
 
 from errors import TaintedLove
+from logic import TIMESPAN_LAST_WEEK
+from logic import TIMESPAN_THIS_WEEK
 from logic.love import get_love
 from logic.love import send_loves
 from logic.love_link import create_love_link
+from logic.leaderboard import get_leaderboard_data
 from main import app
 from models import Employee
 from util.decorators import api_key_required
 from util.recipient import sanitize_recipients
 from util.render import make_json_response
 from views import common
+
 
 
 LOVE_CREATED_STATUS_CODE = 201  # Created
@@ -57,7 +61,6 @@ def api_get_love():
         for love in love_found
     ])
 
-
 # POST /api/love
 @app.route('/api/love', methods=['POST'])
 @api_key_required
@@ -82,6 +85,19 @@ def api_send_loves():
             {}
         )
 
+# GET /api/leaderboard
+@app.route('/api/leaderboard', methods=['GET'])
+@api_key_required
+def api_get_leaderboard():
+    department = request.args.get('department', None)
+    timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
+
+    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
+
+    return make_json_response([
+        'top_loved': top_loved_dicts,
+        'top_lovers': top_lover_dicts,
+    ])
 
 @app.route('/api/autocomplete', methods=['GET'])
 @api_key_required

@@ -4,7 +4,6 @@ import os.path
 import config
 
 from datetime import datetime
-from datetime import timedelta
 
 from flask import abort
 from flask import flash
@@ -18,17 +17,14 @@ import logic.employee
 import logic.event
 import logic.love
 import logic.love_link
-import logic.love_count
 import logic.subscription
 from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
 from errors import TaintedLove
 from google.appengine.api import taskqueue
-from logic import TIMESPAN_LAST_WEEK
 from logic import TIMESPAN_THIS_WEEK
-from logic import to_the_future
-from logic import utc_week_limits
 from logic.love_link import create_love_link
+from logic.leaderboard import get_leaderboard_data
 from main import app
 from models import AccessKey
 from models import Alias
@@ -160,36 +156,7 @@ def leaderboard():
     timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
     department = request.args.get('department', None)
 
-    # If last week, we need to subtract *before* getting the week limits to
-    # avoid being off by one hour on weeks that include a DST transition
-    utc_now = datetime.utcnow()
-    if timespan == TIMESPAN_LAST_WEEK:
-        utc_now -= timedelta(days=7)
-    utc_week_start, _ = utc_week_limits(utc_now)
-
-    top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(utc_week_start, dept=department)
-
-    top_lover_dicts = [
-        {
-            'employee': employee_key.get_async(),
-            'num_sent': sent_count
-        }
-        for employee_key, sent_count
-        in top_lovers
-    ]
-
-    top_loved_dicts = [
-        {
-            'employee': employee_key.get_async(),
-            'num_received': received_count
-        }
-        for employee_key, received_count
-        in top_lovees
-    ]
-
-    # get results for the futures set up previously
-    map(to_the_future, top_lover_dicts)
-    map(to_the_future, top_loved_dicts)
+    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
 
     return render_template(
         'leaderboard.html',
