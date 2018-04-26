@@ -16,7 +16,6 @@ from util.render import make_json_response
 from views import common
 
 
-
 LOVE_CREATED_STATUS_CODE = 201  # Created
 LOVE_FAILED_STATUS_CODE = 418  # I'm a Teapot
 LOVE_BAD_PARAMS_STATUS_CODE = 422  # Unprocessable Entity
@@ -61,6 +60,8 @@ def api_get_love():
     ])
 
 # POST /api/love
+
+
 @app.route('/api/love', methods=['POST'])
 @api_key_required
 def api_send_loves():
@@ -85,6 +86,8 @@ def api_send_loves():
         )
 
 # GET /api/leaderboard
+
+
 @app.route('/api/leaderboard', methods=['GET'])
 @api_key_required
 def api_get_leaderboard():
@@ -93,10 +96,28 @@ def api_get_leaderboard():
 
     (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
 
-    return make_json_response({
-        'top_loved': top_loved_dicts,
-        'top_lovers': top_lover_dicts,
-    })
+    top_lover = [
+        {
+            'full_name': lover['employee'].full_name,
+            'username': lover['employee'].username,
+            'department': lover['employee'].department,
+            'love_count': lover['num_sent'],
+        }
+        for lover in top_lover_dicts
+    ]
+
+    top_loved = [
+        {
+            'full_name': loved['employee'].full_name,
+            'username': loved['employee'].username,
+            'department': loved['employee'].department,
+            'love_count': loved['num_received'],
+        }
+        for loved in top_loved_dicts
+    ]
+    final_result = [top_loved, top_lover]
+    return make_json_response(final_result)
+
 
 @app.route('/api/autocomplete', methods=['GET'])
 @api_key_required

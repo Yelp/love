@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
 from datetime import timedelta
 
@@ -5,6 +6,7 @@ from logic import TIMESPAN_LAST_WEEK
 from logic import to_the_future
 from logic import utc_week_limits
 import logic.love_count
+
 
 def get_leaderboard_data(timespan, department):
     # If last week, we need to subtract *before* getting the week limits to
