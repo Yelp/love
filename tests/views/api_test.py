@@ -145,3 +145,23 @@ class SendLoveFailTest(YelpLoveTestCase):
             'Expected request to return 418',
         )
         self.assertIn('send love to a user multiple times', caught.exception.message)
+
+
+class GetLeaderboardTest(_ApiKeyRequiredTestCase):
+
+    def setUp(self):
+        super(GetLeaderboardTest, self).setUp()
+        create_employee(username='alice')
+        create_employee(username='bob')
+        logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
+
+    def do_request(self, api_key):
+        query_params = {
+            'api_key': api_key,
+        }
+        response = self.app.get('/api/leaderboard', query_params)
+        response_data = response.json
+        self.assertEqual(len(response_data), 2)
+        self.assertEqual(response_data['top_lovers'][0]['employee'].username, 'alice')
+        self.assertEqual(response_data['top_loved'][0]['employee'].username, 'bob')
+        return response

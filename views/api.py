@@ -94,10 +94,10 @@ def api_get_leaderboard():
 
     (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
 
-    return make_json_response([
+    return make_json_response({
         'top_loved': top_loved_dicts,
         'top_lovers': top_lover_dicts,
-    ])
+    })
 
 @app.route('/api/autocomplete', methods=['GET'])
 @api_key_required
