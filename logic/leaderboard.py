@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 
 from logic import TIMESPAN_LAST_WEEK
-from logic import TIMESPAN_THIS_WEEK
 from logic import to_the_future
 from logic import utc_week_limits
 import logic.love_count

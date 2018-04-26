@@ -3,7 +3,6 @@ from flask import make_response
 from flask import request
 
 from errors import TaintedLove
-from logic import TIMESPAN_LAST_WEEK
 from logic import TIMESPAN_THIS_WEEK
 from logic.love import get_love
 from logic.love import send_loves
