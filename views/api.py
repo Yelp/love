@@ -3,9 +3,11 @@ from flask import make_response
 from flask import request
 
 from errors import TaintedLove
+from logic import TIMESPAN_THIS_WEEK
 from logic.love import get_love
 from logic.love import send_loves
 from logic.love_link import create_love_link
+from logic.leaderboard import get_leaderboard_data
 from main import app
 from models import Employee
 from util.decorators import api_key_required
@@ -57,8 +59,9 @@ def api_get_love():
         for love in love_found
     ])
 
-
 # POST /api/love
+
+
 @app.route('/api/love', methods=['POST'])
 @api_key_required
 def api_send_loves():
@@ -81,6 +84,39 @@ def api_send_loves():
             LOVE_FAILED_STATUS_CODE if exc.is_error else LOVE_CREATED_STATUS_CODE,
             {}
         )
+
+# GET /api/leaderboard
+
+
+@app.route('/api/leaderboard', methods=['GET'])
+@api_key_required
+def api_get_leaderboard():
+    department = request.args.get('department', None)
+    timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
+
+    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
+
+    top_lover = [
+        {
+            'full_name': lover['employee'].full_name,
+            'username': lover['employee'].username,
+            'department': lover['employee'].department,
+            'love_count': lover['num_sent'],
+        }
+        for lover in top_lover_dicts
+    ]
+
+    top_loved = [
+        {
+            'full_name': loved['employee'].full_name,
+            'username': loved['employee'].username,
+            'department': loved['employee'].department,
+            'love_count': loved['num_received'],
+        }
+        for loved in top_loved_dicts
+    ]
+    final_result = [top_loved, top_lover]
+    return make_json_response(final_result)
 
 
 @app.route('/api/autocomplete', methods=['GET'])
