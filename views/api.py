@@ -60,6 +60,8 @@ def api_get_love():
     ])
 
 # POST /api/love
+
+
 @app.route('/api/love', methods=['POST'])
 @api_key_required
 def api_send_loves():
@@ -84,6 +86,8 @@ def api_send_loves():
         )
 
 # GET /api/leaderboard
+
+
 @app.route('/api/leaderboard', methods=['GET'])
 @api_key_required
 def api_get_leaderboard():
