@@ -115,7 +115,12 @@ def api_get_leaderboard():
         }
         for loved in top_loved_dicts
     ]
-    final_result = [top_loved, top_lover]
+    final_result = [
+        {
+            'top_loved': top_loved,
+            'top_lover': top_lover,
+        }
+    ]
     return make_json_response(final_result)
 
 
