@@ -162,10 +162,9 @@ class GetLeaderboardTest(_ApiKeyRequiredTestCase):
         }
         response = self.app.get('/api/leaderboard', query_params)
         response_data = response.json
-
-        top_loved = response_data[0].get('top_loved')
-        top_lover = response_data[0].get('top_lover')
-        self.assertEqual(len(response_data[0]), 2)
+        top_loved = response_data.get('top_loved')
+        top_lover = response_data.get('top_lover')
+        self.assertEqual(len(response_data), 2)
         self.assertEqual(len(top_loved), 1)
         self.assertEqual(len(top_lover), 1)
         self.assertEqual(top_loved[0].get('username'), 'bob')
