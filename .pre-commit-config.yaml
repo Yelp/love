@@ -21,3 +21,9 @@
         args: ['--autofix']
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
+-   repo: https://github.com/Yelp/detect-secrets
+    sha: 0.9.1
+    hooks:
+    -   id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: .*tests/.*|\.pre-commit-config\.yaml
