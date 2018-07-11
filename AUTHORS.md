@@ -21,3 +21,5 @@
 * Dennis Coldwell [dencold](https://github.com/dencold)
 * Andrew Lau [ajlau](https://github.com/ajlau)
 * Alina Rada [transcedentalia](https://github.com/transcedentalia)
+* Matthew Bentley [matthewbentley](https://github.com/matthewbentley)
+* Kevin Hock [KevinHock](https://github.com/KevinHock)
