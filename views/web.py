@@ -110,7 +110,7 @@ def love_link(link_id):
             loved=loved,
             link_id=link_id,
         )
-    except NoSuchLoveLink:
+    except NoSuchLoveLink, NoSuchEmployee:
         flash('Sorry, that link ({}) is no longer valid.'.format(link_id), 'error')
         return redirect(url_for('home'))
 
