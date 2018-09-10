@@ -3,7 +3,7 @@
 all: test
 
 run-dev: config.py lib
-	dev_appserver.py dispatch.yaml app.yaml worker.yaml
+	dev_appserver.py --enable_console true --dev_appserver_log_level debug dispatch.yaml app.yaml worker.yaml
 
 deploy: deploy_build
 	# If you are running into permission issues and see a message like this:
