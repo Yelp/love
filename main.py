@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
+import views
 from flask import Flask
 from flask_themes2 import Themes
 
@@ -23,5 +24,3 @@ try:
     app.debug = config.DEBUG
 except AttributeError:
     app.debug = False
-
-import views
