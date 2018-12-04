@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
-import views
 from flask import Flask
 from flask_themes2 import Themes
 
@@ -24,3 +23,6 @@ try:
     app.debug = config.DEBUG
 except AttributeError:
     app.debug = False
+
+# This import needs to stay down here, otherwise we'll get ImportErrors when running tests
+import views  # noqa
