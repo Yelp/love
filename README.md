@@ -130,7 +130,7 @@ You will absolutely want to bump the version in [setup.py](setup.py) and
 setup.py and 1-3-10 in app.yaml.
 
 If you modified [worker.yaml](worker.yaml) then you will also need to bump the
-version of worker.yaml. This version number is specific to the worker module and
+version of worker.yaml. This version number is specific to the worker service and
 is independent of the main app version.
 
 When you bumped versions in the appropriate files you can deploy your changes by running

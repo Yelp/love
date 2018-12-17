@@ -24,4 +24,5 @@ try:
 except AttributeError:
     app.debug = False
 
-import views
+# This import needs to stay down here, otherwise we'll get ImportErrors when running tests
+import views  # noqa

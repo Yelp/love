@@ -4,8 +4,6 @@ import json
 import os.path
 import logging
 
-from boto import connect_s3
-from boto.s3.key import Key
 from google.appengine.api import search
 from google.appengine.ext import ndb
 
@@ -86,6 +84,9 @@ def _generate_substrings(string):
 
 
 def _get_employee_info_from_s3():
+    from boto import connect_s3
+    from boto.s3.key import Key
+
     logging.info('Reading employees file from S3...')
     key = Key(
         connect_s3(
