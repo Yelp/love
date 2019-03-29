@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
 import hashlib
-import logging
 import functools
 
 from google.appengine.ext import ndb

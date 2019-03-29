@@ -28,7 +28,7 @@ def get_employee_photo(alias):
         ).json().get('imagebase64')
 
         return base64.decodestring(response) if response else None
-    except:
+    except Exception:
         # Sometimes the endpoint is overloaded but no problem
         # the data will be fetch the next run
         return None
