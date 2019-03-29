@@ -5,7 +5,7 @@
 APP_NAME = 'Yelp Love'
 
 APP_BASE_URL = 'https://PROJECT_ID.appspot.com/'
-CORPAPI_BASE_URL = 'https://corpapi.yelpcorp.com/v1'
+CORPAPI_BASE_URL = 'https://api.com/v1'
 LOVE_SENDER_EMAIL = 'Yelp Love <love@PROJECT_ID.appspotmail.com>'
 
 # We can use the 'appengine' email API or the 'sendgrid' API. Pick one here.
