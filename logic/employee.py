@@ -16,6 +16,8 @@ from models import Employee
 from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
+from util.corpapi import get_employees
+from util.corpapi import get_employee_photo
 
 
 INDEX_NAME = 'employees'
@@ -98,6 +100,20 @@ def _get_employee_info_from_s3():
     employee_dicts = json.loads(key.get_contents_as_string())
     logging.info('Done.')
     return employee_dicts
+
+
+def _get_employee_from_api():
+    employees = get_employees()
+    return [
+        {
+            'username': e['Work_Email'].split('@')[0],
+            'first_name': e['Preferred_Name_-_First_Name'],
+            'last_name': e['Preferred_Name_-_Last_Name'],
+            'department': e.get('Engineering_Team') or e.get('Cost_Center_-_Name'),
+            'office': e.get('Location'),
+            'photo': get_employee_photo(e['Work_Email'].split('@')[0]),
+        } for e in employees
+    ]
 
 
 def _index_employees(employees):
@@ -274,7 +290,7 @@ def employees_matching_prefix(prefix):
 
 
 def load_employees():
-    employee_dicts = _get_employee_info_from_s3()
+    employee_dicts = _get_employee_from_api()
     set_toggle_state(LOVE_SENDING_ENABLED, False)
     _update_employees(employee_dicts)
     set_toggle_state(LOVE_SENDING_ENABLED, True)

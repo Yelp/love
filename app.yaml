@@ -1,5 +1,5 @@
 application: yelplove
-service: default
+module: default
 version: 1-0-0
 runtime: python27
 api_version: 1
@@ -38,6 +38,10 @@ handlers:
   login: required
   secure: always
 
+libraries:
+- name: ssl
+  version: latest
+
 builtins:
 - remote_api: on
 
@@ -52,3 +56,4 @@ skip_files:
 - ^google_appengine(/.*)?$
 - ^tmp(/.*)?$
 - ^virtualenv_.*$
+- ^venv(/.*)$

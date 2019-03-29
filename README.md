@@ -88,6 +88,7 @@ from models import Secret
 
 Secret(id='AWS_ACCESS_KEY_ID', value='change-me').put()
 Secret(id='AWS_SECRET_ACCESS_KEY', value='change-me').put()
+Secret(id='API_KEY', value='change-me').put()
 ```
 
 In production you can either use the [Datastore UI](https://console.cloud.google.com/datastore/entities/)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import hashlib
+import logging
 import functools
 
 from google.appengine.ext import ndb
@@ -39,6 +40,8 @@ class Employee(ndb.Model, Pagination):
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     user = ndb.UserProperty()
     username = ndb.StringProperty()
+    office = ndb.StringProperty(indexed=False)
+    photo = ndb.BlobProperty(indexed=False)
 
     @classmethod
     def get_current_employee(cls):
@@ -77,8 +80,12 @@ class Employee(ndb.Model, Pagination):
         self.first_name = d['first_name']
         self.last_name = d['last_name']
         self.photo_url = d.get('photo_url')
+        if d.get('photos'):
+            self.photo_url = d['photos']['ms'].replace('http://', 'https://', 1)
         self.department = d.get('department')
         self.meta_department = get_meta_department(self.department)
+        self.office = d.get('office')
+        self.photo = d.get('photo')
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""
@@ -95,6 +102,8 @@ class Employee(ndb.Model, Pagination):
             return self.get_gravatar()
         elif config.GRAVATAR == 'backup' and not self.photo_url:
             return self.get_gravatar()
+        elif self.photo:
+            return 'data:image/png;base64, ' + base64.b64encode(self.photo)
         else:
             return self.photo_url
 

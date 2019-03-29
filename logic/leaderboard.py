@@ -8,7 +8,7 @@ from logic import utc_week_limits
 import logic.love_count
 
 
-def get_leaderboard_data(timespan, department):
+def get_leaderboard_data(timespan, department, office=None):
     # If last week, we need to subtract *before* getting the week limits to
     # avoid being off by one hour on weeks that include a DST transition
     utc_now = datetime.utcnow()
@@ -16,7 +16,11 @@ def get_leaderboard_data(timespan, department):
         utc_now -= timedelta(days=7)
     utc_week_start, _ = utc_week_limits(utc_now)
 
-    top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(utc_week_start, dept=department)
+    top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(
+        utc_week_start,
+        dept=department,
+        office=office,
+    )
 
     top_lover_dicts = [
         {

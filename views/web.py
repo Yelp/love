@@ -17,6 +17,8 @@ import logic.employee
 import logic.event
 import logic.love
 import logic.love_link
+import logic.love_count
+import logic.office
 import logic.subscription
 from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
@@ -155,18 +157,22 @@ def explore():
 def leaderboard():
     timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
     department = request.args.get('department', None)
+    office = request.args.get('office', None)
 
-    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
-
+    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department, office)
     return render_template(
         'leaderboard.html',
         top_loved=top_loved_dicts,
         top_lovers=top_lover_dicts,
         departments=logic.department.META_DEPARTMENTS,
         sub_departments=logic.department.META_DEPARTMENT_MAP,
+        offices=logic.office.OFFICES,
         selected_dept=department,
         selected_timespan=timespan,
+        selected_office=office,
         org_title=config.ORG_TITLE,
+        teams_title=config.TEAMS_TITLE,
+        offices_title=config.OFFICES_TITLE
     )
 
 

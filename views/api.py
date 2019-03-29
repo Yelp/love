@@ -93,8 +93,9 @@ def api_send_loves():
 def api_get_leaderboard():
     department = request.args.get('department', None)
     timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
+    office = request.args.get('office', None)
 
-    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
+    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department, office)
 
     top_lover = [
         {
@@ -102,6 +103,7 @@ def api_get_leaderboard():
             'username': lover['employee'].username,
             'department': lover['employee'].department,
             'love_count': lover['num_sent'],
+            'photo_url': lover['employee'].photo_url,
         }
         for lover in top_lover_dicts
     ]
@@ -112,6 +114,7 @@ def api_get_leaderboard():
             'username': loved['employee'].username,
             'department': loved['employee'].department,
             'love_count': loved['num_received'],
+            'photo_url': loved['employee'].photo_url,
         }
         for loved in top_loved_dicts
     ]
