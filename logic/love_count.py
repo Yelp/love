@@ -14,7 +14,11 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
     (employee key, received love count), each sorted in descending order of love sent
     or received.
     """
-    sent = LoveCount.query(LoveCount.week_start == utc_week_start).order(-LoveCount.sent_count).fetch()
+    sent_query = LoveCount.query(LoveCount.week_start == utc_week_start)
+    if dept:
+        sent_query = sent_query.filter(ndb.OR(LoveCount.meta_department == dept, LoveCount.department == dept))
+
+    sent = sent_query.order(-LoveCount.sent_count).fetch()
     lovers = []
     for c in sent:
         if len(lovers) == limit:
@@ -22,12 +26,7 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
         if c.sent_count == 0:
             continue
         employee_key = c.key.parent()
-        if dept:
-            employee = employee_key.get()
-            if employee.meta_department == dept or employee.department == dept:
-                lovers.append((employee_key, c.sent_count))
-        else:
-            lovers.append((employee_key, c.sent_count))
+        lovers.append((employee_key, c.sent_count))
 
     received = sorted(sent, key=lambda c: c.received_count, reverse=True)
     lovees = []
@@ -37,12 +36,7 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
         if c.received_count == 0:
             continue
         employee_key = c.key.parent()
-        if dept:
-            employee = employee_key.get()
-            if employee.meta_department == dept or employee.department == dept:
-                lovees.append((employee_key, c.received_count))
-        else:
-            lovees.append((employee_key, c.received_count))
+        lovees.append((employee_key, c.received_count))
 
     return (lovers, lovees)
 
