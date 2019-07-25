@@ -9,7 +9,7 @@ from google.appengine.ext import ndb
 
 import config
 from errors import NoSuchEmployee
-from logic import chunk
+from logic import chunk, love_count
 from logic.secret import get_secret
 from logic.toggle import set_toggle_state
 from models import Employee
@@ -172,6 +172,8 @@ def _update_employees(employee_dicts):
         employee.terminated = True
         terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
+    # we need to rebuild the love count index as the departments may have changed.
+    love_count.rebuild_love_count()
 
     logging.info('Done.')
 
