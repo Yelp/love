@@ -264,6 +264,19 @@ h4 {
     background-image: none;
 }
 
+.avatar-autocomplete {
+    height: 35px;
+    cursor: pointer;
+}
+
+.avatar-autocomplete-img {
+    margin: 2px 10px 2px 5px;
+}
+
+.avatar-autocomplete .ui-state-focus {
+    background-color: #ebebeb;
+}
+
 .ui-state-focus {
     background-color: #fac0ba;
 }

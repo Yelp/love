@@ -52,8 +52,26 @@
             terms.push('');
             this.value = terms.join(', ');
             return false;
-          }
-        });
+          },
+
+        }).data('ui-autocomplete')._renderItem = function( ul, item ) {
+          return $( "<li>" )
+              .attr('class', 'ui-menu-item avatar-autocomplete')
+              .attr('role', 'presentation')
+              .attr( "data-value", item.value )
+              .append(
+                  $("<a>")
+                      .attr('class','ui-corner-all')
+                      .attr('tabindex', '-1')
+                      .append(
+                          '<img class="img-circle avatar-autocomplete-img" height="25"' +
+                          ' src="'+(item.avatar_url || '/_themes/default/img/user_medium_square.png')
+                          +'"><span style="vertical-align:middle">'
+                          + item.label
+                          + '</span>')
+              )
+            .appendTo( ul );
+        }
 
       function split( val ) {
         return val.split( /,\s*/ );
