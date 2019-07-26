@@ -61,6 +61,33 @@
       function extractLast( term ) {
         return split(term).pop();
       }
+      var loveLinkBlock = $('.love-link-block');
+      if (loveLinkBlock.length) {
+          $('.create-link-btn').hide();
+          hideLoveLinkBlockOnInputChange(loveLinkBlock);
+          setCopyToClipboardBtnAction();
+      }
+
+      function hideLoveLinkBlockOnInputChange(loveLinkBlock) {
+          $('input[name="recipients"], textarea[name="message"]').change(function () {
+              $('input[name="recipients"], textarea[name="message"]').off('change');
+              loveLinkBlock.hide();
+              $('.create-link-btn').show();
+          });
+      }
+
+      function setCopyToClipboardBtnAction() {
+          var copyBtn = document.querySelector('.copybtn');
+          copyBtn.addEventListener('click', function () {
+              window.getSelection().removeAllRanges();
+              var linkText = document.querySelector('.love-link');
+              var range = document.createRange();
+              range.selectNode(linkText);
+              window.getSelection().addRange(range);
+              document.execCommand('copy');
+              window.getSelection().removeAllRanges();
+          });
+      }
     });
   </script>
 {% endblock %}

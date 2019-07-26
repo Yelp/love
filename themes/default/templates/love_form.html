@@ -27,6 +27,15 @@
             </label>
         </div>
       </div>
+      <div class="form-group">
+          <button type="submit" class="btn btn-primary create-link-btn" name="action" value="create_link">Create shareable link</button>
+          {%  if url %}
+              <div class="love-link-block">
+                  <span class="love-link">{{ url }}</span>
+                  <button type="button" class="btn copybtn">Copy</button>
+              </div>
+          {% endif %}
+      </div>
     </form>
 
     <div id="suggestions-container">

@@ -59,6 +59,18 @@ h2 {
     margin-right: 20px;
 }
 
+.love-link {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 1;
+    color: #333;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
 .navbar-brand {
     padding: 0;
     padding-left: 15px;
@@ -123,6 +135,7 @@ h4 {
     background: linear-gradient(#ea050b, #c41200);
     text-shadow: 0 -1px 1px #b80806;
     border: 1px solid #a50508;
+    color: #fff;
 }
 
 .btn-lg {
