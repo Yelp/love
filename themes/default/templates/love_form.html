@@ -3,7 +3,7 @@
 <div class="row">
   <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
     <h1>Send your lovin'</h1>
-    <form role="form" action="/love" method="post" id="send-love-form">
+    <form class="send-love-form" role="form" action="/love" method="post" id="send-love-form">
       <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
       <div class="alert alert-danger" id="love-error">{% if message %}{{ message }}{% endif %}</div>
       {{ flash.display_flash_messages() }}
@@ -15,8 +15,9 @@
       </div>
       <div class="form-group">
         <textarea class="form-control" rows="3" name="message" placeholder="Welcome to the lovefest." maxlength="140">{% if message %}{{ message }}{% endif %}</textarea>
-        <span class="help-block help-block-left help-block-below">Keep it simple: don't disclose confidential or sensitive information.</span>
-        <span class="help-block help-block-right help-block-below">140 chars max</span>
+        <span class="help-block help-block-left">Keep it simple: don't disclose confidential or sensitive information.</span>
+        <span class="help-block help-block-right">140 chars max</span>
+        <div class="clearfix"></div>
       </div>
 
       <div class="form-group">
@@ -26,6 +27,15 @@
               <input name="secret" type="checkbox" value="true"> Send in secret <span id="secret-love-label" data-placement="right" data-toggle="tooltip" class="small" title="Your recipient will see this love, but it will not be public to others.">(?)</a>
             </label>
         </div>
+      </div>
+      <div class="form-group">
+          <button type="submit" class="btn btn-primary create-link-btn" name="action" value="create_link">Create shareable link</button>
+          {%  if url %}
+              <div class="love-link-block">
+                  <span class="love-link">{{ url }}</span>
+                  <button type="button" class="btn copybtn">Copy</button>
+              </div>
+          {% endif %}
       </div>
     </form>
 

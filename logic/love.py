@@ -124,22 +124,19 @@ def send_loves(recipients, message, sender_username=None, secret=False):
     if get_toggle_state(LOVE_SENDING_ENABLED) is False:
         raise TaintedLove('Sorry, sending love is temporarily disabled. Please try again in a few minutes.')
 
+    recipient_keys, unique_recipients = validate_love_recipients(recipients)
+
     if sender_username is None:
         sender_username = Employee.get_current_employee().username
 
     sender_username = logic.alias.name_for_alias(sender_username)
     sender_key = Employee.query(
-            Employee.username == sender_username,
-            Employee.terminated == False,
-        ).get(keys_only=True)  # noqa
+        Employee.username == sender_username,
+        Employee.terminated == False,
+    ).get(keys_only=True)  # noqa
 
     if sender_key is None:
         raise TaintedLove(u'Sorry, {} is not a valid user.'.format(sender_username))
-
-    unique_recipients = set([logic.alias.name_for_alias(name) for name in recipients])
-
-    if len(recipients) != len(unique_recipients):
-        raise TaintedLove(u'Sorry, you are trying to send love to a user multiple times.')
 
     # Only raise an error if the only recipient is the sender.
     if sender_username in unique_recipients:
@@ -148,6 +145,18 @@ def send_loves(recipients, message, sender_username=None, secret=False):
             raise TaintedLove(u'You can love yourself, but not on {}!'.format(
                 config.APP_NAME
             ))
+
+    for recipient_key in recipient_keys:
+        _send_love(recipient_key, message, sender_key, secret)
+
+    return unique_recipients
+
+
+def validate_love_recipients(recipients):
+    unique_recipients = set([logic.alias.name_for_alias(name) for name in recipients])
+
+    if len(recipients) != len(unique_recipients):
+        raise TaintedLove(u'Sorry, you are trying to send love to a user multiple times.')
 
     # validate all recipients before carrying out any Love transactions
     recipient_keys = []
@@ -162,10 +171,7 @@ def send_loves(recipients, message, sender_username=None, secret=False):
         else:
             recipient_keys += [recipient_key]
 
-    for recipient_key in recipient_keys:
-        _send_love(recipient_key, message, sender_key, secret)
-
-    return unique_recipients
+    return recipient_keys, unique_recipients
 
 
 def _send_love(recipient_key, message, sender_key, secret):

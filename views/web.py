@@ -41,6 +41,7 @@ from views import common
 @app.route('/', methods=['GET'])
 @user_required
 def home():
+    link_id = request.args.get('link_id', None)
     recipients = request.args.get('recipients', request.args.get('recipient'))
     message = request.args.get('message')
 
@@ -50,6 +51,7 @@ def home():
         current_user=Employee.get_current_employee(),
         recipients=recipients,
         message=message,
+        url='{0}l/{1}'.format(config.APP_BASE_URL, link_id) if link_id else None
     )
 
 
@@ -221,6 +223,7 @@ def create_key():
 @csrf_protect
 @user_required
 def love():
+    action = request.form.get('action')
     recipients = sanitize_recipients(request.form.get('recipients'))
     message = request.form.get('message').strip()
     secret = (request.form.get('secret') == 'true')
@@ -237,16 +240,22 @@ def love():
         return redirect(url_for('home', recipients=recipients_display_str))
 
     try:
-        real_recipients = logic.love.send_loves(recipients, message, secret=secret)
-        # actual recipients may have the sender stripped from the list
-        real_display_str = ', '.join(real_recipients)
-
-        if secret:
-            flash('Secret love sent to {}!'.format(real_display_str))
-            return redirect(url_for('home'))
+        if action == 'create_link':
+            _, real_recipients = logic.love.validate_love_recipients(recipients)
+            real_display_str = ', '.join(real_recipients)
+            hash_key = create_love_link(real_display_str, message).hash_key
+            return redirect(url_for('home', recipients=real_display_str, link_id=hash_key, message=message))
         else:
-            hash_key = link_id if link_id else create_love_link(real_display_str, message).hash_key
-            return redirect(url_for('sent', message=message, recipients=real_display_str, link_id=hash_key))
+            real_recipients = logic.love.send_loves(recipients, message, secret=secret)
+            # actual recipients may have the sender stripped from the list
+            real_display_str = ', '.join(real_recipients)
+
+            if secret:
+                flash('Secret love sent to {}!'.format(real_display_str))
+                return redirect(url_for('home'))
+            else:
+                hash_key = link_id if link_id else create_love_link(real_display_str, message).hash_key
+                return redirect(url_for('sent', message=message, recipients=real_display_str, link_id=hash_key))
 
     except TaintedLove as exc:
         if exc.is_error:

@@ -257,7 +257,11 @@ def employees_matching_prefix(prefix):
 
     user_tuples = set()
 
-    results = search.Index(name=INDEX_NAME).search(prefix)
+    search_query = search.Query(
+        query_string=prefix,
+        options=search.QueryOptions(
+            limit=15))
+    results = search.Index(name=INDEX_NAME).search(search_query)
     for r in results:
         username, full_name = None, None
         for f in r.fields:
@@ -268,7 +272,8 @@ def employees_matching_prefix(prefix):
             else:
                 continue
         if username is not None and full_name is not None:
-            user_tuples.add((full_name, username))
+            photo_url = Employee.query(Employee.username == username).get().get_photo_url()
+            user_tuples.add((full_name, username, photo_url))
 
     user_tuples = list(user_tuples)
     user_tuples.sort()

@@ -1,3 +1,11 @@
+body {
+    background-color: #fff;
+}
+
+body,h1,h2,h3,h4,h5,h6,.h1,.h2,.h3,.h4,.h5,.h6,.navbar,.btn {
+    font-family: "Helvetica","Helvetica Neue","sans-serif" ;
+}
+
 h2 {
     font-weight: bold;
     color: #777;
@@ -22,7 +30,7 @@ h2 {
 }
 
 .love-container {
-    padding: 60px 15px;
+    padding: 84px 15px 60px;
 }
 
 .love-header {
@@ -57,6 +65,22 @@ h2 {
 
 .love-photos {
     margin-right: 20px;
+}
+
+.send-love-form {
+    margin-top: 12px;
+}
+
+.love-link {
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 1;
+    color: #333;
+    text-align: center;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .navbar-brand {
@@ -123,6 +147,7 @@ h4 {
     background: linear-gradient(#ea050b, #c41200);
     text-shadow: 0 -1px 1px #b80806;
     border: 1px solid #a50508;
+    color: #fff;
 }
 
 .btn-lg {
@@ -237,6 +262,19 @@ h4 {
     -webkit-border-radius: 0px;
     -moz-border-radius: 0px;
     background-image: none;
+}
+
+.avatar-autocomplete {
+    height: 35px;
+    cursor: pointer;
+}
+
+.avatar-autocomplete-img {
+    margin: 2px 10px 2px 5px;
+}
+
+.avatar-autocomplete .ui-state-focus {
+    background-color: #ebebeb;
 }
 
 .ui-state-focus {
