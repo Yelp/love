@@ -18,6 +18,8 @@ from models import Love
 @app.route('/tasks/employees/load/s3', methods=['GET'])
 def load_employees_from_s3():
     logic.employee.load_employees()
+    # we need to rebuild the love count index as the departments may have changed.
+    logic.love_count.rebuild_love_count()
     return Response(status=200)
 
 
@@ -25,6 +27,8 @@ def load_employees_from_s3():
 @app.route('/tasks/employees/load/csv', methods=['POST'])
 def load_employees_from_csv():
     logic.employee.load_employees_from_csv()
+    # we need to rebuild the love count index as the departments may have changed.
+    logic.love_count.rebuild_love_count()
     return Response(status=200)
 
 
