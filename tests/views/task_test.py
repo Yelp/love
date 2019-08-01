@@ -36,15 +36,19 @@ class EmailLoveTestCase(LoggedInAdminBaseTest):
 class LoadEmployeesTestCase(LoggedInAdminBaseTest):
 
     @mock.patch('logic.employee.load_employees', autospec=True)
-    def test_load_employees_from_s3(self, mock_load_employees):  # noqa
+    @mock.patch('logic.love_count.rebuild_love_count', autospec=True)
+    def test_load_employees_from_s3(self, mock_load_employees, mock_rebuild_love_count):  # noqa
         response = self.app.get('/tasks/employees/load/s3')
 
         self.assertEqual(response.status_int, 200)
-        mock_load_employees.assert_called_with()
+        self.assertEqual(mock_load_employees.call_count, 1)
+        self.assertEqual(mock_rebuild_love_count.call_count, 1)
 
     @mock.patch('logic.employee.load_employees_from_csv', autospec=True)
-    def test_load_employees_from_csv(self, mock_load_employees_from_csv):  # noqa
+    @mock.patch('logic.love_count.rebuild_love_count', autospec=True)
+    def test_load_employees_from_csv(self, mock_load_employees_from_csv, mock_rebuild_love_count):  # noqa
         response = self.app.post('/tasks/employees/load/csv')
 
         self.assertEqual(response.status_int, 200)
-        mock_load_employees_from_csv.assert_called_with()
+        self.assertEqual(mock_load_employees_from_csv.call_count, 1)
+        self.assertEqual(mock_rebuild_love_count.call_count, 1)

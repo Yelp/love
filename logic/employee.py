@@ -9,7 +9,7 @@ from google.appengine.ext import ndb
 
 import config
 from errors import NoSuchEmployee
-from logic import chunk, love_count
+from logic import chunk
 from logic.secret import get_secret
 from logic.toggle import set_toggle_state
 from models import Employee
@@ -138,10 +138,15 @@ def _update_employees(employee_dicts):
     """
     logging.info('Updating employees...')
 
+    db_employee_dict = {
+        employee.username: employee
+        for employee in Employee.query()
+    }
+
     all_employees, new_employees = [], []
     current_usernames = set()
     for d in employee_dicts:
-        existing_employee = Employee.query(Employee.username == d['username']).get()
+        existing_employee = db_employee_dict.get(d['username'])
         if existing_employee is None:
             new_employee = Employee.create_from_dict(d, persist=False)
             all_employees.append(new_employee)
@@ -158,22 +163,15 @@ def _update_employees(employee_dicts):
 
     # Figure out if there are any employees in the DB that aren't in the S3
     # dump. These are terminated employees, and we need to mark them as such.
-    usernames_to_employees = dict(
-        (employee.username, employee)
-        for employee
-        in Employee.query()
-    )
-    db_usernames = set(usernames_to_employees.keys())
+    db_usernames = set(db_employee_dict.keys())
 
     terminated_usernames = db_usernames - current_usernames
     terminated_employees = []
-    for u in terminated_usernames:
-        employee = usernames_to_employees[u]
+    for username in terminated_usernames:
+        employee = db_employee_dict[username]
         employee.terminated = True
         terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
-    # we need to rebuild the love count index as the departments may have changed.
-    love_count.rebuild_love_count()
 
     logging.info('Done.')
 
