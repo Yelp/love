@@ -7,6 +7,6 @@ itsdangerous==0.24
 Jinja2==2.9.5
 MarkupSafe==1.0
 pytz==2016.10
-urllib3==1.20
+urllib3==1.24.3
 Werkzeug==0.12
 wheel==0.29.0
