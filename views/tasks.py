@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import request
 from flask import Response
-from google.appengine.api import background_thread
+from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 
 import logic.employee
@@ -19,7 +19,7 @@ from models import Love
 def load_employees_from_s3():
     logic.employee.load_employees()
     # we need to rebuild the love count index as the departments may have changed.
-    logic.love_count.rebuild_love_count()
+    taskqueue.add(url='/tasks/love_count/rebuild')
     return Response(status=200)
 
 
@@ -28,7 +28,7 @@ def load_employees_from_s3():
 def load_employees_from_csv():
     logic.employee.load_employees_from_csv()
     # we need to rebuild the love count index as the departments may have changed.
-    logic.love_count.rebuild_love_count()
+    taskqueue.add(url='/tasks/love_count/rebuild')
     return Response(status=200)
 
 
@@ -41,7 +41,7 @@ def combine_employees():
     elif not new_username:
         return Response(response='{} is not a valid username'.format(new_username), status=400)
 
-    background_thread.start_new_background_thread(logic.employee.combine_employees, [old_username, new_username])
+    logic.employee.combine_employees(old_username, new_username)
     return Response(status=200)
 
 
@@ -61,7 +61,7 @@ def email_love():
 
 @app.route('/tasks/love_count/rebuild', methods=['GET'])
 def rebuild_love_count():
-    background_thread.start_new_background_thread(logic.love_count.rebuild_love_count, [])
+    logic.love_count.rebuild_love_count()
     return Response(status=200)
 
 

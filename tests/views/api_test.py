@@ -3,6 +3,8 @@ from __future__ import unicode_literals, print_function
 
 import unittest
 
+import mock
+
 import logic.employee
 import logic.love
 from models import AccessKey
@@ -53,7 +55,8 @@ class AutocompleteTest(_ApiKeyRequiredTestCase):
         create_employee(username='alex')
         create_employee(username='bob')
         create_employee(username='carol')
-        logic.employee.rebuild_index()
+        with mock.patch('logic.employee.memory_usage', autospec=True):
+            logic.employee.rebuild_index()
         self.api_key = AccessKey.create('autocomplete key').access_key
 
     def test_autocomplete(self):

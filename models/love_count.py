@@ -12,7 +12,7 @@ class LoveCount(ndb.Model):
     department = ndb.StringProperty()
 
     @classmethod
-    def update(cls, love):
+    def update(cls, love, employee_dict=None):
         utc_week_start, _ = utc_week_limits(love.timestamp)
 
         sender_count = cls.query(
@@ -22,7 +22,7 @@ class LoveCount(ndb.Model):
         if sender_count is not None:
             sender_count.sent_count += 1
         else:
-            employee = love.sender_key.get()
+            employee = employee_dict[love.sender_key] if employee_dict else love.sender_key.get()
             sender_count = cls(
                 parent=love.sender_key,
                 sent_count=1,
@@ -39,7 +39,7 @@ class LoveCount(ndb.Model):
         if recipient_count is not None:
             recipient_count.received_count += 1
         else:
-            employee = love.recipient_key.get()
+            employee = employee_dict[love.recipient_key] if employee_dict else love.recipient_key.get()
             recipient_count = cls(
                 parent=love.recipient_key,
                 received_count=1,

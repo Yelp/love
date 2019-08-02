@@ -5,6 +5,7 @@ import os.path
 import logging
 
 from google.appengine.api import search
+from google.appengine.api.runtime import memory_usage
 from google.appengine.ext import ndb
 
 import config
@@ -44,9 +45,8 @@ def _get_employee_info_from_csv():
 
 
 def _clear_index():
-    logging.info('Clearing index...')
+    logging.info('Clearing index... {}MB'.format(memory_usage().current()))
     index = search.Index(name=INDEX_NAME)
-    index_delete_futures = []
     last_id = None
     while True:
         # We can batch up to 200 doc_ids in the delete call, and
@@ -67,10 +67,9 @@ def _clear_index():
         if not doc_ids:
             break
         last_id = doc_ids[-1]
-        index_delete_futures.append(index.delete_async(doc_ids))
-    for index_delete_future in index_delete_futures:
-        index_delete_future.get_result()
-    logging.info('Done.')
+        index.delete(doc_ids)
+
+    logging.info('Done. {}MB'.format(memory_usage().current()))
 
 
 def _generate_substrings(string):
@@ -87,7 +86,7 @@ def _get_employee_info_from_s3():
     from boto import connect_s3
     from boto.s3.key import Key
 
-    logging.info('Reading employees file from S3...')
+    logging.info('Reading employees file from S3... {}MB'.format(memory_usage().current()))
     key = Key(
         connect_s3(
             aws_access_key_id=get_secret('AWS_ACCESS_KEY_ID'),
@@ -96,14 +95,13 @@ def _get_employee_info_from_s3():
         'employees.json',
     )
     employee_dicts = json.loads(key.get_contents_as_string())
-    logging.info('Done.')
+    logging.info('Done. {}MB'.format(memory_usage().current()))
     return employee_dicts
 
 
 def _index_employees(employees):
-    logging.info('Indexing employees...')
+    logging.info('Indexing employees... {}MB'.format(memory_usage().current()))
     index = search.Index(name=INDEX_NAME)
-    index_put_futures = []
     # According to appengine, put can handle a maximum of 200 documents,
     # and apparently batching is more efficient
     for chunk_of_200 in chunk(employees, 200):
@@ -123,10 +121,8 @@ def _index_employees(employees):
                     search.TextField(name='substrings', value=substrings),
                 ])
                 documents.append(doc)
-        index_put_futures.append(index.put_async(documents))
-    for index_put_future in index_put_futures:
-        index_put_future.get_result()
-    logging.info('Done.')
+        index.put(documents)
+    logging.info('Done. {}MB'.format(memory_usage().current()))
 
 
 def _update_employees(employee_dicts):
@@ -136,7 +132,7 @@ def _update_employees(employee_dicts):
     Then determine whether any employees have been terminated since the last update,
     and mark these employees as such.
     """
-    logging.info('Updating employees...')
+    logging.info('Updating employees... {}MB'.format(memory_usage().current()))
 
     db_employee_dict = {
         employee.username: employee
@@ -159,6 +155,8 @@ def _update_employees(employee_dicts):
             all_employees.append(existing_employee)
 
         current_usernames.add(d['username'])
+        if len(all_employees) % 200 == 0:
+            logging.info('Processed {} employees, {}MB'.format(len(all_employees), memory_usage().current()))
     ndb.put_multi(all_employees)
 
     # Figure out if there are any employees in the DB that aren't in the S3
@@ -173,7 +171,7 @@ def _update_employees(employee_dicts):
         terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
 
-    logging.info('Done.')
+    logging.info('Done. {}MB'.format(memory_usage().current()))
 
 
 def combine_employees(old_username, new_username):
