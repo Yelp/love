@@ -40,7 +40,7 @@ def load_employees_from_csv():
 def _get_employee_info_from_csv():
     logging.info('Reading employees from csv file...')
     employees = csv.DictReader(open(csv_import_file()))
-    logging.info('Done.')
+    logging.info('Done reading employees from csv file.')
     return employees
 
 
@@ -69,7 +69,7 @@ def _clear_index():
         last_id = doc_ids[-1]
         index.delete(doc_ids)
 
-    logging.info('Done. {}MB'.format(memory_usage().current()))
+    logging.info('Done clearing index. {}MB'.format(memory_usage().current()))
 
 
 def _generate_substrings(string):
@@ -95,7 +95,7 @@ def _get_employee_info_from_s3():
         'employees.json',
     )
     employee_dicts = json.loads(key.get_contents_as_string())
-    logging.info('Done. {}MB'.format(memory_usage().current()))
+    logging.info('Done reading employees file from S3. {}MB'.format(memory_usage().current()))
     return employee_dicts
 
 
@@ -122,7 +122,7 @@ def _index_employees(employees):
                 ])
                 documents.append(doc)
         index.put(documents)
-    logging.info('Done. {}MB'.format(memory_usage().current()))
+    logging.info('Done indexing employees. {}MB'.format(memory_usage().current()))
 
 
 def _update_employees(employee_dicts):
@@ -171,7 +171,7 @@ def _update_employees(employee_dicts):
         terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
 
-    logging.info('Done. {}MB'.format(memory_usage().current()))
+    logging.info('Done updating employees. {}MB'.format(memory_usage().current()))
 
 
 def combine_employees(old_username, new_username):
@@ -200,7 +200,7 @@ def combine_employees(old_username, new_username):
         love_to_save.append(received_love)
 
     ndb.put_multi(love_to_save)
-    logging.info('Done.')
+    logging.info('Done reassigning love.')
 
     # Second, we need to update the LoveCount table
     logging.info('Updating LoveCount table...')
@@ -233,12 +233,12 @@ def combine_employees(old_username, new_username):
 
     ndb.delete_multi(love_counts_to_delete)
     ndb.put_multi(love_counts_to_save)
-    logging.info('Done.')
+    logging.info('Done updating LoveCount table.')
 
     # Now we can delete the old employee
     logging.info('Deleting employee {}...'.format(old_username))
     old_employee_key.delete()
-    logging.info('Done.')
+    logging.info('Done deleting employee.')
 
     # ... Which means we need to rebuild the index
     rebuild_index()
