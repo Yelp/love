@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 
+from google.appengine.api.runtime import memory_usage
 from google.appengine.ext import ndb
 
+from logic import utc_week_limits
 from logic.toggle import set_toggle_state
+from models import Employee
 from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
@@ -42,12 +46,28 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
 
 
 def rebuild_love_count():
+    utc_dt = datetime.datetime.utcnow() - datetime.timedelta(days=7)  # rebuild last week and this week
+    week_start, _ = utc_week_limits(utc_dt)
+
     set_toggle_state(LOVE_SENDING_ENABLED, False)
 
-    logging.info('Rebuilding LoveCount table...')
-    ndb.delete_multi(LoveCount.query().fetch(keys_only=True))
-    for l in Love.query().iter(batch_size=1000):
-        LoveCount.update(l)
-    logging.info('Done.')
+    logging.info('Deleting LoveCount table... {}MB'.format(memory_usage().current()))
+    ndb.delete_multi(LoveCount.query(LoveCount.week_start >= week_start).fetch(keys_only=True))
+    employee_dict = {
+        employee.key: employee
+        for employee in Employee.query()
+    }
+    logging.info('Rebuilding LoveCount table... {}MB'.format(memory_usage().current()))
+    cursor = None
+    count = 0
+    while True:
+        loves, cursor, has_more = Love.query(Love.timestamp >= week_start).fetch_page(500, start_cursor=cursor)
+        for l in loves:
+            LoveCount.update(l, employee_dict=employee_dict)
+        count += len(loves)
+        logging.info('Processed {} loves, {}MB'.format(count, memory_usage().current()))
+        if not has_more:
+            break
+    logging.info('Done. {}MB'.format(memory_usage().current()))
 
     set_toggle_state(LOVE_SENDING_ENABLED, True)

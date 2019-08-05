@@ -35,20 +35,20 @@ class EmailLoveTestCase(LoggedInAdminBaseTest):
 
 class LoadEmployeesTestCase(LoggedInAdminBaseTest):
 
+    @mock.patch('google.appengine.api.taskqueue.add', autospec=True)
     @mock.patch('logic.employee.load_employees', autospec=True)
-    @mock.patch('logic.love_count.rebuild_love_count', autospec=True)
-    def test_load_employees_from_s3(self, mock_load_employees, mock_rebuild_love_count):  # noqa
+    def test_load_employees_from_s3(self, mock_load_employees, mock_taskqueue_add):  # noqa
         response = self.app.get('/tasks/employees/load/s3')
 
         self.assertEqual(response.status_int, 200)
         self.assertEqual(mock_load_employees.call_count, 1)
-        self.assertEqual(mock_rebuild_love_count.call_count, 1)
+        mock_taskqueue_add.assert_called_once_with(url='/tasks/love_count/rebuild')
 
+    @mock.patch('google.appengine.api.taskqueue.add', autospec=True)
     @mock.patch('logic.employee.load_employees_from_csv', autospec=True)
-    @mock.patch('logic.love_count.rebuild_love_count', autospec=True)
-    def test_load_employees_from_csv(self, mock_load_employees_from_csv, mock_rebuild_love_count):  # noqa
+    def test_load_employees_from_csv(self, mock_load_employees_from_csv, mock_taskqueue_add):  # noqa
         response = self.app.post('/tasks/employees/load/csv')
 
         self.assertEqual(response.status_int, 200)
         self.assertEqual(mock_load_employees_from_csv.call_count, 1)
-        self.assertEqual(mock_rebuild_love_count.call_count, 1)
+        mock_taskqueue_add.assert_called_once_with(url='/tasks/love_count/rebuild')

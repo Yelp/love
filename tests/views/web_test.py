@@ -592,7 +592,8 @@ class AutocompleteTest(LoggedInUserBaseTest):
         create_employee(username='alex')
         create_employee(username='bob')
         create_employee(username='carol')
-        logic.employee.rebuild_index()
+        with mock.patch('logic.employee.memory_usage', autospec=True):
+            logic.employee.rebuild_index()
 
     def test_autocomplete(self):
         self._test_autocomplete('a', ['alice', 'alex'])
