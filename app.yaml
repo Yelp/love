@@ -41,6 +41,10 @@ handlers:
 builtins:
 - remote_api: on
 
+libraries:
+- name: ssl
+  version: latest
+
 skip_files:
 - ^(.*/)?#.*#$
 - ^(.*/)?.*/RCS/.*$
