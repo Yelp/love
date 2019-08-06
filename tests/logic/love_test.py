@@ -54,6 +54,9 @@ class SendLovesTest(unittest.TestCase):
         self.assertEqual(len(loves_for_bob), 1)
         self.assertEqual(loves_for_bob[0].message, self.message)
 
+        loves_for_alice = logic.love.get_love(None, 'alice').get_result()
+        self.assertEqual(loves_for_alice, [])
+
     def test_sender_is_only_recipient(self):
         with self.assertRaises(TaintedLove):
             logic.love.send_loves(

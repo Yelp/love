@@ -139,9 +139,10 @@ def send_loves(recipients, message, sender_username=None, secret=False):
         raise TaintedLove(u'Sorry, {} is not a valid user.'.format(sender_username))
 
     # Only raise an error if the only recipient is the sender.
-    if sender_username in unique_recipients:
+    if sender_key in recipient_keys:
+        recipient_keys.remove(sender_key)
         unique_recipients.remove(sender_username)
-        if len(unique_recipients) == 0:
+        if len(recipient_keys) == 0:
             raise TaintedLove(u'You can love yourself, but not on {}!'.format(
                 config.APP_NAME
             ))
