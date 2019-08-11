@@ -11,9 +11,10 @@ from models import Employee
 from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
+from logic.office import get_all_offices
 
 
-def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
+def top_lovers_and_lovees(utc_week_start, dept=None, office=None, limit=20):
     """Synchronously return a list of (employee key, sent love count) and a list of
     (employee key, received love count), each sorted in descending order of love sent
     or received.
@@ -21,6 +22,11 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
     sent_query = LoveCount.query(LoveCount.week_start == utc_week_start)
     if dept:
         sent_query = sent_query.filter(ndb.OR(LoveCount.meta_department == dept, LoveCount.department == dept))
+
+    if office:
+        # nbd does not have like queries that's why the first step will be done in python
+        filtered_offices = [office_name for office_name in get_all_offices() if office in office_name]
+        sent_query = sent_query.filter(LoveCount.office.IN(filtered_offices))
 
     sent = sent_query.order(-LoveCount.sent_count).fetch()
     lovers = []
@@ -30,6 +36,7 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
         if c.sent_count == 0:
             continue
         employee_key = c.key.parent()
+
         lovers.append((employee_key, c.sent_count))
 
     received = sorted(sent, key=lambda c: c.received_count, reverse=True)
@@ -40,6 +47,7 @@ def top_lovers_and_lovees(utc_week_start, dept=None, limit=20):
         if c.received_count == 0:
             continue
         employee_key = c.key.parent()
+
         lovees.append((employee_key, c.received_count))
 
     return (lovers, lovees)

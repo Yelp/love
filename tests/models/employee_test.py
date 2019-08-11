@@ -22,7 +22,8 @@ class EmployeeTest(unittest.TestCase):
             first_name='John',
             last_name='Doe',
             department='Accounting',
-            photos=[]
+            office='USA CA SF New Montgomery',
+            photos=[],
         )
         employee = Employee.create_from_dict(employee_dict)
 
@@ -49,6 +50,15 @@ class EmployeeTest(unittest.TestCase):
     def test_full_name(self):
         employee = create_employee(first_name='Foo', last_name='Bar')
         self.assertEqual('Foo Bar', employee.full_name)
+
+    def test_refresh_index_employees(self):
+        employee1 = create_employee(username='Foo')
+        employee2 = create_employee(username='Foo2')
+        Employee.refresh_indexes()
+        employees = Employee.query().fetch()
+        self.assertEqual(len(employees), 2)
+        self.assertEqual(Employee.query(Employee.username == employee1.username).fetch()[0].key, employee1.key)
+        self.assertEqual(Employee.query(Employee.username == employee2.username).fetch()[0].key, employee2.key)
 
     @mock.patch('models.employee.config')
     def test_gravatar_backup(self, mock_config):

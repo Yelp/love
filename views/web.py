@@ -12,11 +12,11 @@ from flask import request
 from flask import url_for
 
 import logic.alias
-import logic.department
 import logic.employee
 import logic.event
 import logic.love
 import logic.love_link
+import logic.love_count
 import logic.subscription
 from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
@@ -36,7 +36,8 @@ from util.decorators import user_required
 from util.recipient import sanitize_recipients
 from util.render import render_template
 from views import common
-
+from logic.office import get_all_offices_compressed
+from logic.department import get_all_departments
 
 @app.route('/', methods=['GET'])
 @user_required
@@ -157,18 +158,22 @@ def explore():
 def leaderboard():
     timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
     department = request.args.get('department', None)
+    office = request.args.get('office', None)
 
-    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department)
+    (top_lover_dicts, top_loved_dicts) = get_leaderboard_data(timespan, department, office)
 
     return render_template(
         'leaderboard.html',
         top_loved=top_loved_dicts,
         top_lovers=top_lover_dicts,
-        departments=logic.department.META_DEPARTMENTS,
-        sub_departments=logic.department.META_DEPARTMENT_MAP,
+        departments=get_all_departments(),
+        offices=get_all_offices_compressed(),
         selected_dept=department,
         selected_timespan=timespan,
+        selected_office=office,
         org_title=config.ORG_TITLE,
+        teams_title=config.TEAMS_TITLE,
+        offices_title=config.OFFICES_TITLE
     )
 
 

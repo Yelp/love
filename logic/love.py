@@ -4,7 +4,6 @@ from google.appengine.api import taskqueue
 
 import config
 import logic.alias
-import logic.department
 import logic.email
 import logic.event
 

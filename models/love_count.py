@@ -10,6 +10,7 @@ class LoveCount(ndb.Model):
     week_start = ndb.DateTimeProperty()
     meta_department = ndb.StringProperty()
     department = ndb.StringProperty()
+    office = ndb.StringProperty()
 
     @classmethod
     def update(cls, love, employee_dict=None):
@@ -29,6 +30,7 @@ class LoveCount(ndb.Model):
                 week_start=utc_week_start,
                 department=employee.department,
                 meta_department=employee.meta_department,
+                office=employee.office,
             )
         sender_count.put()
 
@@ -46,6 +48,7 @@ class LoveCount(ndb.Model):
                 week_start=utc_week_start,
                 department=employee.department,
                 meta_department=employee.meta_department,
+                office=employee.office,
             )
         recipient_count.put()
 
