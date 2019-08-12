@@ -39,6 +39,7 @@ from views import common
 from logic.office import get_all_offices_compressed
 from logic.department import get_all_departments
 
+
 @app.route('/', methods=['GET'])
 @user_required
 def home():
