@@ -9,7 +9,6 @@ from google.appengine.api import users
 import config
 from errors import NoSuchEmployee
 from util.pagination import Pagination
-import logging
 
 
 def memoized(func):
@@ -40,31 +39,6 @@ class Employee(ndb.Model, Pagination):
     user = ndb.UserProperty()
     username = ndb.StringProperty()
     office = ndb.StringProperty(indexed=True)
-
-    @classmethod
-    def refresh_indexes(cls):
-        logging.info('Start refreshing indexes')
-        employees = cls.query().fetch()
-        new_employees = []
-        old_keys = []
-        for employee in employees:
-            old_keys += [employee.key]
-            new_employees += [cls(
-                key=employee.key,
-                department=employee.department,
-                first_name=employee.first_name,
-                last_name=employee.last_name,
-                meta_department=employee.meta_department,
-                photo_url=employee.photo_url,
-                terminated=employee.terminated,
-                timestamp=employee.timestamp,
-                user=employee.user,
-                username=employee.username,
-                office=employee.office,
-            )]
-        ndb.delete_multi(old_keys)
-        ndb.put_multi(new_employees)
-        logging.info('Done refreshing indexes')
 
     @classmethod
     def get_current_employee(cls):

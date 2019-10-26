@@ -21,7 +21,7 @@ def top_lovers_and_lovees(utc_week_start, dept=None, office=None, limit=20):
     """
     sent_query = LoveCount.query(LoveCount.week_start == utc_week_start)
     if dept:
-        sent_query = sent_query.filter(ndb.OR(LoveCount.meta_department == dept, LoveCount.department == dept))
+        sent_query = sent_query.filter(LoveCount.department == dept)
 
     if office:
         # nbd does not have like queries that's why the first step will be done in python
