@@ -8,7 +8,6 @@ class LoveCount(ndb.Model):
     received_count = ndb.IntegerProperty(default=0)
     sent_count = ndb.IntegerProperty(default=0)
     week_start = ndb.DateTimeProperty()
-    meta_department = ndb.StringProperty()
     department = ndb.StringProperty()
     office = ndb.StringProperty()
 
@@ -29,7 +28,6 @@ class LoveCount(ndb.Model):
                 sent_count=1,
                 week_start=utc_week_start,
                 department=employee.department,
-                meta_department=employee.meta_department,
                 office=employee.office,
             )
         sender_count.put()
@@ -47,7 +45,6 @@ class LoveCount(ndb.Model):
                 received_count=1,
                 week_start=utc_week_start,
                 department=employee.department,
-                meta_department=employee.meta_department,
                 office=employee.office,
             )
         recipient_count.put()

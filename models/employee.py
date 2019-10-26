@@ -32,7 +32,6 @@ class Employee(ndb.Model, Pagination):
     department = ndb.StringProperty(indexed=True)
     first_name = ndb.StringProperty(indexed=False)
     last_name = ndb.StringProperty(indexed=False)
-    meta_department = ndb.StringProperty(indexed=True)
     photo_url = ndb.TextProperty()
     terminated = ndb.BooleanProperty(default=False)
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
