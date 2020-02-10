@@ -44,7 +44,7 @@ class Employee(ndb.Model, Pagination):
     def get_current_employee(cls):
         user = users.get_current_user()
         user_email = user.email()
-        employee = cls.query(cls.user == user, cls.terminated == False).get()  # noqa
+        employee = cls.query(cls.username == user.nickname(), cls.terminated == False).get()  # noqa
         if employee is None:
             raise NoSuchEmployee('Couldn\'t find a Google Apps user with email {}'.format(user_email))
         return employee

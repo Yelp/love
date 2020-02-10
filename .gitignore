@@ -15,3 +15,4 @@ tmp
 import/*.csv
 import/*.json
 venv
+.vscode/*
