@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 from logic.notification_request import CONTENT_TYPE_JSON
 from models import Employee
@@ -7,7 +7,8 @@ from models import Employee
 
 class Subscription(ndb.Model):
     """Models a webhook subscription."""
-    request_method = ndb.StringProperty(required=True, default='post')
+
+    request_method = ndb.StringProperty(required=True, default="post")
     request_format = ndb.StringProperty(required=True, default=CONTENT_TYPE_JSON)
     request_url = ndb.StringProperty(required=True)
     active = ndb.BooleanProperty(required=True, default=False)
@@ -20,10 +21,10 @@ class Subscription(ndb.Model):
     def create_from_dict(cls, d, persist=True):
         new_subscription = cls()
         new_subscription.owner_key = Employee.get_current_employee().key
-        new_subscription.request_url = d['request_url']
-        new_subscription.active = d['active']
-        new_subscription.event = d['event']
-        new_subscription.secret = d['secret']
+        new_subscription.request_url = d["request_url"]
+        new_subscription.active = d["active"]
+        new_subscription.event = d["event"]
+        new_subscription.secret = d["secret"]
 
         if persist is True:
             new_subscription.put()
@@ -32,7 +33,4 @@ class Subscription(ndb.Model):
 
     @classmethod
     def all_active_for_event(cls, event):
-        return cls.query(
-            cls.active == True,  # noqa
-            cls.event == event,
-        )
+        return cls.query(cls.active == True, cls.event == event,)  # noqa

@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
-from itertools import izip_longest
+from itertools import zip_longest
 
 import pytz
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 
-TIMESPAN_LAST_WEEK = 'last_week'
-TIMESPAN_THIS_WEEK = 'this_week'
+TIMESPAN_LAST_WEEK = "last_week"
+TIMESPAN_THIS_WEEK = "this_week"
 
 
 def chunk(iterable, chunk_size):
     """Collect data into fixed-length chunks or blocks (http://docs.python.org/2/library/itertools.html#recipes)"""
     args = [iter(iterable)] * chunk_size
-    return izip_longest(*args)
+    return zip_longest(*args)
 
 
 def to_the_future(dict):
@@ -24,7 +24,7 @@ def to_the_future(dict):
 
 def utc_week_limits(utc_dt):
     """Returns US/Pacific start (12:00 am Sunday) and end (11:59 pm Saturday) of the week containing utc_dt, in UTC."""
-    local_now = utc_dt.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('US/Pacific'))
+    local_now = utc_dt.replace(tzinfo=pytz.utc).astimezone(pytz.timezone("US/Pacific"))
 
     local_week_start = local_now - timedelta(
         days=local_now.weekday() + 1,

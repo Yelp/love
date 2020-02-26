@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 import logic.event
 
@@ -13,7 +13,7 @@ class LovesentNotifier(object):
     event = logic.event.LOVESENT
 
     def __init__(self, *args, **kwargs):
-        self.love = ndb.Key(Love, kwargs.get('love_id')).get()
+        self.love = ndb.Key(Love, kwargs.get("love_id")).get()
 
     def notify(self):
         subscriptions = self._subscriptions()
@@ -25,18 +25,18 @@ class LovesentNotifier(object):
         sender = self.love.sender_key.get()
         receiver = self.love.recipient_key.get()
         return {
-            'sender': {
-                'full_name': sender.full_name,
-                'username': sender.username,
-                'email': sender.user.email(),
+            "sender": {
+                "full_name": sender.full_name,
+                "username": sender.username,
+                "email": sender.user.email(),
             },
-            'receiver': {
-                'full_name': receiver.full_name,
-                'username': receiver.username,
-                'email': receiver.user.email(),
+            "receiver": {
+                "full_name": receiver.full_name,
+                "username": receiver.username,
+                "email": receiver.user.email(),
             },
-            'message': self.love.message,
-            'timestamp': self.love.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            "message": self.love.message,
+            "timestamp": self.love.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
         }
 
     def _subscriptions(self):

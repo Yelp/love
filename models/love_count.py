@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 from logic import utc_week_limits
 
@@ -15,14 +15,19 @@ class LoveCount(ndb.Model):
     def update(cls, love, employee_dict=None):
         utc_week_start, _ = utc_week_limits(love.timestamp)
 
-        sender_count = cls.query(
-            ancestor=love.sender_key,
-            filters=(cls.week_start == utc_week_start)
-        ).get()
+        sender_count = (
+            cls.query(ancestor=love.sender_key)
+            .filter(cls.week_start == utc_week_start)
+            .get()
+        )
         if sender_count is not None:
             sender_count.sent_count += 1
         else:
-            employee = employee_dict[love.sender_key] if employee_dict else love.sender_key.get()
+            employee = (
+                employee_dict[love.sender_key]
+                if employee_dict
+                else love.sender_key.get()
+            )
             sender_count = cls(
                 parent=love.sender_key,
                 sent_count=1,
@@ -32,14 +37,19 @@ class LoveCount(ndb.Model):
             )
         sender_count.put()
 
-        recipient_count = cls.query(
-            ancestor=love.recipient_key,
-            filters=(cls.week_start == utc_week_start)
-        ).get()
+        recipient_count = (
+            cls.query(ancestor=love.recipient_key)
+            .filter(cls.week_start == utc_week_start)
+            .get()
+        )
         if recipient_count is not None:
             recipient_count.received_count += 1
         else:
-            employee = employee_dict[love.recipient_key] if employee_dict else love.recipient_key.get()
+            employee = (
+                employee_dict[love.recipient_key]
+                if employee_dict
+                else love.recipient_key.get()
+            )
             recipient_count = cls(
                 parent=love.recipient_key,
                 received_count=1,
@@ -54,8 +64,7 @@ class LoveCount(ndb.Model):
         utc_week_start, _ = utc_week_limits(love.timestamp)
 
         sender_count = cls.query(
-            ancestor=love.sender_key,
-            filters=(cls.week_start == utc_week_start)
+            ancestor=love.sender_key, filters=(cls.week_start == utc_week_start)
         ).get()
         if sender_count is not None and sender_count.sent_count > 0:
             sender_count.sent_count -= 1
@@ -65,8 +74,7 @@ class LoveCount(ndb.Model):
                 sender_count.put()
 
         recipient_count = cls.query(
-            ancestor=love.recipient_key,
-            filters=(cls.week_start == utc_week_start)
+            ancestor=love.recipient_key, filters=(cls.week_start == utc_week_start)
         ).get()
         if recipient_count is not None and recipient_count.received_count > 0:
             recipient_count.received_count -= 1

@@ -8,14 +8,13 @@ def autocomplete(request):
     the api view and web view that is called from Javascript, only the authorization
     checks are different.
     """
-    matches = employees_matching_prefix(request.args.get('term', None))
+    matches = employees_matching_prefix(request.args.get("term", None))
     users = [
         {
-            'label': u'{} ({})'.format(full_name, username),
-            'value': unicode(username),
-            'avatar_url': photo_url,
+            "label": f"{full_name} ({username})",
+            "value": username,
+            "avatar_url": photo_url,
         }
-        for full_name, username, photo_url
-        in matches
+        for full_name, username, photo_url in matches
     ]
     return make_json_response(users)

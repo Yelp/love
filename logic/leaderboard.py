@@ -16,24 +16,18 @@ def get_leaderboard_data(timespan, department):
         utc_now -= timedelta(days=7)
     utc_week_start, _ = utc_week_limits(utc_now)
 
-    top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(utc_week_start, dept=department)
+    top_lovers, top_lovees = logic.love_count.top_lovers_and_lovees(
+        utc_week_start, dept=department
+    )
 
     top_lover_dicts = [
-        {
-            'employee': employee_key.get_async(),
-            'num_sent': sent_count
-        }
-        for employee_key, sent_count
-        in top_lovers
+        {"employee": employee_key.get(), "num_sent": sent_count}
+        for employee_key, sent_count in top_lovers
     ]
 
     top_loved_dicts = [
-        {
-            'employee': employee_key.get_async(),
-            'num_received': received_count
-        }
-        for employee_key, received_count
-        in top_lovees
+        {"employee": employee_key.get(), "num_received": received_count}
+        for employee_key, received_count in top_lovees
     ]
 
     # get results for the futures set up previously

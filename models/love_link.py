@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from time import mktime
 
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 import config
 
 
 class LoveLink(ndb.Model):
     """Models an instance of a Love Link."""
+
     hash_key = ndb.StringProperty()
     message = ndb.TextProperty()
     recipient_list = ndb.TextProperty()
@@ -19,4 +20,4 @@ class LoveLink(ndb.Model):
 
     @property
     def url(self):
-        return config.APP_BASE_URL + 'l/' + self.hash_key
+        return config.APP_BASE_URL + "l/" + self.hash_key

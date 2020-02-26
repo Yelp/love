@@ -16,3 +16,6 @@ import/*.csv
 import/*.json
 venv
 .vscode/*
+client_secrets.json
+.gcloudignore
+service_account_credentials.json

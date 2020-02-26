@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from time import mktime
 
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 from models import Employee
 
 
 class Love(ndb.Model):
     """Models an instance of sent love."""
+
     message = ndb.TextProperty()
     recipient_key = ndb.KeyProperty(kind=Employee)
     secret = ndb.BooleanProperty(default=False)
