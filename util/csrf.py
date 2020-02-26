@@ -13,8 +13,12 @@ def check_csrf_protection():
     on a per-view basis, maybe with a decorator.
     """
     if request.method == "POST":
-        token = session.pop("_csrf_token", None)
-        if not token or token != request.form.get("_csrf_token"):
+        token = session.get("_csrf_token")
+        x = request.form.get("_csrf_token")
+        # request form of csrf token is returned as a string of a bytestring, slicing to just retrieve the bytestring
+        # I'm sorry :(
+        y = bytes(x[2:-1], encoding="ascii") if x else None
+        if not token or token != y:
             abort(403)
 
 
