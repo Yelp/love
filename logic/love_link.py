@@ -15,7 +15,7 @@ from google.cloud import ndb
 def get_love_link(hash_key):
     loveLink = LoveLink.query(LoveLink.hash_key == hash_key).get()
     if loveLink is None:
-        raise NoSuchLoveLink("Couldn't Love Link with id {}".format(hash_key))
+        raise NoSuchLoveLink(f"Couldn't Love Link with id {hash_key}")
     return loveLink
 
 
@@ -39,7 +39,7 @@ def create_love_link(recipients, message):
 def add_recipient(hash_key, recipient):
     loveLink = LoveLink.query(LoveLink.hash_key == hash_key).get()
     if loveLink is None:
-        raise NoSuchLoveLink("Couldn't Love Link with id {}".format(hash_key))
+        raise NoSuchLoveLink(f"Couldn't Love Link with id {hash_key}")
 
     # check that user exists, get_key_for_username throws an exception if not
     recipient_username = logic.alias.name_for_alias(recipient)
@@ -57,8 +57,8 @@ def love_links_cleanup():
     love_links_keys = LoveLink.query(LoveLink.timestamp <= earliest).fetch(
         keys_only=True
     )
-    logging.info("Preparing to delete love links older than {}.".format(str(earliest)))
+    logging.info(f"Preparing to delete love links older than {str(earliest)}.")
     ndb.delete_multi(love_links_keys)
-    logging.info("Love links older than {} were deleted.".format(str(earliest)))
+    logging.info(f"Love links older than {str(earliest)} were deleted.")
 
     return

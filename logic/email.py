@@ -132,7 +132,7 @@ def createGoogleHeaders():
             continue
         if response.get("access_token"):
             headers = {
-                "Authorization": "Bearer {}".format(response["access_token"]),
+                "Authorization": f"Bearer {response['access_token']}",
             }
             return headers
         else:

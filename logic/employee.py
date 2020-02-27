@@ -44,50 +44,11 @@ def _get_employee_info_from_csv():
     return employees
 
 
-# def _clear_index():
-#     # logging.info('Clearing index... {}MB'.format(memory_usage().current()))
-#     index = search.Index(name=INDEX_NAME)
-#     last_id = None
-#     while True:
-#         # We can batch up to 200 doc_ids in the delete call, and
-#         # batching is better according to the docs. Because we're deleting
-#         # async, we need to keep track of where we left off each time
-#         # we do get_range
-#         use_start_object = False
-#         if last_id is None:
-#             use_start_object = True
-#         doc_ids = [
-#             doc.doc_id
-#             for doc in index.get_range(
-#                 ids_only=True,
-#                 limit=200,
-#                 start_id=last_id,
-#                 include_start_object=use_start_object,
-#             )
-#         ]
-#         if not doc_ids:
-#             break
-#         last_id = doc_ids[-1]
-#         index.delete(doc_ids)
-
-#     # logging.info('Done clearing index. {}MB'.format(memory_usage().current()))
-
-
-# def _generate_substrings(string):
-#     """Given a string, return a string of all its substrings (not including the original)
-#     anchored at the first character, concatenated with spaces.
-
-#     Example:
-#         _concatenate_substrings('arothman') => 'a ar aro arot aroth arothm arothma'
-#     """
-#     return " ".join([string[:i] for i in xrange(1, len(string))])
-
-
 def _get_employee_info_from_s3():
     from boto import connect_s3
     from boto.s3.key import Key
 
-    # logging.info('Reading employees file from S3... {}MB'.format(memory_usage().current()))
+    logging.info("Reading employees file from S3...")
     key = Key(
         connect_s3(
             aws_access_key_id=get_secret("AWS_ACCESS_KEY_ID"),
@@ -96,40 +57,8 @@ def _get_employee_info_from_s3():
         "employees.json",
     )
     employee_dicts = json.loads(key.get_contents_as_string())
-    # logging.info('Done reading employees file from S3. {}MB'.format(memory_usage().current()))
+    logging.info("Done reading employees file from S3.")
     return employee_dicts
-
-
-# def _index_employees(employees):
-#     # logging.info('Indexing employees... {}MB'.format(memory_usage().current()))
-#     index = search.Index(name=INDEX_NAME)
-#     # According to appengine, put can handle a maximum of 200 documents,
-#     # and apparently batching is more efficient
-#     for chunk_of_200 in chunk(employees, 200):
-#         documents = []
-#         for employee in chunk_of_200:
-#             if employee is not None:
-#                 # Gross hack to support prefix matching, see documentation for _generate_substrings
-#                 substrings = u" ".join(
-#                     [
-#                         _generate_substrings(employee.first_name),
-#                         _generate_substrings(employee.last_name),
-#                         _generate_substrings(employee.username),
-#                     ]
-#                 )
-#                 doc = search.Document(
-#                     fields=[
-#                         # Full name is already unicode
-#                         search.TextField(name="full_name", value=employee.full_name),
-#                         search.TextField(
-#                             name="username", value=unicode(employee.username)
-#                         ),
-#                         search.TextField(name="substrings", value=substrings),
-#                     ]
-#                 )
-#                 documents.append(doc)
-#         index.put(documents)
-#     # logging.info('Done indexing employees. {}MB'.format(memory_usage().current()))
 
 
 def _update_employees(employee_dicts):
@@ -139,7 +68,7 @@ def _update_employees(employee_dicts):
     Then determine whether any employees have been terminated since the last update,
     and mark these employees as such.
     """
-    # logging.info('Updating employees... {}MB'.format(memory_usage().current()))
+    logging.info("Updating employees...")
 
     db_employee_dict = {employee.username: employee for employee in Employee.query()}
 
@@ -160,7 +89,7 @@ def _update_employees(employee_dicts):
 
         current_usernames.add(d["username"])
         # if len(all_employees) % 200 == 0:
-        # logging.info('Processed {} employees, {}MB'.format(len(all_employees), memory_usage().current()))
+        logging.info(f"Processed {len(all_employees)} employees")
     ndb.put_multi(all_employees)
 
     # Figure out if there are any employees in the DB that aren't in the S3
@@ -175,7 +104,7 @@ def _update_employees(employee_dicts):
         terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
 
-    # logging.info('Done updating employees. {}MB'.format(memory_usage().current()))
+    logging.info("Done updating employees.")
 
 
 def combine_employees(old_username, new_username):
@@ -193,7 +122,7 @@ def combine_employees(old_username, new_username):
         raise NoSuchEmployee(new_username)
 
     # First, we need to update the actual instances of Love sent to/from the old employee
-    logging.info("Reassigning {}'s love to {}...".format(old_username, new_username))
+    logging.info(f"Reassigning {old_username}'s love to {new_username}...")
 
     love_to_save = []
 
@@ -244,7 +173,7 @@ def combine_employees(old_username, new_username):
     logging.info("Done updating LoveCount table.")
 
     # Now we can delete the old employee
-    logging.info("Deleting employee {}...".format(old_username))
+    logging.info(f"Deleting employee {old_username}...")
     old_employee_key.delete()
     logging.info("Done deleting employee.")
 
