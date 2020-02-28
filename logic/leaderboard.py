@@ -29,14 +29,7 @@ def get_leaderboard_data(timespan, department):
         {"employee": employee_key.get_async(), "num_received": received_count}
         for employee_key, received_count in top_lovees
     ]
-    # y = top_loved_dicts[0]
-    # x = to_the_future(top_loved_dicts[0])
-    # top_lover_dicts2 = [
-    #     {"employee": employee_key.get(), "num_sent": sent_count}
-    #     for employee_key, sent_count in top_lovers
-    # ]
-    # z = to_the_future(top_lover_dicts2[0])
-    # get results for the futures set up previously
+
     list(map(to_the_future, top_lover_dicts))
     list(map(to_the_future, top_loved_dicts))
     return (top_lover_dicts, top_loved_dicts)

@@ -40,6 +40,20 @@ def admin_required(func):
     return decorated_view
 
 
+def appengineTaskOnly(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        # https://cloud.google.com/tasks/docs/creating-appengine-handlers#reading_app_engine_task_request_headers
+        # Only appengine can have a header with the leading 'X-'
+        taskHeader = request.headers.get("X-AppEngine-QueueName")
+        cronHeader = request.headers.get("X-Appengine-Cron")
+        if not any([taskHeader, cronHeader]):
+            abort(401)  # Not from appengine
+        return func(*args, **kwargs)
+
+    return decorated_function
+
+
 def api_key_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):

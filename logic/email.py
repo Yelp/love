@@ -33,12 +33,12 @@ with open("service_account_credentials.json") as json_file:
 
 
 def send_appengine_email(sender, recipient, subject, body_html, body_text):
-    # headers = createGoogleHeaders()
     message = create_message(
         config.EMAIL_DELEGATION_ADDRESS, recipient, subject, body_html,
     )
 
     service = service_account_login()
+    # me is the magic word to reference the account credentials
     send_message(service, "me", message)
 
 
