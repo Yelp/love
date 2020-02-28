@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from google.cloud import tasks_v2
+import config
 
 
 class Tasks:
     def __init__(self, queue="default"):
-        self.project = "rkosko-app-test"
+        self.project = config.PROJECT_NAME
         self.queue = queue
         self.location = "us-west2"
 
@@ -14,6 +15,5 @@ class Tasks:
         if payload:
             converted_payload = str(payload).encode()
             task["app_engine_http_request"]["body"] = converted_payload
-
         client.create_task(parent, task)
         return

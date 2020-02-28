@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import request
 from flask import Response
+import json
 
 # from google.appengine.api import taskqueue
 from google.cloud import ndb
@@ -61,7 +62,10 @@ def combine_employees():
 
 @app.route("/tasks/love/email", methods=["POST"])
 def email_love():
-    love_id = int(request.form["id"])
+    # print(request.get_data(as_text=True))
+    payload = json.loads(request.get_data(as_text=True).replace("'", '"'))
+    # payload = json.loads(payload.replace("'", "\""))
+    love_id = int(payload["id"])
     love = ndb.Key(Love, love_id).get()
     logic.love.send_love_email(love)
     return Response(status=200)
@@ -75,9 +79,11 @@ def rebuild_love_count():
 
 @app.route("/tasks/subscribers/notify", methods=["POST"])
 def notify_subscribers():
-    notifier = logic.notifier.notifier_for_event(request.json["event"])(
-        **request.json["options"]
-    )
+    payload = json.loads(request.get_data(as_text=True).replace("'", '"'))
+    # payload = json.loads(payload)
+    # payload = json.loads(payload.replace("'", "\""))
+    # x = request.json
+    notifier = logic.notifier.notifier_for_event(payload["event"])(**payload["options"])
     notifier.notify()
     return Response(status=200)
 

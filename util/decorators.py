@@ -11,7 +11,7 @@ from flask.helpers import make_response
 from main import oidc
 
 # from google.appengine.api import users
-
+from models.employee import Employee
 from models.access_key import AccessKey
 from util.csrf import check_csrf_protection
 
@@ -29,11 +29,11 @@ from util.csrf import check_csrf_protection
 def admin_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        # x = oidc
-        # y = (oidc.user_getfield('email'))
-        # z = oidc.user_getfield('groups')
-        # s = session
-        if "Access-Love-Admin" not in oidc.user_getfield("groups"):
+        username = oidc.user_getfield("email").split("@")[0]
+        isAdmin = Employee.query(
+            Employee.username == username, Employee.is_admin == True  # noqa E712
+        ).get()
+        if not isAdmin:
             abort(401)  # Unauthorized
         return func(*args, **kwargs)
 

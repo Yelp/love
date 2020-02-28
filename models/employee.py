@@ -41,6 +41,7 @@ class Employee(ndb.Model, Pagination):
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     user = ndb.UserProperty()
     username = ndb.StringProperty()
+    is_admin = ndb.BooleanProperty()
 
     @classmethod
     def get_current_employee(cls):

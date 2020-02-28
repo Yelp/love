@@ -16,10 +16,10 @@ def chunk(iterable, chunk_size):
     return zip_longest(*args)
 
 
-def to_the_future(dict):
-    for k, v in dict.iteritems():
+def to_the_future(future_dict):
+    for k, v in list(future_dict.items()):
         if issubclass(v.__class__, ndb.Future):
-            dict[k] = v.get_result()
+            future_dict[k] = v.get_result()
 
 
 def utc_week_limits(utc_dt):
