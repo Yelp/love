@@ -5,7 +5,6 @@ import functools
 from main import oidc
 from google.cloud import ndb
 
-# from google.appengine.api import users
 
 import config
 from errors import NoSuchEmployee

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-# from google.appengine.api import taskqueue
-# from google.cloud import tasks_v2
 import config
 import logic.alias
 import logic.department

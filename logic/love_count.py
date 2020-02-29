@@ -2,7 +2,6 @@
 import datetime
 import logging
 
-# from google.appengine.api.runtime import memory_usage
 from google.cloud import ndb
 
 from logic import utc_week_limits

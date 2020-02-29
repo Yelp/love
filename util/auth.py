@@ -1,7 +1,11 @@
-# -*- coding: utf-8 -*-
-# from google.appengine.api import users
+from models import Employee
+from main import oidc
 
 
 def is_admin():
-    # return users.get_current_user() and users.is_current_user_admin()
-    return True
+    # return True
+    username = oidc.user_getfield("email").split("@")[0]
+    isAdmin = Employee.query(
+        Employee.username == username, Employee.is_admin == True  # noqa E712
+    ).get()
+    return bool(isAdmin)

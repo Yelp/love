@@ -5,7 +5,6 @@ from flask import Flask
 from flask_themes2 import Themes
 from flask_oidc import OpenIDConnect
 import config
-from util.auth import is_admin
 from util.converter import RegexConverter
 from util.csrf import generate_csrf_token
 from google.cloud import ndb
@@ -28,7 +27,6 @@ app.secret_key = "config.SECRET_KEY"
 app.url_map.converters["regex"] = RegexConverter
 app.jinja_env.globals["config"] = config
 app.jinja_env.globals["csrf_token"] = generate_csrf_token
-app.jinja_env.globals["is_admin"] = is_admin
 app.config["OIDC_CLIENT_SECRETS"] = "client_secrets.json"
 app.config["OIDC_COOKIE_SECURE"] = False
 app.config["OIDC_CALLBACK_ROUTE"] = "/oidc_callback"

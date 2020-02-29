@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-# import json
-# from google.cloud import tasks_v2
 
-# from google.appengine.api import taskqueue
 from models.tasks import Tasks
 
 LOVESENT = "lovesent"
@@ -25,9 +22,3 @@ def add_event(event, relative_uri, options={}, http_method="POST"):
         }
     }
     Tasks("events").create_task(payload, task)
-    # taskqueue.add(
-    #     queue_name='events',
-    #     url='/tasks/subscribers/notify',
-    #     headers={'Content-Type': 'application/json'},
-    #     payload=json.dumps(payload),
-    # )

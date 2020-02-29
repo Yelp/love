@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import namedtuple
 
-# from main import client
-# from google.cloud import ndb
-# from google.cloud import datastore
-# import base64
-
-# from google.appengine.datastore.datastore_query import Cursor
 
 PaginationResult = namedtuple(
     "PaginationResult", ["collection", "prev_offset", "next_offset", "prev", "next"],

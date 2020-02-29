@@ -22,7 +22,6 @@ from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
 from errors import TaintedLove
 
-# from google.appengine.api import taskqueue
 from logic import TIMESPAN_THIS_WEEK
 from logic.love_link import create_love_link
 from logic.leaderboard import get_leaderboard_data
@@ -34,11 +33,14 @@ from models import Subscription
 from util.decorators import admin_required
 from util.decorators import csrf_protect
 
-# from util.decorators import user_required
 from util.recipient import sanitize_recipients
 from util.render import render_template
 from views import common
 from main import oidc
+from util.auth import is_admin
+
+# Setting this after oidc is initialized to get user info
+app.jinja_env.globals["is_admin"] = is_admin
 
 
 @app.route("/", methods=["GET"])
@@ -398,5 +400,6 @@ def import_employees():
         "We started importing employee data in the background. Refresh the page to see it.",
         "info",
     )
+    # TODO update this method
     # taskqueue.add(url="/tasks/employees/load/csv")
     return redirect(url_for("employees"))

@@ -3,14 +3,11 @@ from functools import wraps
 
 from flask import abort
 
-# from flask import redirect
 from flask import request
 
-# from flask import session
 from flask.helpers import make_response
 from main import oidc
 
-# from google.appengine.api import users
 from models.employee import Employee
 from models.access_key import AccessKey
 from util.csrf import check_csrf_protection

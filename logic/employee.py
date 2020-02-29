@@ -4,8 +4,6 @@ import json
 import os.path
 import logging
 
-# from google.appengine.api import search
-# from google.appengine.api.runtime import memory_usage
 from google.cloud import ndb
 
 import config

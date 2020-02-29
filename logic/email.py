@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# from google.appengine.api.mail import EmailMessage
 
 from util.email import get_name_and_email
 import config

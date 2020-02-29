@@ -3,7 +3,6 @@ from flask import request
 from flask import Response
 import json
 
-# from google.appengine.api import taskqueue
 from google.cloud import ndb
 from logic.event import add_event
 import logic.employee
