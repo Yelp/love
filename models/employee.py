@@ -38,7 +38,7 @@ class Employee(ndb.Model, Pagination):
     photo_url = ndb.TextProperty()
     terminated = ndb.BooleanProperty(default=False)
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
-    user = ndb.UserProperty()
+    # user = ndb.UserProperty()
     username = ndb.StringProperty()
     is_admin = ndb.BooleanProperty()
 
@@ -90,6 +90,20 @@ class Employee(ndb.Model, Pagination):
         self.photo_url = d.get("photo_url")
         self.department = d.get("department")
         self.meta_department = get_meta_department(self.department)
+        self.terminated = False
+
+    def is_employee_data_changed(self, d, is_terminated):
+        result = any(
+            [
+                self.first_name != d.get("first_name"),
+                self.last_name != d.get("last_name"),
+                self.photo_url != d.get("photo_url"),
+                self.department != d.get("department"),
+                self.meta_department != get_meta_department(self.department),
+                self.terminated is not is_terminated,
+            ]
+        )
+        return result
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""

@@ -72,22 +72,22 @@ def _update_employees(employee_dicts):
 
     all_employees, new_employees = [], []
     current_usernames = set()
-    for d in employee_dicts[:25]:  # TODO undo this slice
+    for d in employee_dicts:
         existing_employee = db_employee_dict.get(d["username"])
         if existing_employee is None:
             new_employee = Employee.create_from_dict(d, persist=False)
             all_employees.append(new_employee)
             new_employees.append(new_employee)
-        else:
+
+        # Check if any data differences that need to be updated
+        elif existing_employee.is_employee_data_changed(d, is_terminated=False):
             existing_employee.update_from_dict(d)
-            # If the user is in the S3 dump, then the user is no longer
-            # terminated.
-            existing_employee.terminated = False
             all_employees.append(existing_employee)
 
         current_usernames.add(d["username"])
-        # if len(all_employees) % 200 == 0:
         logging.info(f"Processed {len(all_employees)} employees")
+
+    # Only updates the changed and new employees data
     ndb.put_multi(all_employees)
 
     # Figure out if there are any employees in the DB that aren't in the S3
@@ -98,8 +98,10 @@ def _update_employees(employee_dicts):
     terminated_employees = []
     for username in terminated_usernames:
         employee = db_employee_dict[username]
-        employee.terminated = True
-        terminated_employees.append(employee)
+
+        # Only updating non-terminated employees
+        if not employee.terminated:
+            terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
 
     logging.info("Done updating employees.")
