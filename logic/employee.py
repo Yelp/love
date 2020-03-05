@@ -16,7 +16,7 @@ from models import Employee
 from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
-
+from models.mysql import MySql
 
 INDEX_NAME = "employees"
 
@@ -32,7 +32,6 @@ def load_employees_from_csv():
     set_toggle_state(LOVE_SENDING_ENABLED, False)
     _update_employees(employee_dicts)
     set_toggle_state(LOVE_SENDING_ENABLED, True)
-    # rebuild_index()
 
 
 def _get_employee_info_from_csv():
@@ -101,6 +100,7 @@ def _update_employees(employee_dicts):
 
         # Only updating non-terminated employees
         if not employee.terminated:
+            employee.terminated = True
             terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
 
@@ -146,10 +146,11 @@ def combine_employees(old_username, new_username):
 
     for old_love_count in LoveCount.query(ancestor=old_employee_key).iter():
         # Try to find a corresponding row for the new employee
-        new_love_count = LoveCount.query(
-            ancestor=new_employee_key,
-            filters=(LoveCount.week_start == old_love_count.week_start),
-        ).get()
+        new_love_count = (
+            LoveCount.query(ancestor=new_employee_key)
+            .filter(LoveCount.week_start == old_love_count.week_start)
+            .get()
+        )
 
         if new_love_count is None:
             # If there's no corresponding row for the new user, create one
@@ -177,9 +178,6 @@ def combine_employees(old_username, new_username):
     old_employee_key.delete()
     logging.info("Done deleting employee.")
 
-    # ... Which means we need to rebuild the index
-    # rebuild_index()
-
     set_toggle_state(LOVE_SENDING_ENABLED, True)
 
 
@@ -188,19 +186,20 @@ def employees_matching_prefix(prefix):
     if not prefix:
         return []
 
+    with MySql().db.connect() as conn:
+        # Execute the query and fetch all results
+        results = conn.execute(
+            f"""SELECT * FROM employee_search where first_name like '%%{prefix}%%'
+            or last_name like '%%{prefix}%%' or username like '%%{prefix}%%';"""
+        ).fetchall()
     user_tuples = set()
-    results = Employee.query().filter(Employee.username >= prefix).fetch(limit=15)
-    # search_query = search.Query(
-    #     query_string=prefix,
-    #     options=search.QueryOptions(
-    #         limit=15))
-    # results = search.Index(name=INDEX_NAME).search(search_query)
+
     for r in results:
         username, full_name = None, None
-        full_name = r.full_name
-        username = r.username
+        full_name = r[1] + " " + r[2]
+        username = r[0]
         if username is not None and full_name is not None:
-            photo_url = r.photo_url
+            photo_url = r[4]
             user_tuples.add((full_name, username, photo_url))
 
     user_tuples = list(user_tuples)
@@ -216,9 +215,18 @@ def load_employees():
     # rebuild_index()
 
 
-# def rebuild_index():
-#     active_employees_future = Employee.query(
-#         Employee.terminated == False
-#     ).fetch_async()  # noqa
-#     _clear_index()
-#     _index_employees(active_employees_future.get_result())
+def load_employees_into_mysql():
+    employees = [
+        (
+            employee.username,
+            employee.first_name,
+            employee.last_name,
+            employee.photo_url,
+        )
+        for employee in Employee.query(Employee.terminated == False)  # noqa
+    ]
+    sql = "insert into employee_search (username, first_name, last_name, photo_url) values (%s, %s, %s, %s);"
+    with MySql().db.connect() as conn:
+        conn.execute("Use employees;")
+        conn.execute("truncate employee_search;")
+        conn.execute(sql, employees)

@@ -13,6 +13,7 @@ import logic.love_link
 from main import app
 from models import Love
 from util.decorators import appengineTaskOnly
+from main import oidc
 
 # All tasks that are to be executed by cron need to use HTTP GET
 # see https://cloud.google.com/appengine/docs/python/config/cron
@@ -22,12 +23,24 @@ def load_employees_from_s3():
     logic.employee.load_employees()
     # we need to rebuild the love count index as the departments may have changed.
     add_event("load_S3", "/tasks/love_count/rebuild", {}, "GET")
+    add_event("load_S3", "/tasks/employees/load/data/autocomplete", {}, "GET")
+
+    return Response(status=200)
+
+
+@app.route("/tasks/employees/load/data/autocomplete", methods=["GET"])
+@appengineTaskOnly
+def load_mysql_data():
+    logic.employee.load_employees_into_mysql()
+    # we need to rebuild the love count index as the departments may have changed.
+    # add_event("load_S3", "/tasks/love_count/rebuild", {}, "GET")
 
     return Response(status=200)
 
 
 # This task has a web UI to trigger it, so let's use POST
 @app.route("/tasks/employees/load/csv", methods=["POST"])
+@oidc.require_login
 def load_employees_from_csv():
     logic.employee.load_employees_from_csv()
     # we need to rebuild the love count index as the departments may have changed.
@@ -37,6 +50,7 @@ def load_employees_from_csv():
 
 # One-off tasks are much easier to trigger using GET
 @app.route("/tasks/employees/combine", methods=["GET"])
+@oidc.require_login
 def combine_employees():
     old_username, new_username = request.args["old"], request.args["new"]
     if not old_username:

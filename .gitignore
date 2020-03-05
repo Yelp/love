@@ -19,3 +19,4 @@ venv
 client_secrets.json
 .gcloudignore
 service_account_credentials.json
+cron.yaml

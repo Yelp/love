@@ -1,38 +1,31 @@
-# repos:
-#  -  repo: https://github.com/ambv/black
-#     rev: stable
-#     hooks:
-#     - id: black
-#       language_version: python3.7
-# -   repo: https://github.com/pre-commit/pre-commit-hooks
-#     rev: v1.2.3
-#     hooks:
-#     -   id: autopep8-wrapper
-#     -   id: check-added-large-files
-#     -   id: check-ast
-#     -   id: check-byte-order-marker
-#     -   id: check-case-conflict
-#     -   id: check-docstring-first
-#     -   id: check-json
-#     -   id: check-merge-conflict
-#     -   id: check-yaml
-#     -   id: debug-statements
-#     -   id: detect-private-key
-#     -   id: double-quote-string-fixer
-#     -   id: end-of-file-fixer
-#     -   id: flake8
-#     -   id: fix-encoding-pragma
-#     -   id: name-tests-test
-#     -   id: pretty-format-json
-#         args: ['--autofix']
-#     -   id: requirements-txt-fixer
-#     -   id: trailing-whitespace
 repos:
   - repo: https://github.com/ambv/black
     rev: stable
     hooks:
       - id: black
         language_version: python3.7
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.2.3
+    hooks:
+      - id: autopep8-wrapper
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-byte-order-marker
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: debug-statements
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: flake8
+      - id: fix-encoding-pragma
+      - id: name-tests-test
+      - id: pretty-format-json
+        args: ["--autofix"]
+      - id: requirements-txt-fixer
+      - id: trailing-whitespace
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v1.2.3
     hooks:
