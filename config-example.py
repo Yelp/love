@@ -2,14 +2,14 @@
 # Copy this file to config.py and change the settings. Don't forget to specify your own SECRET_KEY.
 
 # The app name will be used in several places.
-APP_NAME = 'Yelp Love'
+APP_NAME = "Yelp Love"
 
-APP_BASE_URL = 'https://PROJECT_ID.appspot.com/'
+APP_BASE_URL = "https://PROJECT_ID.appspot.com/"
 
-LOVE_SENDER_EMAIL = 'Yelp Love <love@PROJECT_ID.appspotmail.com>'
+LOVE_SENDER_EMAIL = "Yelp Love <love@PROJECT_ID.appspotmail.com>"
 
 # We can use the 'appengine' email API or the 'sendgrid' API. Pick one here.
-EMAIL_BACKEND = 'appengine'
+EMAIL_BACKEND = "appengine"
 # If you have EMAIL_BACKEND = 'sendgrid', you'll need to set the SENDGRID_API_KEY
 # secret using the Secret Model. This is documented in the README in the discussion
 # on "JSON via Amazon S3". You'll also need to add the sendgrid module to your
@@ -18,10 +18,10 @@ EMAIL_BACKEND = 'appengine'
 
 # Flask's secret key, used to encrypt the session cookie.
 # Set this to any random string and make sure not to share this!
-SECRET_KEY = 'YOUR_SECRET_HERE'
+SECRET_KEY = "YOUR_SECRET_HERE"
 
 # Use default theme
-THEME = 'default'
+THEME = "default"
 
 # Set to True if you'd like to see Tracebacks on localhost
 DEBUG = True
@@ -29,16 +29,28 @@ DEBUG = True
 # Every employee needs a reference to a Google Account. This reference is based on the users
 # Google Account email address and created when employee data is imported: we take the *username*
 # and this DOMAIN
-DOMAIN = 'example.com'
+DOMAIN = "example.com"
 
 # Name of the S3 bucket used to import employee data from a file named employees.json
 # Check out /import/employees.json.example to see how this file should look like.
-S3_BUCKET = 'employees'
+S3_BUCKET = "employees"
 
 # When do we use Gravatar? Options are:
 # * 'always' - prefers Gravatar over the Employee.photo_url
 # * 'backup' - use Gravatar when photo_url is empty
 # * anything else - disabled
-GRAVATAR = 'backup'
+GRAVATAR = "backup"
 
-ORG_TITLE = 'All Company'
+ORG_TITLE = "All Company"
+
+EMAIL_SERVICE_ACCOUNT = "example@appspot.gserviceaccount.com"
+
+# From address of love email address
+EMAIL_DELEGATION_ADDRESS = "test_email@example.com"
+
+PROJECT_NAME = "test-project"
+
+DB_USER = "user"
+DB_PASSWORD = "password"
+DB_NAME = "employees"
+DB_CONNECTION_NAME = "project:region:name"
