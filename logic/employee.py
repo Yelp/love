@@ -190,7 +190,8 @@ def employees_matching_prefix(prefix):
         # Execute the query and fetch all results
         results = conn.execute(
             f"""SELECT * FROM employee_search where first_name like '%%{prefix}%%'
-            or last_name like '%%{prefix}%%' or username like '%%{prefix}%%';"""
+            or last_name like '%%{prefix}%%' or username like '%%{prefix}%%'
+            or CONCAT(first_name, ' ', last_name) like '%%{prefix}%%';"""
         ).fetchall()
     user_tuples = set()
 
