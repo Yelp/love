@@ -13,16 +13,6 @@ from models.access_key import AccessKey
 from util.csrf import check_csrf_protection
 
 
-# def user_required(func):
-#     @wraps(func)
-#     def decorated_view(*args, **kwargs):
-#         if not users.get_current_user():
-#             return redirect(users.create_login_url(request.url))
-#         return func(*args, **kwargs)
-
-#     return decorated_view
-
-
 def admin_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
@@ -37,7 +27,7 @@ def admin_required(func):
     return decorated_view
 
 
-def appengineTaskOnly(func):
+def appengineTaskOrCron(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
         # https://cloud.google.com/tasks/docs/creating-appengine-handlers#reading_app_engine_task_request_headers

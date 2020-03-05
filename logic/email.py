@@ -3,22 +3,13 @@
 from util.email import get_name_and_email
 import config
 import logic.secret
-import requests
-from google.auth import jwt
-from google.auth import crypt
-import time
 
-# import os
 from googleapiclient.discovery import build
 
-# from apiclient import errors
 from email.mime.text import MIMEText
 
-# from email.mime.multipart import MIMEMultipart
 import base64
 
-# from oauth2client import file, client, tools
-# from httplib2 import Http
 from google.oauth2 import service_account
 import json
 
@@ -105,35 +96,3 @@ def service_account_login():
     delegated_credentials = credentials.with_subject(config.EMAIL_DELEGATION_ADDRESS)
     service = build("gmail", "v1", credentials=delegated_credentials)
     return service
-
-
-def createGoogleHeaders():
-    for attempt in range(5):
-        jwtClaimSet = {
-            "iss": config.EMAIL_SERVICE_ACCOUNT,
-            "sub": config.EMAIL_DELEGATION_ADDRESS,
-            "scope": "https://mail.google.com/",
-            "aud": "https://oauth2.googleapis.com/token",
-            "exp": int(time.time() + 3600),
-            "iat": int(time.time()),
-        }
-        signer = crypt.RSASigner.from_service_account_info(CREDS)
-        token = jwt.encode(signer, jwtClaimSet)
-        data = {
-            "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-            "assertion": token,
-        }
-        try:
-            response = requests.post(
-                "https://oauth2.googleapis.com/token", data=data
-            ).json()
-        except requests.RequestException:
-            continue
-        if response.get("access_token"):
-            headers = {
-                "Authorization": f"Bearer {response['access_token']}",
-            }
-            return headers
-        else:
-            continue
-    return None

@@ -12,13 +12,13 @@ import logic.love_count
 import logic.love_link
 from main import app
 from models import Love
-from util.decorators import appengineTaskOnly
+from util.decorators import appengineTaskOrCron
 from main import oidc
 
 # All tasks that are to be executed by cron need to use HTTP GET
 # see https://cloud.google.com/appengine/docs/python/config/cron
 @app.route("/tasks/employees/load/s3", methods=["GET"])
-@appengineTaskOnly
+@appengineTaskOrCron
 def load_employees_from_s3():
     logic.employee.load_employees()
     # we need to rebuild the love count index as the departments may have changed.
@@ -29,7 +29,7 @@ def load_employees_from_s3():
 
 
 @app.route("/tasks/employees/load/data/autocomplete", methods=["GET"])
-@appengineTaskOnly
+@appengineTaskOrCron
 def load_mysql_data():
     logic.employee.load_employees_into_mysql()
     # we need to rebuild the love count index as the departments may have changed.
@@ -67,7 +67,7 @@ def combine_employees():
 
 
 @app.route("/tasks/love/email", methods=["POST"])
-@appengineTaskOnly
+@appengineTaskOrCron
 def email_love():
     payload = json.loads(request.get_data(as_text=True).replace("'", '"'))
     love_id = int(payload["id"])
@@ -77,14 +77,14 @@ def email_love():
 
 
 @app.route("/tasks/love_count/rebuild", methods=["GET"])
-@appengineTaskOnly
+@appengineTaskOrCron
 def rebuild_love_count():
     logic.love_count.rebuild_love_count()
     return Response(status=200)
 
 
 @app.route("/tasks/subscribers/notify", methods=["POST"])
-@appengineTaskOnly
+@appengineTaskOrCron
 def notify_subscribers():
     payload = json.loads(request.get_data(as_text=True).replace("'", '"'))
     notifier = logic.notifier.notifier_for_event(payload["event"])(**payload["options"])
@@ -93,7 +93,7 @@ def notify_subscribers():
 
 
 @app.route("/tasks/lovelinks/cleanup", methods=["GET"])
-@appengineTaskOnly
+@appengineTaskOrCron
 def lovelinks_cleanup():
     logic.love_link.love_links_cleanup()
     return Response(status=200)

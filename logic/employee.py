@@ -9,7 +9,6 @@ from google.cloud import ndb
 import config
 from errors import NoSuchEmployee
 
-# from logic import chunk
 from logic.secret import get_secret
 from logic.toggle import set_toggle_state
 from models import Employee
@@ -17,8 +16,6 @@ from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
 from models.mysql import MySql
-
-INDEX_NAME = "employees"
 
 
 def csv_import_file():
@@ -189,9 +186,9 @@ def employees_matching_prefix(prefix):
     with MySql().db.connect() as conn:
         # Execute the query and fetch all results
         results = conn.execute(
-            f"""SELECT * FROM employee_search where first_name like '%%{prefix}%%'
-            or last_name like '%%{prefix}%%' or username like '%%{prefix}%%'
-            or CONCAT(first_name, ' ', last_name) like '%%{prefix}%%';"""
+            f"""SELECT * FROM employee_search where first_name like '{prefix}%%'
+            or last_name like '{prefix}%%' or username like '{prefix}%%'
+            or CONCAT(first_name, ' ', last_name) like '{prefix}%%';"""
         ).fetchall()
     user_tuples = set()
 
@@ -213,10 +210,10 @@ def load_employees():
     set_toggle_state(LOVE_SENDING_ENABLED, False)
     _update_employees(employee_dicts)
     set_toggle_state(LOVE_SENDING_ENABLED, True)
-    # rebuild_index()
 
 
 def load_employees_into_mysql():
+    """Always truncates table and inserts all employees from datastore that are not terminated."""
     employees = [
         (
             employee.username,

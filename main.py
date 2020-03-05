@@ -23,15 +23,15 @@ def ndb_wsgi_middleware(wsgi_app):
 
 app = Flask(__name__.split(".")[0])
 app.wsgi_app = ndb_wsgi_middleware(app.wsgi_app)  # Wrap the app in middleware.
-app.secret_key = "config.SECRET_KEY"
+app.secret_key = config.SECRET_KEY
 app.url_map.converters["regex"] = RegexConverter
 app.jinja_env.globals["config"] = config
 app.jinja_env.globals["csrf_token"] = generate_csrf_token
 app.config["OIDC_CLIENT_SECRETS"] = "client_secrets.json"
-app.config["OIDC_COOKIE_SECURE"] = False
+app.config["OIDC_COOKIE_SECURE"] = not config.DEBUG
 app.config["OIDC_CALLBACK_ROUTE"] = "/oidc_callback"
 app.config["OIDC_SCOPES"] = ["openid", "email", "groups"]
-app.config["SECRET_KEY"] = "my_secret_key"
+app.config["SECRET_KEY"] = config.SECRET_KEY
 oidc = OpenIDConnect(app,)
 Themes(app, app_identifier="yelplove")
 

@@ -38,14 +38,12 @@ class Employee(ndb.Model, Pagination):
     photo_url = ndb.TextProperty()
     terminated = ndb.BooleanProperty(default=False)
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
-    # user = ndb.UserProperty()
     username = ndb.StringProperty()
     is_admin = ndb.BooleanProperty()
 
     @classmethod
     def get_current_employee(cls):
         user = oidc.user_getfield("email").split("@")[0]
-        # print(user)
         user_email = oidc.user_getfield("email")
         employee = cls.query(
             cls.username == user, cls.terminated == False

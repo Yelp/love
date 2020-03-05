@@ -18,6 +18,7 @@ import logic.event
 import logic.love
 import logic.love_link
 import logic.subscription
+from logic.event import add_event
 from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
 from errors import TaintedLove
@@ -377,9 +378,7 @@ def employees():
     return render_template(
         "employees.html",
         pagination_result=Employee.paginate(
-            order_by=Employee.username,
-            offset=request.args.get("offset"),
-            # next_cursor_str=request.args.get("next_offset"),
+            order_by=Employee.username, offset=request.args.get("offset"),
         ),
     )
 
@@ -400,6 +399,5 @@ def import_employees():
         "We started importing employee data in the background. Refresh the page to see it.",
         "info",
     )
-    # TODO update this method
-    # taskqueue.add(url="/tasks/employees/load/csv")
+    add_event("load_CSV", "/tasks/employees/load/csv", {}, "GET")
     return redirect(url_for("employees"))

@@ -202,14 +202,8 @@ def _send_love(recipient_key, message, sender_key, secret):
     new_love.put()
     LoveCount.update(new_love)
 
-    # Send email asynchronously
-    # client = tasks_v2.CloudTasksClient()
-    # project = "rkosko-app-test"
-    # queue = "default"
-    # location = "us-west2"
     payload = {"id": new_love.key.id()}
 
-    # parent = client.queue_path(project, location, queue)
     task = {
         "app_engine_http_request": {  # Specify the type of request.
             "http_method": "POST",
@@ -217,11 +211,6 @@ def _send_love(recipient_key, message, sender_key, secret):
         }
     }
     Tasks().create_task(payload, task)
-
-    # converted_payload = str(payload).encode()
-    # task["app_engine_http_request"]["body"] = converted_payload
-    # response = client.create_task(parent, task)
-    # taskqueue.add(url="/tasks/love/email", params={"id": new_love.key.id()})
 
     if not secret:
         logic.event.add_event(
