@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 from logic import utc_week_limits
 
@@ -16,9 +16,7 @@ class LoveCount(ndb.Model):
         utc_week_start, _ = utc_week_limits(love.timestamp)
 
         sender_count = cls.query(
-            ancestor=love.sender_key,
-            filters=(cls.week_start == utc_week_start)
-        ).get()
+            ancestor=love.sender_key).filter(cls.week_start == utc_week_start).get()
         if sender_count is not None:
             sender_count.sent_count += 1
         else:
@@ -32,10 +30,7 @@ class LoveCount(ndb.Model):
             )
         sender_count.put()
 
-        recipient_count = cls.query(
-            ancestor=love.recipient_key,
-            filters=(cls.week_start == utc_week_start)
-        ).get()
+        recipient_count = cls.query(ancestor=love.recipient_key).filter(cls.week_start == utc_week_start).get()
         if recipient_count is not None:
             recipient_count.received_count += 1
         else:
@@ -54,9 +49,7 @@ class LoveCount(ndb.Model):
         utc_week_start, _ = utc_week_limits(love.timestamp)
 
         sender_count = cls.query(
-            ancestor=love.sender_key,
-            filters=(cls.week_start == utc_week_start)
-        ).get()
+            ancestor=love.sender_key).filter(cls.week_start == utc_week_start).get()
         if sender_count is not None and sender_count.sent_count > 0:
             sender_count.sent_count -= 1
             if sender_count.sent_count == 0 and sender_count.received_count == 0:

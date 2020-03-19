@@ -2,9 +2,9 @@
 import base64
 import hashlib
 import functools
+from main import oidc
 
-from google.appengine.ext import ndb
-from google.appengine.api import users
+from google.cloud import ndb
 
 import config
 from errors import NoSuchEmployee
@@ -39,12 +39,13 @@ class Employee(ndb.Model, Pagination):
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     user = ndb.UserProperty()
     username = ndb.StringProperty()
+    is_admin = ndb.BooleanProperty()
 
     @classmethod
     def get_current_employee(cls):
-        user = users.get_current_user()
-        user_email = user.email()
-        employee = cls.query(cls.user == user, cls.terminated == False).get()  # noqa
+        user = oidc.user_getfield('email').split('@')[0]
+        user_email = oidc.user_getfield('email')
+        employee = cls.query(cls.username == user, cls.terminated == False).get()  # noqa
         if employee is None:
             raise NoSuchEmployee('Couldn\'t find a Google Apps user with email {}'.format(user_email))
         return employee
@@ -53,7 +54,6 @@ class Employee(ndb.Model, Pagination):
     def create_from_dict(cls, d, persist=True):
         new_employee = cls()
         new_employee.username = d['username']
-        new_employee.user = users.User('{user}@{domain}'.format(user=new_employee.username, domain=config.DOMAIN))
         new_employee.update_from_dict(d)
 
         if persist is True:
@@ -79,11 +79,25 @@ class Employee(ndb.Model, Pagination):
         self.photo_url = d.get('photo_url')
         self.department = d.get('department')
         self.meta_department = get_meta_department(self.department)
+        self.terminated = False
+
+    def is_employee_data_changed(self, d, is_terminated):
+        result = any(
+            [
+                self.first_name != d.get('first_name'),
+                self.last_name != d.get('last_name'),
+                self.photo_url != d.get('photo_url'),
+                self.department != d.get('department'),
+                self.meta_department != get_meta_department(self.department),
+                self.terminated is not is_terminated,
+            ]
+        )
+        return result
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""
         m = hashlib.md5()
-        m.update(self.user.email())
+        m.update((self.username + '@' + config.DOMAIN).encode())
         encoded_hash = base64.b16encode(m.digest()).lower()
         return 'https://gravatar.com/avatar/{}?s=200'.format(encoded_hash)
 
@@ -101,4 +115,4 @@ class Employee(ndb.Model, Pagination):
     @property
     def full_name(self):
         """Return user's full name (first name + ' ' + last name)."""
-        return u'{} {}'.format(self.first_name, self.last_name)
+        return '{} {}'.format(self.first_name, self.last_name)
