@@ -18,10 +18,11 @@ import logic.event
 import logic.love
 import logic.love_link
 import logic.subscription
+from logic.event import add_event
 from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
 from errors import TaintedLove
-from google.appengine.api import taskqueue
+
 from logic import TIMESPAN_THIS_WEEK
 from logic.love_link import create_love_link
 from logic.leaderboard import get_leaderboard_data
@@ -32,14 +33,14 @@ from models import Employee
 from models import Subscription
 from util.decorators import admin_required
 from util.decorators import csrf_protect
-from util.decorators import user_required
 from util.recipient import sanitize_recipients
 from util.render import render_template
 from views import common
+from main import oidc
 
 
 @app.route('/', methods=['GET'])
-@user_required
+@oidc.require_login
 def home():
     link_id = request.args.get('link_id', None)
     recipients = request.args.get('recipients', request.args.get('recipient'))
@@ -56,7 +57,7 @@ def home():
 
 
 @app.route('/me', methods=['GET'])
-@user_required
+@oidc.require_login
 def me():
     current_employee = Employee.get_current_employee()
 
@@ -73,7 +74,7 @@ def me():
 
 
 @app.route('/<regex("[a-zA-Z]{3,30}"):user>', methods=['GET'])
-@user_required
+@oidc.require_login
 def me_or_explore(user):
     current_employee = Employee.get_current_employee()
     username = logic.alias.name_for_alias(user.lower().strip())
@@ -90,7 +91,7 @@ def me_or_explore(user):
 
 
 @app.route('/l/<string:link_id>', methods=['GET'])
-@user_required
+@oidc.require_login
 def love_link(link_id):
     try:
         loveLink = logic.love_link.get_love_link(link_id)
@@ -118,7 +119,7 @@ def love_link(link_id):
 
 
 @app.route('/explore', methods=['GET'])
-@user_required
+@oidc.require_login
 def explore():
     username = request.args.get('user', None)
     if not username:
@@ -153,7 +154,7 @@ def explore():
 
 
 @app.route('/leaderboard', methods=['GET'])
-@user_required
+@oidc.require_login
 def leaderboard():
     timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
     department = request.args.get('department', None)
@@ -173,7 +174,7 @@ def leaderboard():
 
 
 @app.route('/sent', methods=['GET'])
-@user_required
+@oidc.require_login
 def sent():
     link_id = request.args.get('link_id', None)
     recipients_str = request.args.get('recipients', None)
@@ -199,6 +200,7 @@ def sent():
 
 
 @app.route('/keys', methods=['GET'])
+@oidc.require_login
 @admin_required
 def keys():
     api_keys = AccessKey.query().fetch()
@@ -210,6 +212,7 @@ def keys():
 
 @app.route('/keys/create', methods=['POST'])
 @csrf_protect
+@oidc.require_login
 @admin_required
 def create_key():
     description = request.form.get('description')
@@ -221,7 +224,7 @@ def create_key():
 
 @app.route('/love', methods=['POST'])
 @csrf_protect
-@user_required
+@oidc.require_login
 def love():
     action = request.form.get('action')
     recipients = sanitize_recipients(request.form.get('recipients'))
@@ -267,12 +270,13 @@ def love():
 
 
 @app.route('/user/autocomplete', methods=['GET'])
-@user_required
+@oidc.require_login
 def autocomplete_web():
     return common.autocomplete(request)
 
 
 @app.route('/subscriptions', methods=['GET'])
+@oidc.require_login
 @admin_required
 def subscriptions():
     return render_template(
@@ -284,6 +288,7 @@ def subscriptions():
 
 @app.route('/subscriptions/create', methods=['POST'])
 @csrf_protect
+@oidc.require_login
 @admin_required
 def create_subscription():
     subscription_dict = dict(
@@ -304,6 +309,7 @@ def create_subscription():
 
 @app.route('/subscriptions/<int:subscription_id>/delete', methods=['POST'])
 @csrf_protect
+@oidc.require_login
 @admin_required
 def delete_subscription(subscription_id):
     logic.subscription.delete_subscription(subscription_id)
@@ -312,6 +318,7 @@ def delete_subscription(subscription_id):
 
 
 @app.route('/aliases', methods=['GET'])
+@oidc.require_login
 @admin_required
 def aliases():
     return render_template(
@@ -322,6 +329,7 @@ def aliases():
 
 @app.route('/aliases', methods=['POST'])
 @csrf_protect
+@oidc.require_login
 @admin_required
 def create_alias():
     try:
@@ -338,6 +346,7 @@ def create_alias():
 
 @app.route('/aliases/<int:alias_id>/delete', methods=['POST'])
 @csrf_protect
+@oidc.require_login
 @admin_required
 def delete_alias(alias_id):
     logic.alias.delete_alias(alias_id)
@@ -346,19 +355,20 @@ def delete_alias(alias_id):
 
 
 @app.route('/employees', methods=['GET'])
+@oidc.require_login
 @admin_required
 def employees():
     return render_template(
         'employees.html',
         pagination_result=Employee.paginate(
             order_by=Employee.username,
-            prev_cursor_str=request.args.get('prev_cursor'),
-            next_cursor_str=request.args.get('next_cursor'),
+            offset=request.args.get('offset'),
         ),
     )
 
 
 @app.route('/employees/import', methods=['GET'])
+@oidc.require_login
 @admin_required
 def import_employees_form():
     import_file_exists = os.path.isfile(logic.employee.csv_import_file())
@@ -369,8 +379,9 @@ def import_employees_form():
 
 
 @app.route('/employees/import', methods=['POST'])
+@oidc.require_login
 @admin_required
 def import_employees():
     flash('We started importing employee data in the background. Refresh the page to see it.', 'info')
-    taskqueue.add(url='/tasks/employees/load/csv')
+    add_event('load_CSV', '/tasks/employees/load/csv', {}, 'GET')
     return redirect(url_for('employees'))
