@@ -181,9 +181,8 @@ def employees_matching_prefix(prefix):
     with MySql().db.connect() as conn:
         # Execute the query and fetch all results
         results = conn.execute(
-            """SELECT * FROM employee_search where first_name like '{}%%'
-            or last_name like '{}%%' or username like '{}%%'
-            or CONCAT(first_name, ' ', last_name) like '{}%%';""".format(prefix)
+            """SELECT * FROM employee_search where first_name like '{0}%%' or last_name like '{0}%%' or username like '{0}%%'
+            or CONCAT(first_name, ' ', last_name) like '{0}%%';""".format(prefix)
         ).fetchall()
     user_tuples = set()
 

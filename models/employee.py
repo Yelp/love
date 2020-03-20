@@ -30,9 +30,9 @@ def memoized(func):
 
 class Employee(ndb.Model, Pagination):
     """Models an Employee."""
-    department = ndb.StringProperty(indexed=False)
-    first_name = ndb.StringProperty(indexed=False)
-    last_name = ndb.StringProperty(indexed=False)
+    department = ndb.StringProperty()
+    first_name = ndb.StringProperty()
+    last_name = ndb.StringProperty()
     meta_department = ndb.StringProperty()
     photo_url = ndb.TextProperty()
     terminated = ndb.BooleanProperty(default=False)

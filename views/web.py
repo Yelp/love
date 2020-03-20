@@ -37,6 +37,10 @@ from util.recipient import sanitize_recipients
 from util.render import render_template
 from views import common
 from main import oidc
+from util.auth import is_admin
+
+# Setting this after oidc is initialized to get user info
+app.jinja_env.globals['is_admin'] = is_admin
 
 
 @app.route('/', methods=['GET'])

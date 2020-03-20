@@ -1,6 +1,6 @@
 # This requirements file lists all dependecies for this project.
 # Run 'make lib' to install these dependencies in this project's lib directory.
-boto==2.49.0
+boto==2.46.1
 Flask==1.1.1
 flask_oidc==1.4.0
 -e git://github.com/koskorya/flask-themes2.git#egg=flask_themes2
