@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from google.appengine.api import taskqueue
 
 import config
 import logic.alias
 import logic.department
 import logic.email
 import logic.event
-
+from models.tasks import Tasks
 from errors import TaintedLove
 from logic.toggle import get_toggle_state
 from models import Employee
@@ -65,7 +64,7 @@ def send_love_email(l):
     recipient = recipient_future.get_result()
 
     from_ = config.LOVE_SENDER_EMAIL
-    to = recipient.user.email()
+    to = recipient.username + '@' + config.DOMAIN
     subject = u'Love from {}'.format(sender.full_name)
 
     body_text = u'"{}"\n\n{}'.format(
@@ -187,12 +186,15 @@ def _send_love(recipient_key, message, sender_key, secret):
     LoveCount.update(new_love)
 
     # Send email asynchronously
-    taskqueue.add(
-        url='/tasks/love/email',
-        params={
-            'id': new_love.key.id()
+    payload = {'id': new_love.key.id()}
+
+    task = {
+        'app_engine_http_request': {  # Specify the type of request.
+            'http_method': 'POST',
+            'relative_uri': '/tasks/love/email',
         }
-    )
+    }
+    Tasks().create_task(payload, task)
 
     if not secret:
         logic.event.add_event(

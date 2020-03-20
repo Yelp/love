@@ -2,8 +2,7 @@
 import datetime
 import logging
 
-from google.appengine.api.runtime import memory_usage
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 from logic import utc_week_limits
 from logic.toggle import set_toggle_state
@@ -51,13 +50,13 @@ def rebuild_love_count():
 
     set_toggle_state(LOVE_SENDING_ENABLED, False)
 
-    logging.info('Deleting LoveCount table... {}MB'.format(memory_usage().current()))
+    logging.info('Deleting LoveCount table...')
     ndb.delete_multi(LoveCount.query(LoveCount.week_start >= week_start).fetch(keys_only=True))
     employee_dict = {
         employee.key: employee
         for employee in Employee.query()
     }
-    logging.info('Rebuilding LoveCount table... {}MB'.format(memory_usage().current()))
+    logging.info('Rebuilding LoveCount table...')
     cursor = None
     count = 0
     while True:
@@ -65,9 +64,9 @@ def rebuild_love_count():
         for l in loves:
             LoveCount.update(l, employee_dict=employee_dict)
         count += len(loves)
-        logging.info('Processed {} loves, {}MB'.format(count, memory_usage().current()))
+        logging.info('Processed {} loves'.format(count))
         if not has_more:
             break
-    logging.info('Done. {}MB'.format(memory_usage().current()))
+    logging.info('Done.')
 
     set_toggle_state(LOVE_SENDING_ENABLED, True)

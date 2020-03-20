@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 import logic.event
 

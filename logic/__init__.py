@@ -3,7 +3,7 @@ from datetime import timedelta
 from itertools import izip_longest
 
 import pytz
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 
 TIMESPAN_LAST_WEEK = 'last_week'
@@ -17,7 +17,7 @@ def chunk(iterable, chunk_size):
 
 
 def to_the_future(dict):
-    for k, v in dict.iteritems():
+    for k, v in list(dict.items()):
         if issubclass(v.__class__, ndb.Future):
             dict[k] = v.get_result()
 
