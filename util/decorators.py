@@ -2,32 +2,26 @@
 from functools import wraps
 
 from flask import abort
-from flask import redirect
 from flask import request
 from flask.helpers import make_response
-from google.appengine.api import users
+from main import oidc
 
+from models.employee import Employee
 from models.access_key import AccessKey
 from util.csrf import check_csrf_protection
-
-
-def user_required(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if not users.get_current_user():
-            return redirect(users.create_login_url(request.url))
-        return func(*args, **kwargs)
-    return decorated_view
 
 
 def admin_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        if users.get_current_user():
-            if not users.is_current_user_admin():
-                abort(401)  # Unauthorized
-            return func(*args, **kwargs)
-        return redirect(users.create_login_url(request.url))
+        username = oidc.user_getfield('email').split('@')[0]
+        isAdmin = Employee.query(
+            Employee.username == username, Employee.is_admin == True  # noqa E712
+        ).get()
+        if not isAdmin:
+            abort(401)  # Unauthorized
+        return func(*args, **kwargs)
+
     return decorated_view
 
 
@@ -53,3 +47,17 @@ def csrf_protect(func):
         return func(*args, **kwargs)
 
     return decorated_view
+
+
+def appengineTaskOrCron(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        # https://cloud.google.com/tasks/docs/creating-appengine-handlers#reading_app_engine_task_request_headers
+        # Only appengine can have a header with the leading 'X-'
+        taskHeader = request.headers.get('X-AppEngine-QueueName')
+        cronHeader = request.headers.get('X-Appengine-Cron')
+        if not any([taskHeader, cronHeader]):
+            abort(401)  # Not from appengine
+        return func(*args, **kwargs)
+
+    return decorated_function
