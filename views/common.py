@@ -11,8 +11,8 @@ def autocomplete(request):
     matches = employees_matching_prefix(request.args.get('term', None))
     users = [
         {
-            'label': u'{} ({})'.format(full_name, username),
-            'value': unicode(username),
+            'label': '{} ({})'.format(full_name, username),
+            'value': username,
             'avatar_url': photo_url,
         }
         for full_name, username, photo_url

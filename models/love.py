@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import mktime
 
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 from models import Employee
 

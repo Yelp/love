@@ -42,3 +42,15 @@ S3_BUCKET = 'employees'
 GRAVATAR = 'backup'
 
 ORG_TITLE = 'All Company'
+
+EMAIL_SERVICE_ACCOUNT = 'example@appspot.gserviceaccount.com'
+
+# From address of love email address
+EMAIL_DELEGATION_ADDRESS = 'test_email@example.com'
+
+PROJECT_NAME = 'test-project'
+
+DB_USER = 'user'
+DB_PASSWORD = 'password'
+DB_NAME = 'employees'
+DB_CONNECTION_NAME = 'project:region:name'

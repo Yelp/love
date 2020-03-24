@@ -74,7 +74,7 @@ def api_send_loves():
         recipients_display_str = ', '.join(recipients)
         link_url = create_love_link(recipients_display_str, message).url
         return make_response(
-            u'Love sent to {}! Share: {}'.format(recipients_display_str, link_url),
+            'Love sent to {}! Share: {}'.format(recipients_display_str, link_url),
             LOVE_CREATED_STATUS_CODE,
             {}
         )

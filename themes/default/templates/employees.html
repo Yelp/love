@@ -33,13 +33,13 @@
     </table>
     <div class="pagination-result">
       {% if pagination_result.prev %}
-        <a href="/employees?prev_cursor={{ pagination_result.prev_cursor }}">&laquo; Previous</a>
+        <a href="/employees?offset={{ pagination_result.prev_offset }}">&laquo; Previous</a>
       {% else %}
         &laquo; Previous
       {% endif %}
       |
       {% if pagination_result.next %}
-        <a href="/employees?next_cursor={{ pagination_result.next_cursor }}">Next &raquo;</a>
+        <a href="/employees?offset={{ pagination_result.next_offset }}">Next &raquo;</a>
       {% else %}
         Next &raquo;
       {% endif %}

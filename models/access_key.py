@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
 
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 
 class AccessKey(ndb.Model):

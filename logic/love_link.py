@@ -9,7 +9,7 @@ from errors import NoSuchLoveLink
 from models import LoveLink
 from models import Employee
 
-from google.appengine.ext import ndb
+from google.cloud import ndb
 
 
 def get_love_link(hash_key):

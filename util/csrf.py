@@ -13,12 +13,13 @@ def check_csrf_protection():
     on a per-view basis, maybe with a decorator.
     """
     if request.method == 'POST':
-        token = session.pop('_csrf_token', None)
-        if not token or token != request.form.get('_csrf_token'):
+        token = session.get('_csrf_token')
+        payload = request.form.get('_csrf_token')
+        if not token or token != payload:
             abort(403)
 
 
 def generate_csrf_token():
     if '_csrf_token' not in session:
-        session['_csrf_token'] = binascii.hexlify(os.urandom(16))
+        session['_csrf_token'] = binascii.hexlify(os.urandom(16)).decode('ascii')
     return session['_csrf_token']
