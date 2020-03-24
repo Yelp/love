@@ -15,14 +15,11 @@ def check_csrf_protection():
     if request.method == 'POST':
         token = session.get('_csrf_token')
         payload = request.form.get('_csrf_token')
-        # request form of csrf token is returned as a string of a bytestring, slicing to just retrieve the bytestring
-        # Not sure how else to do this :/
-        byte_payload = bytes(payload[2:-1], encoding='ascii') if payload else None
-        if not token or token != byte_payload:
+        if not token or token != payload:
             abort(403)
 
 
 def generate_csrf_token():
     if '_csrf_token' not in session:
-        session['_csrf_token'] = binascii.hexlify(os.urandom(16))
+        session['_csrf_token'] = binascii.hexlify(os.urandom(16)).decode('ascii')
     return session['_csrf_token']

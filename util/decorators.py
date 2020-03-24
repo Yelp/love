@@ -4,21 +4,16 @@ from functools import wraps
 from flask import abort
 from flask import request
 from flask.helpers import make_response
-from main import oidc
 
-from models.employee import Employee
 from models.access_key import AccessKey
 from util.csrf import check_csrf_protection
+from util.auth import is_admin
 
 
 def admin_required(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        username = oidc.user_getfield('email').split('@')[0]
-        isAdmin = Employee.query(
-            Employee.username == username, Employee.is_admin == True  # noqa E712
-        ).get()
-        if not isAdmin:
+        if not is_admin():
             abort(401)  # Unauthorized
         return func(*args, **kwargs)
 

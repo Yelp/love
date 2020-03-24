@@ -64,7 +64,7 @@ def send_love_email(l):
     recipient = recipient_future.get_result()
 
     from_ = config.LOVE_SENDER_EMAIL
-    to = recipient.username + '@' + config.DOMAIN
+    to = recipient.email
     subject = u'Love from {}'.format(sender.full_name)
 
     body_text = u'"{}"\n\n{}'.format(
@@ -199,5 +199,6 @@ def _send_love(recipient_key, message, sender_key, secret):
     if not secret:
         logic.event.add_event(
             logic.event.LOVESENT,
+            '/tasks/subscribers/notify',
             {'love_id': new_love.key.id()},
         )

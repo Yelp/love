@@ -97,7 +97,7 @@ class Employee(ndb.Model, Pagination):
     def get_gravatar(self):
         """Creates gravatar URL from email address."""
         m = hashlib.md5()
-        m.update((self.username + '@' + config.DOMAIN).encode())
+        m.update(self.email.encode())
         encoded_hash = base64.b16encode(m.digest()).lower()
         return 'https://gravatar.com/avatar/{}?s=200'.format(encoded_hash)
 
@@ -116,3 +116,8 @@ class Employee(ndb.Model, Pagination):
     def full_name(self):
         """Return user's full name (first name + ' ' + last name)."""
         return '{} {}'.format(self.first_name, self.last_name)
+
+    @property
+    def email(self):
+        """Return user's email (username + '@' + config.Domain)."""
+        return '{}@{}'.format(self.username, config.DOMAIN)

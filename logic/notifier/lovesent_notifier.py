@@ -28,12 +28,12 @@ class LovesentNotifier(object):
             'sender': {
                 'full_name': sender.full_name,
                 'username': sender.username,
-                'email': sender.user.email(),
+                'email': sender.email,
             },
             'receiver': {
                 'full_name': receiver.full_name,
                 'username': receiver.username,
-                'email': receiver.user.email(),
+                'email': receiver.email,
             },
             'message': self.love.message,
             'timestamp': self.love.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
