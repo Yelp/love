@@ -5,5 +5,4 @@
 Flask-WebTest==0.0.8
 ipdb
 mock==2.0.0
-NoseGAE==0.5.10
 pre-commit==0.13.3

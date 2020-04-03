@@ -5,7 +5,7 @@ import unittest
 import logic.email
 
 
-class EmailTest(unittest.TestCase):
+class TestEmail(unittest.TestCase):
     """We really just want to test that configuration is honored here."""
 
     sender = 'test@example.com'

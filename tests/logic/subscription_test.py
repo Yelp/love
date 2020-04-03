@@ -8,7 +8,7 @@ from testing.factories import create_employee
 from testing.factories import create_subscription
 
 
-class SubscriptionTest(unittest.TestCase):
+class TestSubscription(unittest.TestCase):
     nosegae_datastore_v3 = True
 
     @mock.patch('models.subscription.Employee', autospec=True)
@@ -16,8 +16,8 @@ class SubscriptionTest(unittest.TestCase):
         mock_model_employee.get_current_employee.return_value = create_employee()
 
         subscription = create_subscription()
-        self.assertIsNotNone(Subscription.get_by_id(subscription.key.id()))
+        assert Subscription.get_by_id(subscription.key.id()) is not None
 
         logic.subscription.delete_subscription(subscription.key.id())
 
-        self.assertIsNone(Subscription.get_by_id(subscription.key.id()))
+        assert Subscription.get_by_id(subscription.key.id()) is None

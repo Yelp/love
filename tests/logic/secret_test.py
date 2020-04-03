@@ -6,12 +6,12 @@ from logic.secret import get_secret
 from testing.factories import create_secret
 
 
-class SecretTest(unittest.TestCase):
+class TestSecret(unittest.TestCase):
     nosegae_datastore_v3 = True
 
     def test_existing_secret(self):
         create_secret('FOO', value='bar')
-        self.assertEqual('bar', get_secret('FOO'))
+        assert 'bar' == get_secret('FOO')
 
     def test_unknown_secret(self):
         with self.assertRaises(NoSuchSecret):

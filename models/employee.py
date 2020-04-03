@@ -2,7 +2,6 @@
 import base64
 import hashlib
 import functools
-from main import oidc
 
 from google.cloud import ndb
 
@@ -43,6 +42,7 @@ class Employee(ndb.Model, Pagination):
 
     @classmethod
     def get_current_employee(cls):
+        from main import oidc
         user = oidc.user_getfield('email').split('@')[0]
         user_email = oidc.user_getfield('email')
         employee = cls.query(cls.username == user, cls.terminated == False).get()  # noqa

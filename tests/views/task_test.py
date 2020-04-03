@@ -29,7 +29,7 @@ class EmailLoveTestCase(LoggedInAdminBaseTest):
             {'id': self.love.key.id()},
         )
 
-        self.assertEqual(response.status_int, 200)
+        assert response.status_int == 200
         mock_send_email.assert_called_once_with(self.love)
 
 
@@ -40,8 +40,8 @@ class LoadEmployeesTestCase(LoggedInAdminBaseTest):
     def test_load_employees_from_s3(self, mock_load_employees, mock_taskqueue_add):  # noqa
         response = self.app.get('/tasks/employees/load/s3')
 
-        self.assertEqual(response.status_int, 200)
-        self.assertEqual(mock_load_employees.call_count, 1)
+        assert response.status_int == 200
+        assert mock_load_employees.call_count == 1
         mock_taskqueue_add.assert_called_once_with(url='/tasks/love_count/rebuild')
 
     @mock.patch('google.appengine.api.taskqueue.add', autospec=True)
@@ -49,6 +49,6 @@ class LoadEmployeesTestCase(LoggedInAdminBaseTest):
     def test_load_employees_from_csv(self, mock_load_employees_from_csv, mock_taskqueue_add):  # noqa
         response = self.app.post('/tasks/employees/load/csv')
 
-        self.assertEqual(response.status_int, 200)
-        self.assertEqual(mock_load_employees_from_csv.call_count, 1)
+        assert response.status_int == 200
+        assert mock_load_employees_from_csv.call_count == 1
         mock_taskqueue_add.assert_called_once_with(url='/tasks/love_count/rebuild')

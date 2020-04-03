@@ -5,7 +5,7 @@ import unittest
 from testing.factories import create_love_link
 
 
-class LoveLinkTest(unittest.TestCase):
+class TestLoveLink(unittest.TestCase):
     # enable the datastore stub
     nosegae_datastore_v3 = True
 
@@ -14,4 +14,4 @@ class LoveLinkTest(unittest.TestCase):
         mock_config.APP_BASE_URL = 'http://foo.io/'
 
         link = create_love_link(hash_key='lOvEr')
-        self.assertEqual('http://foo.io/l/lOvEr', link.url)
+        assert 'http://foo.io/l/lOvEr' == link.url

@@ -9,7 +9,7 @@ from models.employee import Employee
 from testing.factories import create_employee
 
 
-class EmployeeTest(unittest.TestCase):
+class TestEmployee(unittest.TestCase):
     # enable the datastore stub
     nosegae_datastore_v3 = True
 
@@ -26,9 +26,9 @@ class EmployeeTest(unittest.TestCase):
         )
         employee = Employee.create_from_dict(employee_dict)
 
-        self.assertIsNotNone(employee)
-        self.assertIsNotNone(employee.user)
-        self.assertEqual('john.d@foo.io', employee.user.email())
+        assert employee is not None
+        assert employee.user is not None
+        assert 'john.d@foo.io' == employee.user.email()
 
     @mock.patch('models.employee.users.get_current_user')
     def test_get_current_employee(self, mock_get_current_user):
@@ -36,8 +36,8 @@ class EmployeeTest(unittest.TestCase):
         mock_get_current_user.return_value = employee.user
         current_employee = Employee.get_current_employee()
 
-        self.assertIsNotNone(current_employee)
-        self.assertEqual('john.d', current_employee.username)
+        assert current_employee is not None
+        assert 'john.d' == current_employee.username
 
     @mock.patch('models.employee.users.get_current_user')
     def test_get_current_employee_raises(self, mock_get_current_user):
@@ -48,28 +48,28 @@ class EmployeeTest(unittest.TestCase):
 
     def test_full_name(self):
         employee = create_employee(first_name='Foo', last_name='Bar')
-        self.assertEqual('Foo Bar', employee.full_name)
+        assert 'Foo Bar' == employee.full_name
 
     @mock.patch('models.employee.config')
     def test_gravatar_backup(self, mock_config):
         mock_config.GRAVATAR = 'backup'
         employee = create_employee(photo_url='')
-        self.assertEqual(employee.get_gravatar(), employee.get_photo_url())
+        assert employee.get_gravatar() == employee.get_photo_url()
         employee = create_employee(photo_url='http://example.com/example.jpg')
-        self.assertEqual(employee.photo_url, employee.get_photo_url())
+        assert employee.photo_url == employee.get_photo_url()
 
     @mock.patch('models.employee.config')
     def test_gravatar_always(self, mock_config):
         mock_config.GRAVATAR = 'always'
         employee = create_employee(photo_url='')
-        self.assertEqual(employee.get_gravatar(), employee.get_photo_url())
+        assert employee.get_gravatar() == employee.get_photo_url()
         employee = create_employee(photo_url='http://example.com/example.jpg')
-        self.assertEqual(employee.get_gravatar(), employee.get_photo_url())
+        assert employee.get_gravatar() == employee.get_photo_url()
 
     @mock.patch('models.employee.config')
     def test_gravatar_disabled(self, mock_config):
         mock_config.GRAVATAR = 'disabled'
         employee = create_employee(photo_url='')
-        self.assertEqual(employee.photo_url, employee.get_photo_url())
+        assert employee.photo_url == employee.get_photo_url()
         employee = create_employee(photo_url='http://example.com/example.jpg')
-        self.assertEqual(employee.photo_url, employee.get_photo_url())
+        assert employee.photo_url == employee.get_photo_url()

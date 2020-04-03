@@ -8,12 +8,17 @@ from util.converter import RegexConverter
 from util.csrf import generate_csrf_token
 from google.cloud import ndb
 
+
 client = ndb.Client()
+use_ndb_middleware = True
 
 
 def ndb_wsgi_middleware(wsgi_app):
     def middleware(environ, start_response):
-        with client.context():
+        if use_ndb_middleware:
+            with client.context():
+                return wsgi_app(environ, start_response)
+        else:
             return wsgi_app(environ, start_response)
 
     return middleware
@@ -33,11 +38,7 @@ app.config['SECRET_KEY'] = config.SECRET_KEY
 oidc = OpenIDConnect(app,)
 Themes(app, app_identifier='yelplove')
 
-# if debug property is present, let's use it
-try:
-    app.debug = config.DEBUG
-except AttributeError:
-    app.debug = False
+app.debug = config.DEBUG
 
 # This import needs to stay down here, otherwise we'll get ImportErrors when running tests
 import views  # noqa

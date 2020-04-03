@@ -8,6 +8,7 @@ def create_employee(
     first_name='John',
     last_name='Doe',
     photo_url=None,
+    is_admin=False,
 ):
 
     if photo_url is None:
@@ -19,4 +20,5 @@ def create_employee(
         'first_name': first_name,
         'last_name': last_name,
         'photo_url': photo_url,
+        'is_admin': is_admin,
     })

@@ -33,7 +33,7 @@ class _ApiKeyRequiredTestCase(YelpLoveTestCase):
     def test_with_api_key(self):
         api_key = AccessKey.create('test key').access_key
         response = self.do_request(api_key)
-        self.assertEqual(response.status_int, self.successful_response_code)
+        assert response.status_int == self.successful_response_code
 
     def test_without_api_key(self):
         bad_api_key = AccessKey.generate_uuid()
@@ -44,13 +44,12 @@ class _ApiKeyRequiredTestCase(YelpLoveTestCase):
                      'Expected request without valid API key to return 401')
 
 
-class AutocompleteTest(_ApiKeyRequiredTestCase):
+class TestAutocomplete(_ApiKeyRequiredTestCase):
     nosegae_memcache = True
     nosegae_datastore_v3 = True
     nosegae_search = True
 
     def setUp(self):
-        super(AutocompleteTest, self).setUp()
         create_employee(username='alice')
         create_employee(username='alex')
         create_employee(username='bob')
@@ -71,17 +70,16 @@ class AutocompleteTest(_ApiKeyRequiredTestCase):
             api_key = self.api_key
         response = self.app.get('/api/autocomplete', {'term': prefix, 'api_key': api_key})
         received_values = set(item['value'] for item in response.json)
-        self.assertEqual(set(expected_values), received_values)
+        assert set(expected_values) == received_values
         return response
 
     def do_request(self, api_key):
         return self._test_autocomplete('test', [], api_key)
 
 
-class GetLoveTest(_ApiKeyRequiredTestCase):
+class TestGetLove(_ApiKeyRequiredTestCase):
 
     def setUp(self):
-        super(GetLoveTest, self).setUp()
         create_employee(username='alice')
         create_employee(username='bob')
         logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
@@ -95,17 +93,16 @@ class GetLoveTest(_ApiKeyRequiredTestCase):
         }
         response = self.app.get('/api/love', query_params)
         response_data = response.json
-        self.assertEqual(len(response_data), 1)
-        self.assertEqual(response_data[0]['sender'], 'alice')
-        self.assertEqual(response_data[0]['recipient'], 'bob')
+        assert len(response_data) == 1
+        assert response_data[0]['sender'] == 'alice'
+        assert response_data[0]['recipient'] == 'bob'
         return response
 
 
-class SendLoveTest(_ApiKeyRequiredTestCase):
+class TestSendLove(_ApiKeyRequiredTestCase):
     successful_response_code = 201
 
     def setUp(self):
-        super(SendLoveTest, self).setUp()
         create_employee(username='alice')
         create_employee(username='bob')
 
@@ -121,7 +118,7 @@ class SendLoveTest(_ApiKeyRequiredTestCase):
         return response
 
 
-class SendLoveFailTest(YelpLoveTestCase):
+class TestSendLoveFail(YelpLoveTestCase):
     nosegae_datastore_v3 = True
     nosegae_memcache = True
     nosegae_taskqueue = True
@@ -147,13 +144,12 @@ class SendLoveFailTest(YelpLoveTestCase):
             caught.exception.message.startswith('Bad response: 418'),
             'Expected request to return 418',
         )
-        self.assertIn('send love to a user multiple times', caught.exception.message)
+        assert 'send love to a user multiple times' in caught.exception.message
 
 
-class GetLeaderboardTest(_ApiKeyRequiredTestCase):
+class TestGetLeaderboard(_ApiKeyRequiredTestCase):
 
     def setUp(self):
-        super(GetLeaderboardTest, self).setUp()
         create_employee(username='alice')
         create_employee(username='bob')
         logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
@@ -167,9 +163,9 @@ class GetLeaderboardTest(_ApiKeyRequiredTestCase):
         response_data = response.json
         top_loved = response_data.get('top_loved')
         top_lover = response_data.get('top_lover')
-        self.assertEqual(len(response_data), 2)
-        self.assertEqual(len(top_loved), 1)
-        self.assertEqual(len(top_lover), 1)
-        self.assertEqual(top_loved[0].get('username'), 'bob')
-        self.assertEqual(top_lover[0].get('username'), 'alice')
+        assert len(response_data) == 2
+        assert len(top_loved) == 1
+        assert len(top_lover) == 1
+        assert top_loved[0].get('username') == 'bob'
+        assert top_lover[0].get('username') == 'alice'
         return response

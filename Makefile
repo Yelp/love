@@ -26,8 +26,6 @@ lib: requirements.txt
 	pip install -r requirements.txt -t lib
 
 test: google_appengine
-	# reset database before each test run
-	rm -f /tmp/nosegae.sqlite3
 	tox
 
 clean:
@@ -37,5 +35,5 @@ clean:
 
 google_appengine:
 	mkdir -p tmp
-	wget -O tmp/google_appengine.zip 'https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.40.zip' --no-check-certificate
+	wget -O tmp/google_appengine.zip 'https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.88.zip' --no-check-certificate
 	unzip tmp/google_appengine.zip
