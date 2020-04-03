@@ -24,25 +24,15 @@ To get an idea what Yelp Love looks like go and check out the [screenshots](/scr
 
 Yelp Love runs on [Google App Engine](https://appengine.google.com/).
 In order to install Yelp Love you will need a Google account and the
-[Google App Engine SDK for Python](https://cloud.google.com/appengine/downloads).
-We recommend installing this via Homebrew if you don't already have it:
-```
-$ brew install google-app-engine
-```
+[Google App Engine SDK for Python 2.7](https://cloud.google.com/appengine/docs/standard/python/download).
 
 ### Create a new project
 
-Login to [Google Cloud Platform](https://console.cloud.google.com) and create a
-new project and give it a project name. Optionally you
-can specify a project id - a unique identifier for your project. If you don‘t
-specify a project id Google will create a random one for you. This id can not be
-changed once the project is created.
+[Follow the instructions](https://cloud.google.com/appengine/docs/standard/python/getting-started/python-standard-env)
+on creating a project and initializing your App Engine app - you'll also need
+to set up billing and give Cloud Build permission to deploy your app.
 
 ### Prepare for deployment
-
-Before you can deploy the application for the first time and start sending love
-you have to modify [app.yaml](app.yaml) and [worker.yaml](worker.yaml). Please
-edit these files and replace the application placeholder with your project id.
 
 Copy the [example config](config-example.py) file to config.py and change the
 settings. Don't forget to specify your own SECRET_KEY.
@@ -55,6 +45,14 @@ $ make deploy
 ```
 This will open a browser window for you to authenticate yourself with your
 Google account and will upload your local application code to Google App Engine.
+
+If the initial deployment fails with a Cloud Build error, try running
+```
+$ gcloud app deploy
+```
+manually. After that, `make deploy` should do the job, and will make sure
+everything is uploaded properly - including the worker service, database indexes
+and so on.
 
 Once the deployment succeeds open your browser and navigate to your application
 URL, normally [https://project_id.appspot.com](https://project_id.appspot.com).
@@ -119,19 +117,6 @@ your favorite packet manager.
 * Make your changes
 
 ## Deployment
-
-Once you've made your code changes and want to deploy them, you must bump the app version. If you don't,
-your [deployment](#initial-deployment) will overwrite the active version of the
-app on App Engine. The version number must be updated in 2 or possibly 3 places,
-depending on the nature of your changes.
-
-You will absolutely want to bump the version in [setup.py](setup.py) and
-[app.yaml](app.yaml). These versions should always match e.g., 1.3.10 in
-setup.py and 1-3-10 in app.yaml.
-
-If you modified [worker.yaml](worker.yaml) then you will also need to bump the
-version of worker.yaml. This version number is specific to the worker service and
-is independent of the main app version.
 
 When you bumped versions in the appropriate files you can deploy your changes by running
 <code>make deploy</code>.
