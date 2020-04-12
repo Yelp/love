@@ -31,5 +31,5 @@ clean:
 
 google_appengine:
 	mkdir -p tmp
-	wget -O tmp/google_appengine.zip 'https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.88.zip' --no-check-certificate
+	curl -o tmp/google_appengine.zip 'https://storage.googleapis.com/appengine-sdks/featured/google_appengine_1.9.88.zip'
 	unzip tmp/google_appengine.zip
