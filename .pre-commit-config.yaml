@@ -15,6 +15,7 @@
     -   id: double-quote-string-fixer
     -   id: end-of-file-fixer
     -   id: flake8
+        language_version: python2.7
     -   id: fix-encoding-pragma
     -   id: name-tests-test
     -   id: pretty-format-json
