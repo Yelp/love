@@ -9,10 +9,8 @@ from google.appengine.api import users
 import config
 from errors import NoSuchEmployee
 from util.pagination import Pagination
-import yaml
 
-OFFICES = yaml.safe_load(open('offices.yaml'))
-REMOTE_OFFICE = 'Remote'
+from logic.office import get_office_name
 
 
 def memoized(func):
@@ -29,21 +27,6 @@ def memoized(func):
 
     _memoization_wrapper.forget_results = _forget_results
     return _memoization_wrapper
-
-
-def get_office_name(employee_office_location):
-    """
-    Given the employee office location retrive the office name
-    The matching is done by basic string matching
-    Args:
-        employee_office_location: str
-        Returns: str
-    """
-    employee_office_location = employee_office_location.lower()
-    for office in OFFICES:
-        if office.lower() in employee_office_location.lower():
-            return office
-    return REMOTE_OFFICE
 
 
 class Employee(ndb.Model, Pagination):

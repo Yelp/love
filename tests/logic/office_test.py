@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import unittest
-from models.employee import REMOTE_OFFICE
+from logic.office import REMOTE_OFFICE
 from logic.office import get_all_offices
 from testing.factories import create_employee
 
 
 OFFICES = {
-    'OFFice 1 Hamburg',
-    'Germany Berlin',
+    'Hamburg Office',
+    'Germany Berlin remoTe',
 }
 
-OFFICE_NAME = 'Office 1'
+OFFICE_NAME = 'Hamburg Office'
 
 
 class OfficeTest(unittest.TestCase):
