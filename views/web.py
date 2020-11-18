@@ -36,7 +36,7 @@ from util.decorators import user_required
 from util.recipient import sanitize_recipients
 from util.render import render_template
 from views import common
-from logic.office import get_all_offices_compressed
+from logic.office import get_all_offices
 from logic.department import get_all_departments
 
 
@@ -168,7 +168,7 @@ def leaderboard():
         top_loved=top_loved_dicts,
         top_lovers=top_lover_dicts,
         departments=get_all_departments(),
-        offices=get_all_offices_compressed(),
+        offices=get_all_offices(),
         selected_dept=department,
         selected_timespan=timespan,
         selected_office=office,

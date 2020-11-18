@@ -11,7 +11,6 @@ from models import Employee
 from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
-from logic.office import get_all_offices
 
 
 def top_lovers_and_lovees(utc_week_start, dept=None, office=None, limit=20):
@@ -24,9 +23,7 @@ def top_lovers_and_lovees(utc_week_start, dept=None, office=None, limit=20):
         sent_query = sent_query.filter(LoveCount.department == dept)
 
     if office:
-        # nbd does not have like queries that's why the first step will be done in python
-        filtered_offices = [office_name for office_name in get_all_offices() if office in office_name]
-        sent_query = sent_query.filter(LoveCount.office.IN(filtered_offices))
+        sent_query = sent_query.filter(LoveCount.office == office)
 
     sent = sent_query.order(-LoveCount.sent_count).fetch()
     lovers = []
@@ -70,8 +67,8 @@ def rebuild_love_count():
     count = 0
     while True:
         loves, cursor, has_more = Love.query(Love.timestamp >= week_start).fetch_page(500, start_cursor=cursor)
-        for l in loves:
-            LoveCount.update(l, employee_dict=employee_dict)
+        for love in loves:
+            LoveCount.update(love, employee_dict=employee_dict)
         count += len(loves)
         logging.info('Processed {} loves, {}MB'.format(count, memory_usage().current()))
         if not has_more:

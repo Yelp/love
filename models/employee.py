@@ -9,6 +9,10 @@ from google.appengine.api import users
 import config
 from errors import NoSuchEmployee
 from util.pagination import Pagination
+import yaml
+
+OFFICES = yaml.safe_load(open('offices.yaml'))
+REMOTE_OFFICE = 'Remote'
 
 
 def memoized(func):
@@ -25,6 +29,21 @@ def memoized(func):
 
     _memoization_wrapper.forget_results = _forget_results
     return _memoization_wrapper
+
+
+def get_office_name(employee_office_location):
+    """
+    Given the employee office location retrive the office name
+    The matching is done by basic string matching
+    Args:
+        employee_office_location: str
+        Returns: str
+    """
+    employee_office_location = employee_office_location.lower()
+    for office in OFFICES:
+        if office.lower() in employee_office_location.lower():
+            return office
+    return REMOTE_OFFICE
 
 
 class Employee(ndb.Model, Pagination):
@@ -79,7 +98,7 @@ class Employee(ndb.Model, Pagination):
         if d.get('photos'):
             self.photo_url = d['photos']['ms'].replace('http://', 'https://', 1)
         self.department = d.get('department')
-        self.office = d.get('office')
+        self.office = get_office_name(d['office']) if d.get('office') else None
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""

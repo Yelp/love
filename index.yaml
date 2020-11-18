@@ -60,6 +60,13 @@ indexes:
 
 - kind: LoveCount
   properties:
+  - name: office
+  - name: week_start
+  - name: sent_count
+    direction: desc
+
+- kind: LoveCount
+  properties:
   - name: week_start
   - name: sent_count
     direction: desc
