@@ -4,7 +4,6 @@ from google.appengine.api import taskqueue
 
 import config
 import logic.alias
-import logic.department
 import logic.email
 import logic.event
 
@@ -46,7 +45,7 @@ def recent_received_love(employee_key, start_dt=None, end_dt=None, include_secre
     return query.fetch_async(limit) if type(limit) is int else query.fetch_async()
 
 
-def send_love_email(l):
+def send_love_email(l):  # noqa
     """Send an email notifying the recipient of l about their love."""
     sender_future = l.sender_key.get_async()
     recipient_future = l.recipient_key.get_async()
@@ -132,7 +131,7 @@ def send_loves(recipients, message, sender_username=None, secret=False):
     sender_username = logic.alias.name_for_alias(sender_username)
     sender_key = Employee.query(
         Employee.username == sender_username,
-        Employee.terminated == False,
+        Employee.terminated == False,  # noqa
     ).get(keys_only=True)  # noqa
 
     if sender_key is None:
@@ -164,7 +163,7 @@ def validate_love_recipients(recipients):
     for recipient_username in unique_recipients:
         recipient_key = Employee.query(
             Employee.username == recipient_username,
-            Employee.terminated == False
+            Employee.terminated == False  # noqa
         ).get(keys_only=True)  # noqa
 
         if recipient_key is None:

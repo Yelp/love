@@ -8,8 +8,9 @@ from google.appengine.api import users
 
 import config
 from errors import NoSuchEmployee
-from logic.department import get_meta_department
 from util.pagination import Pagination
+
+from logic.office import get_office_name
 
 
 def memoized(func):
@@ -30,15 +31,15 @@ def memoized(func):
 
 class Employee(ndb.Model, Pagination):
     """Models an Employee."""
-    department = ndb.StringProperty(indexed=False)
+    department = ndb.StringProperty(indexed=True)
     first_name = ndb.StringProperty(indexed=False)
     last_name = ndb.StringProperty(indexed=False)
-    meta_department = ndb.StringProperty()
     photo_url = ndb.TextProperty()
     terminated = ndb.BooleanProperty(default=False)
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
     user = ndb.UserProperty()
     username = ndb.StringProperty()
+    office = ndb.StringProperty(indexed=True)
 
     @classmethod
     def get_current_employee(cls):
@@ -77,8 +78,10 @@ class Employee(ndb.Model, Pagination):
         self.first_name = d['first_name']
         self.last_name = d['last_name']
         self.photo_url = d.get('photo_url')
+        if d.get('photos'):
+            self.photo_url = d['photos']['ms'].replace('http://', 'https://', 1)
         self.department = d.get('department')
-        self.meta_department = get_meta_department(self.department)
+        self.office = get_office_name(d['office']) if d.get('office') else None
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""

@@ -47,6 +47,14 @@ indexes:
 - kind: LoveCount
   properties:
   - name: department
+  - name: office
+  - name: week_start
+  - name: sent_count
+    direction: desc
+
+- kind: LoveCount
+  properties:
+  - name: department
   - name: week_start
   - name: sent_count
     direction: desc
@@ -54,6 +62,13 @@ indexes:
 - kind: LoveCount
   properties:
   - name: meta_department
+  - name: week_start
+  - name: sent_count
+    direction: desc
+
+- kind: LoveCount
+  properties:
+  - name: office
   - name: week_start
   - name: sent_count
     direction: desc

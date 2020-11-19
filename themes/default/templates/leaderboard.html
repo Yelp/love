@@ -21,14 +21,18 @@
       <div class="form-group">
         <label class="sr-only" for="department">Department</label>
         <select name="department" class="form-control" id="department" style="font-size: 18px;">
-          <option value="" {% if not selected_dept %}selected{% endif%}>{{ org_title }}</option>
-          {% for meta_dept in departments|sort %}
-            <option {% if selected_dept == meta_dept %}selected{% endif %} value="{{ meta_dept }}">{{ meta_dept }}</option>
-              {% if meta_dept in sub_departments %}
-                {% for sub_dept in sub_departments[meta_dept]|sort %}
-                  <option {% if selected_dept == sub_dept %}selected{% endif %} value="{{ sub_dept }}">-  {{ sub_dept }}</option>
-                {% endfor %}
-              {% endif %}
+          <option value="" {% if not selected_dept %}selected{% endif%}>{{ teams_title }}</option>
+          {% for department in departments|sort %}
+            <option {% if selected_dept == department %}selected{% endif %} value="{{ department }}">{{ department }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="office">Office</label>
+        <select name="office" class="form-control" id="office" style="font-size: 18px;">
+          <option value="" {% if not selected_office %}selected{% endif%}>{{ offices_title }}</option>
+          {% for office in offices|sort %}
+            <option {% if selected_office == office %}selected{% endif %} value="{{ office }}">{{ office }}</option>
           {% endfor %}
         </select>
       </div>

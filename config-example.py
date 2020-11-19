@@ -42,3 +42,7 @@ S3_BUCKET = 'employees'
 GRAVATAR = 'backup'
 
 ORG_TITLE = 'All Company'
+
+TEAMS_TITLE = 'All Teams'
+
+OFFICES_TITLE = 'All Offices'
