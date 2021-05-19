@@ -27,7 +27,7 @@
       </div>
     {% else %}
       <div class="well">
-        Oh no! You haven't received any love yet!<br>
+        Oh no! You haven't received any {% if page > 1 %}more {% endif %}love yet!<br>
         <a href="/">Give and ye shall receive!</a>
       </div>
     {% endif %}
@@ -54,11 +54,18 @@
       </div>
     {% else %}
       <div class="well">
-        Oh no! You haven't sent any love yet. <a href="/">Get on it!</a>
+        Oh no! You haven't sent any {% if page > 1 %}more {% endif %}love yet. <a href="/">Get on it!</a>
       </div>
     {% endif %}
   </div>
 </div>
+<div class="row">
+  {% if more_link %}
+    <div class="col-md-6 col-md-offset-5 col-sm-8 col-sm-offset-3 col-xs-10 col-xs-offset-4">
+      <a href="{{ more_link }}">More...</a>
+    </div>
+  {% endif %}
+<div>
 {% endblock %}
 
 {% block javascript %}

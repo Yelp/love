@@ -394,6 +394,29 @@ class MeTest(LoggedInUserBaseTest):
         self.assertEqual(response.context['received_loves'], [received_love])
         self.assertIn('Awesome work.', response.body)
 
+        self.assertNotIn('More...', response.body)
+        dude.key.delete()
+
+    def test_me_with_pagination(self):
+        dude = create_employee(username='dude')
+        sent_loves = []
+        for i in range(25):
+            sent_loves.append(create_love(sender_key=self.current_user.key,
+                                          recipient_key=dude.key,
+                                          message='Test love %d' % i,
+                                          ))
+
+        response = self.app.get('/me')
+
+        sent_loves = sorted(sent_loves, key=lambda x: x.timestamp, reverse=True)
+        self.assertEqual(response.context['sent_loves'], sent_loves[:20])
+        self.assertIn('More...', response.body)
+        # Should not show 'any more' when on the first page
+        self.assertIn('any love', response.body)
+        self.assertNotIn('any more love', response.body)
+        response = self.app.get('/me?page=2')
+        # dude has only received >1p loves, not sent any
+        self.assertIn('any more love', response.body)
         dude.key.delete()
 
 
@@ -581,6 +604,30 @@ class ExploreTest(LoggedInUserBaseTest):
 
         self.assertEqual(response.status_int, 302)
         self.assertIn('/explore', response.location)
+
+    def test_explore_with_pagination(self):
+        dude = create_employee(username='dude')
+        pal = create_employee(username='pal')
+        sent_loves = []
+        for i in range(25):
+            sent_loves.append(create_love(sender_key=dude.key,
+                                          recipient_key=pal.key,
+                                          message='Test love %d' % i,
+                                          ))
+
+        response = self.app.get('/explore?user=dude')
+
+        sent_loves = sorted(sent_loves, key=lambda x: x.timestamp, reverse=True)
+        self.assertEqual(response.context['sent_loves'], sent_loves[:20])
+        self.assertIn('More...', response.body)
+        # Should not show 'any more' when on the first page
+        self.assertIn('any love', response.body)
+        self.assertNotIn('any more love', response.body)
+        response = self.app.get('/explore?user=dude&page=2')
+        # dude has only sent >1p loves, not received any, so we should show 'any more' for received
+        self.assertIn('any more love', response.body)
+        dude.key.delete()
+        pal.key.delete()
 
 
 class AutocompleteTest(LoggedInUserBaseTest):

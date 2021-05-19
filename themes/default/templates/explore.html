@@ -54,7 +54,7 @@
       </div>
     {% else %}
       <div class="well">
-        Oh no! {{ user.username }} hasn't sent any love yet.
+        Oh no! {{ user.username }} hasn't sent any {% if page > 1 %}more {% endif %}love yet.
       </div>
     {% endif %}
   </div>
@@ -78,11 +78,18 @@
       </div>
     {% else %}
       <div class="well">
-        Oh no! {{ user.username }} hasn't received any love yet.<br>
+        Oh no! {{ user.username }} hasn't received any {% if page > 1 %}more {% endif %}love yet.<br>
         <a href="/?recipients={{ user.username }}">Hook them up.</a>
       </div>
     {% endif %}
   </div>
+</div>
+<div class="row">
+  {% if more_link %}
+    <div class="col-md-6 col-md-offset-5 col-sm-8 col-sm-offset-3 col-xs-10 col-xs-offset-4">
+      <a href="{{ more_link }}">More...</a>
+    </div>
+  {% endif %}
 </div>
 {% endif %}
 

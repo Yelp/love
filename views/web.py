@@ -62,15 +62,30 @@ def home():
 def me():
     current_employee = Employee.get_current_employee()
 
-    sent_love = logic.love.recent_sent_love(current_employee.key, limit=20)
-    received_love = logic.love.recent_received_love(current_employee.key, limit=20)
+    page = request.args.get('page', 1)
+    try:
+        page = int(page)
+    except ValueError:
+        page = 1
+
+    limit = 20
+    sent_loves, _, sent_more = logic.love.recent_sent_love_page(
+        current_employee.key, limit=limit, page=page).get_result()
+    received_loves, _, received_more = logic.love.recent_received_love_page(
+        current_employee.key, limit=limit, page=page).get_result()
+
+    more_link = None
+    if sent_more or received_more:
+        more_link = url_for('me', page=page+1)
 
     return render_template(
         'me.html',
         current_time=datetime.utcnow(),
         current_user=current_employee,
-        sent_loves=sent_love.get_result(),
-        received_loves=received_love.get_result()
+        sent_loves=sent_loves,
+        received_loves=received_loves,
+        more_link=more_link,
+        page=page,
     )
 
 
@@ -142,15 +157,30 @@ def explore():
         flash('Sorry, "{}" is not a valid user.'.format(username), 'error')
         return redirect(url_for('explore'))
 
-    sent_love = logic.love.recent_sent_love(user_key, include_secret=False, limit=20)
-    received_love = logic.love.recent_received_love(user_key, include_secret=False, limit=20)
+    page = request.args.get('page', 1)
+    try:
+        page = int(page)
+    except ValueError:
+        page = 1
+
+    limit = 20
+    sent_loves, _, sent_more = logic.love.recent_sent_love_page(
+        user_key, include_secret=False, limit=limit, page=page).get_result()
+    received_loves, _, received_more = logic.love.recent_received_love_page(
+        user_key, include_secret=False, limit=limit, page=page).get_result()
+
+    more_link = None
+    if sent_more or received_more:
+        more_link = url_for('explore', user=username, page=page+1)
 
     return render_template(
         'explore.html',
         current_time=datetime.utcnow(),
-        sent_loves=sent_love.get_result(),
-        received_loves=received_love.get_result(),
-        user=user_key.get()
+        sent_loves=sent_loves,
+        received_loves=received_loves,
+        user=user_key.get(),
+        more_link=more_link,
+        page=page,
     )
 
 
