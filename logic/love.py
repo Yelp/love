@@ -45,6 +45,24 @@ def recent_received_love(employee_key, start_dt=None, end_dt=None, include_secre
     return query.fetch_async(limit) if type(limit) is int else query.fetch_async()
 
 
+def recent_sent_love_page(employee_key, start_dt=None, end_dt=None, include_secret=True, limit=20, cursor=None):
+    """ Returns results, next_cursor, more for paginated love requests """
+    query = _sent_love_query(employee_key, start_dt, end_dt, include_secret)
+    if not limit:
+        # Just use our default
+        limit = 20
+    return query.fetch_page_async(limit, start_cursor=cursor)
+
+
+def recent_received_love_page(employee_key, start_dt=None, end_dt=None, include_secret=True, limit=20, cursor=None):
+    """ Returns results, next_cursor, more for paginated love requests """
+    query = _received_love_query(employee_key, start_dt, end_dt, include_secret)
+    if not limit:
+        # Just use our default
+        limit = 20
+    return query.fetch_page_async(limit, start_cursor=cursor)
+
+
 def send_love_email(l):  # noqa
     """Send an email notifying the recipient of l about their love."""
     sender_future = l.sender_key.get_async()

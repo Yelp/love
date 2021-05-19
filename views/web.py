@@ -22,6 +22,7 @@ from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
 from errors import TaintedLove
 from google.appengine.api import taskqueue
+from google.appengine.datastore.datastore_query import Cursor
 from logic import TIMESPAN_THIS_WEEK
 from logic.love_link import create_love_link
 from logic.leaderboard import get_leaderboard_data
@@ -62,15 +63,32 @@ def home():
 def me():
     current_employee = Employee.get_current_employee()
 
-    sent_love = logic.love.recent_sent_love(current_employee.key, limit=20)
-    received_love = logic.love.recent_received_love(current_employee.key, limit=20)
+    sent_cursor = Cursor(urlsafe=request.args.get('sent_cur')) if 'sent_cur' in request.args else None
+    rcvd_cursor = Cursor(urlsafe=request.args.get('rcvd_cur')) if 'rcvd_cur' in request.args else None
+    limit = request.args.get('limit', 20)
+    try:
+        limit = int(limit)
+    except ValueError:
+        limit = 20
+
+    sent_love, next_sent_cursor, sent_has_more = logic.love.recent_sent_love_page(
+        current_employee.key, limit=limit, cursor=sent_cursor).get_result()
+    received_love, next_received_cursor, received_has_more = logic.love.recent_received_love_page(
+        current_employee.key, limit=limit, cursor=rcvd_cursor).get_result()
+
+    more_link = None
+    if sent_has_more or received_has_more:
+        next_sent_str = next_sent_cursor.urlsafe() if next_sent_cursor else None
+        next_received_str = next_received_cursor.urlsafe() if next_received_cursor else None
+        more_link = url_for('me', limit=limit, sent_cur=next_sent_str, rcvd_cur=next_received_str)
 
     return render_template(
         'me.html',
         current_time=datetime.utcnow(),
         current_user=current_employee,
-        sent_loves=sent_love.get_result(),
-        received_loves=received_love.get_result()
+        sent_loves=sent_love,
+        received_loves=received_love,
+        more_link=more_link,
     )
 
 
@@ -142,15 +160,33 @@ def explore():
         flash('Sorry, "{}" is not a valid user.'.format(username), 'error')
         return redirect(url_for('explore'))
 
-    sent_love = logic.love.recent_sent_love(user_key, include_secret=False, limit=20)
-    received_love = logic.love.recent_received_love(user_key, include_secret=False, limit=20)
+    limit = request.args.get('limit', 20)
+    try:
+        limit = int(limit)
+    except ValueError:
+        limit = 20
+
+    sent_cursor = Cursor(urlsafe=request.args.get('sent_cur')) if 'sent_cur' in request.args else None
+    rcvd_cursor = Cursor(urlsafe=request.args.get('rcvd_cur')) if 'rcvd_cur' in request.args else None
+
+    sent_love, next_sent_cursor, sent_has_more = logic.love.recent_sent_love_page(
+        user_key, limit=limit, cursor=sent_cursor).get_result()
+    received_love, next_received_cursor, received_has_more = logic.love.recent_received_love_page(
+        user_key, limit=limit, cursor=rcvd_cursor).get_result()
+
+    more_link = None
+    if sent_has_more or received_has_more:
+        next_sent_str = next_sent_cursor.urlsafe() if next_sent_cursor else None
+        next_received_str = next_received_cursor.urlsafe() if next_received_cursor else None
+        more_link = url_for('explore', user=username, limit=limit, sent_cur=next_sent_str, rcvd_cur=next_received_str)
 
     return render_template(
         'explore.html',
         current_time=datetime.utcnow(),
-        sent_loves=sent_love.get_result(),
-        received_loves=received_love.get_result(),
-        user=user_key.get()
+        sent_loves=sent_love,
+        received_loves=received_love,
+        user=user_key.get(),
+        more_link=more_link,
     )
 
 

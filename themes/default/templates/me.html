@@ -59,6 +59,13 @@
     {% endif %}
   </div>
 </div>
+<div class="row">
+  {% if more_link %}
+    <div class="col-md-6 col-md-offset-5 col-sm-8 col-sm-offset-3 col-xs-10 col-xs-offset-4">
+      <a href="{{ more_link }}">More...</a>
+    </div>
+  {% endif %}
+<div>
 {% endblock %}
 
 {% block javascript %}

@@ -396,6 +396,26 @@ class MeTest(LoggedInUserBaseTest):
 
         dude.key.delete()
 
+    def test_me_with_pagination(self):
+        dude = create_employee(username='dude')
+        sent_loves = []
+        for i in range(25):
+            sent_loves.append(create_love(sender_key=self.current_user.key,
+                                          recipient_key=dude.key,
+                                          message='Test love %d' % i,
+                                          ))
+
+        response = self.app.get('/me')
+
+        sent_loves = sorted(sent_loves, key=lambda x: x.timestamp, reverse=True)
+        self.assertEqual(response.context['sent_loves'], sent_loves[:20])
+        self.assertIn('More...', response.body)
+
+        response = self.app.get('/me?limit=5')
+        self.assertIn('limit=5', response.context['more_link'])
+        self.assertEqual(len(response.context['sent_loves']), 5)
+        dude.key.delete()
+
 
 class SubscriptionsTestCase(LoggedInAdminBaseTest):
     """
