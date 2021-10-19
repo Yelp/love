@@ -31,16 +31,18 @@ def get_office_name(employee_office_location):
     Examples in: out
         if we have yaml file with the follwong content: {Hamburg office, SF office}
         NY Remote: Remote
+        SF office: SF office
+        SF office Remote: SF office
         Germany Hamburg office: Hamburg office
         CA SF New Montgomery Office: Sf office
     """
     employee_office_location = employee_office_location.lower()
 
-    if REMOTE_OFFICE.lower() in employee_office_location:
-        return REMOTE_OFFICE
-
     for office in OFFICES:
         if office.lower() in employee_office_location:
             return office
+
+    if REMOTE_OFFICE.lower() in employee_office_location:
+        return REMOTE_OFFICE
 
     return OTHER_OFFICE
