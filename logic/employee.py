@@ -17,6 +17,7 @@ from models import Employee
 from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
+from logic.office import OfficeParser
 
 
 INDEX_NAME = 'employees'
@@ -132,6 +133,8 @@ def _update_employees(employee_dicts):
     Then determine whether any employees have been terminated since the last update,
     and mark these employees as such.
     """
+    employee_dicts = list(employee_dicts)
+
     logging.info('Updating employees... {}MB'.format(memory_usage().current()))
 
     db_employee_dict = {
@@ -141,8 +144,15 @@ def _update_employees(employee_dicts):
 
     all_employees, new_employees = [], []
     current_usernames = set()
+    office_parser = OfficeParser(employee_dicts)
+
     for d in employee_dicts:
+        d['office'] = office_parser.get_office_name(
+            employee_office_location=d['office'],
+            employee_department=d.get('department'),
+        ) if d.get('office') else None
         existing_employee = db_employee_dict.get(d['username'])
+
         if existing_employee is None:
             new_employee = Employee.create_from_dict(d, persist=False)
             all_employees.append(new_employee)
