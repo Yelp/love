@@ -22,8 +22,6 @@ class OfficeTest(unittest.TestCase):
             {'username': 'foo1-hamburg', 'department': 'bar-team', 'office': 'Germany: Remote'},
             {'username': 'foo2-hamburg', 'department': 'bar-team', 'office': 'Sweden: Remote'},
         ]
-        # for employee in self.employee_dicts:
-        #     create_employee(office=employee["office"], username=employee["username"])
 
     def _create_employees(self):
         for office in OFFICES:
