@@ -10,8 +10,6 @@ import config
 from errors import NoSuchEmployee
 from util.pagination import Pagination
 
-from logic.office import get_office_name
-
 
 def memoized(func):
     results = {}
@@ -81,7 +79,7 @@ class Employee(ndb.Model, Pagination):
         if d.get('photos'):
             self.photo_url = d['photos']['ms'].replace('http://', 'https://', 1)
         self.department = d.get('department')
-        self.office = get_office_name(d['office']) if d.get('office') else None
+        self.office = d['office']
 
     def get_gravatar(self):
         """Creates gravatar URL from email address."""
