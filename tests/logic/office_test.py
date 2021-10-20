@@ -19,8 +19,8 @@ class OfficeTest(unittest.TestCase):
     def setUp(self):
         self.employee_dicts = [
             {'username': 'foo1-hamburg', 'department': 'bar-team', 'office': 'Germany: Hamburg Office'},
-            {'username': 'foo1-hamburg', 'department': 'bar-team', 'office': 'Germany: Remote'},
-            {'username': 'foo2-hamburg', 'department': 'bar-team', 'office': 'Sweden: Remote'},
+            {'username': 'foo2-hamburg', 'department': 'bar-team', 'office': 'Germany: Remote'},
+            {'username': 'foo3-hamburg', 'department': 'bar-team', 'office': 'Sweden: Remote'},
         ]
 
     def _create_employees(self):

@@ -25,8 +25,8 @@ class OfficeParser:
         """
 
         Args:
-            employee_dicts ([Dict], optional): [description]. Defaults to None.
-            If this dict exists the location of the employeed will be determined from
+            employee_dicts ([Dict], optional): Defaults to None.
+            If this dict exists the location of the employee will be determined from
             the team location in case we don't have a location assigned to the employee
         """
         self.offices = yaml.safe_load(open('offices.yaml'))
@@ -64,7 +64,7 @@ class OfficeParser:
             employee_office_location: str
             employee_department: Optional[str].
                 This is the team of the employee. If it exists the office will be guessed from the
-                office location incase we don't have an office for the employee
+                office location in case we don't have an office for the employee
             Returns: str
 
         Examples in: out
@@ -91,7 +91,7 @@ class OfficeParser:
 
     def __get_office_name_match(self, office_name):
         """
-        Get the office name in the saved yaml file that matches this officename
+        Get the office name in the saved yaml file that matches this office name
         Args:
             office_name [str]
 
