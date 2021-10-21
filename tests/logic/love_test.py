@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import mock
 import unittest
 
+from config import CompanyValue
 import logic.love
 from errors import TaintedLove
 from testing.factories import create_alias_with_employee_username
@@ -95,3 +97,16 @@ class SendLovesTest(unittest.TestCase):
 
         loves_for_bob = logic.love.get_love('alice', 'bob').get_result()
         self.assertEqual(loves_for_bob, [])
+
+    @mock.patch('util.company_values.config')
+    def test_send_love_with_value_hashtag(self, mock_config):
+        mock_config.COMPANY_VALUES = [
+            CompanyValue('AWESOME', 'awesome', ['awesome'])
+        ]
+        message = 'Loving your alias #Awesome'
+        create_alias_with_employee_username(name='bobby', username=self.bob.username)
+        logic.love.send_loves(['bobby'], message, sender_username=self.carol.username)
+
+        loves_for_bob = logic.love.get_love('carol', 'bob').get_result()
+        self.assertEqual(len(loves_for_bob), 1)
+        self.assertEqual(loves_for_bob[0].company_values, ['AWESOME'])

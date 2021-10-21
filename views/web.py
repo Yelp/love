@@ -342,6 +342,7 @@ def autocomplete_web():
 
 
 @app.route('/values/autocomplete', methods=['GET'])
+@user_required
 def autocomplete_company_values_web():
     matching_prefixes = values_matching_prefix(request.args.get('term', None))
     return make_json_response(matching_prefixes)

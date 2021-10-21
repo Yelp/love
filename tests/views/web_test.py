@@ -42,6 +42,15 @@ class LoggedOutTest(YelpLoveTestCase):
     def test_autocomplete(self):
         self.assertRequiresLogin(self.app.get('/user/autocomplete'))
 
+    def test_values_autocomplete(self):
+        self.assertRequiresLogin(self.app.get('/values/autocomplete'))
+
+    def test_single_company_value(self):
+        self.assertRequiresLogin(self.app.get('/value/test'))
+
+    def test_company_values(self):
+        self.assertRequiresLogin(self.app.get('/values'))
+
     def test_sent(self):
         self.assertRequiresLogin(self.app.get('/sent'))
 
