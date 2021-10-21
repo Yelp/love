@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copy this file to config.py and change the settings. Don't forget to specify your own SECRET_KEY.
+from collections import namedtuple
 
 # The app name will be used in several places.
 APP_NAME = 'Yelp Love'
@@ -46,3 +47,9 @@ ORG_TITLE = 'All Company'
 TEAMS_TITLE = 'All Teams'
 
 OFFICES_TITLE = 'All Offices'
+
+CompanyValue = namedtuple('CompanyValue', ['id', 'display_string', 'hashtags'])
+COMPANY_VALUES = [
+    CompanyValue('BE_EXCELLENT', 'Be excellent to each other', ('excellent', 'BeExcellent', 'WyldStallyns')),
+    CompanyValue('DUST_IN_THE_WIND', 'All we are is dust in the wind, dude.', ('woah', 'whoa', 'DustInTheWind'))
+]

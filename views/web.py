@@ -35,6 +35,10 @@ from util.decorators import csrf_protect
 from util.decorators import user_required
 from util.recipient import sanitize_recipients
 from util.render import render_template
+from util.render import make_json_response
+from util.company_values import get_company_value
+from util.company_values import get_company_value_link_pairs
+from util.company_values import values_matching_prefix
 from views import common
 from logic.office import get_all_offices
 from logic.department import get_all_departments
@@ -89,6 +93,65 @@ def me_or_explore(user):
         return redirect(url_for('me'))
     else:
         return redirect(url_for('explore', user=username))
+
+
+def format_loves(loves):
+    # organise loves into two roughly equal lists for displaying
+    if len(loves) < 20:
+        loves_list_one = loves
+        loves_list_two = []
+    else:
+        loves_list_one = loves[:len(loves)/2]
+        loves_list_two = loves[len(loves)/2:]
+
+        if len(loves_list_one) < len(loves_list_two):
+            loves_list_one.append(loves_list_two.pop())
+    return loves_list_one, loves_list_two
+
+
+@app.route('/value/<string:company_value_id>', methods=['GET'])
+@user_required
+def single_company_value(company_value_id):
+    company_value = get_company_value(company_value_id.upper())
+    if not company_value:
+        return redirect(url_for('company_values'))
+
+    current_employee = Employee.get_current_employee()
+
+    loves = logic.love.recent_loves_by_company_value(None, company_value.id, limit=100).get_result()
+    loves_list_one, loves_list_two = format_loves(loves)
+
+    return render_template(
+        'values.html',
+        current_time=datetime.utcnow(),
+        current_user=current_employee,
+        loves_first_list=loves_list_one,
+        loves_second_list=loves_list_two,
+        values=get_company_value_link_pairs(),
+        company_value_string=company_value.display_string
+    )
+
+
+@app.route('/values', methods=['GET'])
+@user_required
+def company_values():
+    if not config.COMPANY_VALUES:
+        abort(404)
+
+    loves = logic.love.recent_loves_with_any_company_value(None, limit=100).get_result()
+    loves_list_one, loves_list_two = format_loves(loves)
+
+    current_employee = Employee.get_current_employee()
+
+    return render_template(
+        'values.html',
+        current_time=datetime.utcnow(),
+        current_user=current_employee,
+        loves_first_list=loves_list_one,
+        loves_second_list=loves_list_two,
+        values=get_company_value_link_pairs(),
+        company_value_string=None
+    )
 
 
 @app.route('/l/<string:link_id>', methods=['GET'])
@@ -276,6 +339,12 @@ def love():
 @user_required
 def autocomplete_web():
     return common.autocomplete(request)
+
+
+@app.route('/values/autocomplete', methods=['GET'])
+def autocomplete_company_values_web():
+    matching_prefixes = values_matching_prefix(request.args.get('term', None))
+    return make_json_response(matching_prefixes)
 
 
 @app.route('/subscriptions', methods=['GET'])

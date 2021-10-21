@@ -27,6 +27,9 @@
             <li id="nav-me"><a href="/me">My Love</a></li>
             <li id="nav-explore"><a href="/explore">Explore</a></li>
             <li id="nav-leaderboard"><a href="/leaderboard">Leaderboard</a></li>
+            {% if config.COMPANY_VALUES %}
+            <li id="nav-values"><a href="/values">Values</a></li>
+            {% endif %}
           </ul>
 
           {% if is_admin() %}

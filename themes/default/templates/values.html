@@ -1,0 +1,70 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/love_message.html") as love_message %}
+
+{% block title %}Love with company values{% endblock %}
+
+{% block body %}
+<div class="row">
+  <div class="col-md-12">
+    {% if company_value_string %}
+      <h1>Most recent Loves for "{{ company_value_string }}"</h1>
+    {% else %}
+      <h1>Who's repping the Values?</h1>
+    {% endif %}
+    <div class="content-container">
+      {% for name, link in values %}
+        <a href="{{link}}">{{name}}</a>
+        {{ " | " if not loop.last else "" }}
+	{% endfor %}
+    </div>
+  </div>
+
+  {% if loves_first_list %}
+  <div class="col-md-6">
+    <div class="content-container">
+      {% for love in loves_first_list %}
+        {% set sender = love.sender_key.get() %}
+        {% set recipient = love.recipient_key.get() %}
+        {{ love_message.love(
+          sender.full_name,
+          sender.username,
+          recipient.first_name,
+          recipient.username,
+          sender,
+          love.message,
+          love.seconds_since_epoch)
+        }}
+      {% endfor %}
+    </div>
+  </div>  <div class="col-md-6">
+    <div class="content-container">
+      {% for love in loves_second_list %}
+        {% set sender = love.sender_key.get() %}
+        {% set recipient = love.recipient_key.get() %}
+        {{ love_message.love(
+          sender.full_name,
+          sender.username,
+          recipient.first_name,
+          recipient.username,
+          sender,
+          love.message,
+          love.seconds_since_epoch)
+        }}
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <div class="well content-container">
+    Oh no! Nobody has posted any love for this core value yet!<br>
+    <a href="/">Give and ye shall receive!</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    $('#nav-values').addClass('active');
+  </script>
+{% endblock %}

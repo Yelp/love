@@ -13,6 +13,7 @@ from models import Employee
 from models import Love
 from models import LoveCount
 from models.toggle import LOVE_SENDING_ENABLED
+from util.company_values import get_hashtag_value_mapping
 from util.render import render_template
 
 
@@ -44,6 +45,26 @@ def recent_received_love(employee_key, start_dt=None, end_dt=None, include_secre
     query = _received_love_query(employee_key, start_dt, end_dt, include_secret)
     return query.fetch_async(limit) if type(limit) is int else query.fetch_async()
 
+
+def _love_query_by_company_value(employee_key, company_value, start_dt, end_dt, include_secret):
+    return _love_query(start_dt, end_dt, include_secret).filter(Love.company_values == company_value)
+
+
+def _love_query_with_any_company_value(employee_key, start_dt, end_dt, include_secret):
+    company_values = [value.id for value in config.COMPANY_VALUES]
+    return _love_query(start_dt, end_dt, include_secret).filter(Love.company_values.IN(company_values))
+
+
+def recent_loves_by_company_value(employee_key, company_value, start_dt=None, end_dt=None,
+                                  include_secret=False, limit=None):
+    query = _love_query_by_company_value(employee_key, company_value, start_dt, end_dt, include_secret)
+    return query.fetch_async(limit) if type(limit) is int else query.fetch_async()
+
+
+def recent_loves_with_any_company_value(employee_key, start_dt=None, end_dt=None,
+                                        include_secret=False, limit=None):
+    query = _love_query_with_any_company_value(employee_key, start_dt, end_dt, include_secret)
+    return query.fetch_async(limit) if type(limit) is int else query.fetch_async()
 
 def send_love_email(l):  # noqa
     """Send an email notifying the recipient of l about their love."""
@@ -182,6 +203,7 @@ def _send_love(recipient_key, message, sender_key, secret):
         message=message,
         secret=(secret is True),
     )
+    new_love.company_values = _get_company_values(new_love, message)
     new_love.put()
     LoveCount.update(new_love)
 
@@ -198,3 +220,19 @@ def _send_love(recipient_key, message, sender_key, secret):
             logic.event.LOVESENT,
             {'love_id': new_love.key.id()},
         )
+
+
+def _get_company_values(new_love, message):
+    # Handle hashtags.
+    hashtag_value_mapping = get_hashtag_value_mapping()
+
+    matched_categories = set()
+    for hashtag, category in hashtag_value_mapping.iteritems():
+        if hashtag in message.lower():
+            matched_categories.add(category)
+
+    company_values = []
+    for value in matched_categories:
+        company_values.append(value)
+
+    return company_values
