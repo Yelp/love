@@ -38,7 +38,6 @@ def get_hashtag_value_mapping():
 def linkify_company_values(love):
     # escape the input before we add our own safe links
     escaped_love = str(markupsafe.escape(love))
-
     hashtag_value_mapping = get_hashtag_value_mapping()
 
     # find all the hashtags.

@@ -66,6 +66,7 @@ def recent_loves_with_any_company_value(employee_key, start_dt=None, end_dt=None
     query = _love_query_with_any_company_value(employee_key, start_dt, end_dt, include_secret)
     return query.fetch_async(limit) if type(limit) is int else query.fetch_async()
 
+
 def send_love_email(l):  # noqa
     """Send an email notifying the recipient of l about their love."""
     sender_future = l.sender_key.get_async()
