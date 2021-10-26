@@ -9,6 +9,7 @@ def create_love(
     recipient_key,
     message=DEFAULT_LOVE_MESSAGE,
     secret=False,
+    company_values=()
 ):
 
     love = Love(
@@ -16,6 +17,7 @@ def create_love(
         recipient_key=recipient_key,
         message=message,
         secret=secret,
+        company_values=company_values
     )
     love.put()
 
