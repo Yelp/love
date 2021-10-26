@@ -4,7 +4,7 @@
 <div class="love-message-container">
     {{ photobox.user_icon(icon_user) }}
     <div class="love-message">
-        {{ message }}
+        {{ message|linkify_company_values }}
         {% if secret %}
             <span class="badge">SECRET</span>
         {% endif %}

@@ -12,6 +12,13 @@ indexes:
 
 - kind: Love
   properties:
+  - name: company_values
+  - name: secret
+  - name: timestamp
+    direction: desc
+
+- kind: Love
+  properties:
   - name: recipient_key
   - name: secret
   - name: sender_key

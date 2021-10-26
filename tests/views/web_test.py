@@ -3,6 +3,7 @@ import mock
 
 from webtest.app import AppError
 
+from config import CompanyValue
 import logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
@@ -41,6 +42,15 @@ class LoggedOutTest(YelpLoveTestCase):
 
     def test_autocomplete(self):
         self.assertRequiresLogin(self.app.get('/user/autocomplete'))
+
+    def test_values_autocomplete(self):
+        self.assertRequiresLogin(self.app.get('/values/autocomplete'))
+
+    def test_single_company_value(self):
+        self.assertRequiresLogin(self.app.get('/value/test'))
+
+    def test_company_values(self):
+        self.assertRequiresLogin(self.app.get('/values'))
 
     def test_sent(self):
         self.assertRequiresLogin(self.app.get('/sent'))
@@ -607,6 +617,101 @@ class AutocompleteTest(LoggedInUserBaseTest):
         response = self.app.get('/user/autocomplete', {'term': prefix})
         received_values = set(item['value'] for item in response.json)
         self.assertEqual(set(expected_values), received_values)
+
+
+class ValuesAutocompleteTest(LoggedInUserBaseTest):
+
+    @mock.patch('util.company_values.config')
+    def test_autocomplete(self, mock_config):
+        mock_config.COMPANY_VALUES = [
+            CompanyValue('AWESOME', 'awesome', ['awesome', 'awesometacular', 'superAwesome']),
+        ]
+        self._test_autocomplete('#aw', ['#awesome', '#awesometacular'])
+        self._test_autocomplete('#su', ['#superAwesome'])
+        self._test_autocomplete('#derp', [])
+
+    def _test_autocomplete(self, prefix, expected_values):
+        response = self.app.get('/values/autocomplete', {'term': prefix})
+        received_values = set(item for item in response.json)
+        self.assertEqual(set(expected_values), received_values)
+
+
+class ValuesTest(LoggedInUserBaseTest):
+
+    def setUp(self):
+        super(ValuesTest, self).setUp()
+
+        receiver = create_employee(username='receiver')
+        sender = create_employee(username='sender')
+
+        create_love(
+            sender_key=sender.key,
+            recipient_key=receiver.key,
+            message='really cool',
+            company_values=['COOL']
+        )
+
+        create_love(
+            sender_key=sender.key,
+            recipient_key=receiver.key,
+            message='really quite cool',
+            company_values=['COOL']
+        )
+
+        create_love(
+            sender_key=sender.key,
+            recipient_key=receiver.key,
+            message='#cool #notcool',
+            company_values=['COOL']
+        )
+
+        create_love(
+            sender_key=sender.key,
+            recipient_key=receiver.key,
+            message='jk really awesome',
+            company_values=['AWESOME']
+        )
+
+        create_love(
+            sender_key=sender.key,
+            recipient_key=receiver.key,
+            message='bogus',
+            company_values=[]
+        )
+
+    @mock.patch('util.company_values.config')
+    @mock.patch('logic.love.config')
+    def test_single_value_page(self, mock_util_config, mock_logic_config):
+        mock_util_config.COMPANY_VALUES = mock_logic_config.COMPANY_VALUES = [
+            CompanyValue('AWESOME', 'awesome', ['awesome']),
+            CompanyValue('COOL', 'cool', ['cool'])
+        ]
+
+        response = self.app.get('/value/cool')
+        self.assertIn('really cool', response.body)
+        self.assertIn('really quite cool', response.body)
+
+        # check linkification of hashtags
+        self.assertIn('<a href="/value/cool">#cool</a>', response.body)
+
+        # check only relevant hashtags are linkified
+        self.assertIn('#notcool', response.body)
+        self.assertNotIn('<a href="/value/cool">#notcool</a>', response.body)
+
+        self.assertNotIn('jk really awesome', response.body)
+
+    @mock.patch('util.company_values.config')
+    @mock.patch('logic.love.config')
+    def test_all_values_page(self, mock_util_config, mock_logic_config):
+        mock_util_config.COMPANY_VALUES = mock_logic_config.COMPANY_VALUES = [
+            CompanyValue('AWESOME', 'awesome', ['awesome']),
+            CompanyValue('COOL', 'cool', ['cool'])
+        ]
+
+        response = self.app.get('/values')
+        self.assertIn('really cool', response.body)
+        self.assertIn('jk really awesome', response.body)
+        self.assertNotIn('bogus', response.body)
 
 
 class EmployeeTestCase(LoggedInAdminBaseTest):

@@ -13,6 +13,7 @@ class Love(ndb.Model):
     secret = ndb.BooleanProperty(default=False)
     sender_key = ndb.KeyProperty(kind=Employee)
     timestamp = ndb.DateTimeProperty(auto_now_add=True)
+    company_values = ndb.StringProperty(repeated=True)
 
     @property
     def seconds_since_epoch(self):

@@ -17,7 +17,40 @@
         $('textarea[name="message"]').focus().val('').val(messageText);
       }
       $('#love-error').hide();
-      // code heavily sampled from http://jqueryui.com/autocomplete/#multiple-remote
+        // code heavily sampled from http://jqueryui.com/autocomplete/#multiple-remote
+      $('textarea[name="message"]')
+            .bind('keydown', function(event) {
+		if (event.keyCode === $.ui.keyCode.TAB &&
+		    $(this).data("ui-autocomplete").menu.active) {
+		    event.preventDefault();
+		}
+            })
+	    .autocomplete({
+		source: function(request, response) {
+		    $.getJSON('/values/autocomplete', {
+			term: request.term.split(/\s/).pop()
+		    }, response);
+		},
+		search: function() {
+		    var term = this.value.split(/\s/).pop();
+		    if ( !term.startsWith("#")) {
+			return false;
+		    }
+		    return term;
+		},
+		focus: function() {return false;},
+		select: function(event, ui) {
+		    var terms = this.value.split(/\s/);
+		    terms.pop();
+		    terms.push(ui.item.value + " ");
+		    this.value = terms.join(" ");
+		    return false;
+		},
+		minLength: 1,
+		delay: 5,
+		autoFocus: true
+	  });
+
       $('input[name="recipients"]')
         // don't navigate away from the field on tab when selecting an item
         .bind('keydown', function(event) {
