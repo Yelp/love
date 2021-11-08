@@ -23,3 +23,4 @@
 * Alina Rada [transcedentalia](https://github.com/transcedentalia)
 * Matthew Bentley [matthewbentley](https://github.com/matthewbentley)
 * Kevin Hock [KevinHock](https://github.com/KevinHock)
+* Duncan Cook [theletterd](https://github.com/theletterd)
