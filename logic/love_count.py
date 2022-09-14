@@ -79,7 +79,7 @@ def rebuild_love_count():
     set_toggle_state(LOVE_SENDING_ENABLED, True)
 
 
-def get_love_counts_by_week(username):
+def get_love_counts_by_week(username, unixtime_range_start, unixtime_range_end):
     """Return the amount of love sent and received by a particular employee, broken down by week."""
 
     employee_key = Employee.query(Employee.username == username).get(keys_only=True)
@@ -87,7 +87,9 @@ def get_love_counts_by_week(username):
         raise NoSuchEmployee(username)
 
     received_by_week, sent_by_week = {}, {}
-    for love_count in LoveCount.query(ancestor=employee_key).iter():
+    for love_count in LoveCount.query(LoveCount.week_start >= datetime.datetime.fromtimestamp(unixtime_range_start),
+                                      LoveCount.week_start <= datetime.datetime.fromtimestamp(unixtime_range_end),
+                                      ancestor=employee_key).iter():
         received_by_week[love_count.week_start] = love_count.received_count
         sent_by_week[love_count.week_start] = love_count.sent_count
 
