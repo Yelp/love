@@ -1,0 +1,105 @@
+{% extends theme("layout.html") %}
+
+{% import theme("parts/photobox.html") as photobox %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block body %}
+
+{% if username %}
+<div class="row">
+  <div class="col-xs-6 col-md-4">
+    <h1>Legacy for {{ username }}</h1>
+  </div>
+  <div class="col-xs-12 col-md-8">
+    <form class="form-inline leaderboard-filter" role="form">
+      <div class="form-group">
+        <label class="sr-only" for="username">Username</label>
+        <input name="username" class="form-control" id="username" type="text" value="{{ username }}" />
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-default">View Legacy</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Recieved love</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Week</th>
+                    <th>Love Received</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in received_by_week.keys() %}
+                    {% set formatted_week = week.strftime('%d/%b/%Y') %}
+                    {% set received_count = received_by_week[week] %}
+                    <tr>
+                        <td>Week of <strong>{{ formatted_week }}</strong></td>
+                        <td><strong>{{ received_count }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h2>Sent love</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Week</th>
+                    <th>Love Sent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in sent_by_week.keys() %}
+                    {% set formatted_week = week.strftime('%d/%b/%Y') %}
+                    {% set sent_count = sent_by_week[week] %}
+                    <tr>
+                        <td>Week of <strong>{{ formatted_week }}</strong></td>
+                        <td><strong>{{ sent_count }}</strong></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-xs-6 col-md-4">
+      <h1>Legacy</h1>
+    </div>
+    <div class="col-xs-12 col-md-8">
+      <form class="form-inline leaderboard-filter" role="form">
+        <div class="form-group">
+          <label class="sr-only" for="username">Username</label>
+          <input name="username" class="form-control" id="username" type="text"/>
+        </div>
+        <div class="form-group">
+          <button type="button" class="btn btn-default">View Legacy</button>
+        </div>
+      </form>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+  <script type="text/javascript">
+    const onViewLegacy = (e) => {
+        e.preventDefault();
+        const username = $('.leaderboard-filter :input').val();
+        window.location.href = '/legacy/' + username;
+    };
+
+    $(document).ready(function() {
+        $('.leaderboard-filter button').on('click', onViewLegacy);
+        $('form.leaderboard-filter').on('submit', onViewLegacy);
+    });
+  </script>
+{% endblock %}

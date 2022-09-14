@@ -5,6 +5,7 @@ import logging
 from google.appengine.api.runtime import memory_usage
 from google.appengine.ext import ndb
 
+from errors import NoSuchEmployee
 from logic import utc_week_limits
 from logic.toggle import set_toggle_state
 from models import Employee
@@ -76,3 +77,18 @@ def rebuild_love_count():
     logging.info('Done. {}MB'.format(memory_usage().current()))
 
     set_toggle_state(LOVE_SENDING_ENABLED, True)
+
+
+def get_love_counts_by_week(username):
+    """Return the amount of love sent and received by a particular employee, broken down by week."""
+
+    employee_key = Employee.query(Employee.username == username).get(keys_only=True)
+    if not employee_key:
+        raise NoSuchEmployee(username)
+
+    received_by_week, sent_by_week = {}, {}
+    for love_count in LoveCount.query(ancestor=employee_key).iter():
+        received_by_week[love_count.week_start] = love_count.received_count
+        sent_by_week[love_count.week_start] = love_count.sent_count
+
+    return received_by_week, sent_by_week
