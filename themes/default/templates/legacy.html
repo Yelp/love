@@ -49,7 +49,7 @@
             </thead>
             <tbody>
                 {% for week in received_by_week.keys() %}
-                    {% set formatted_week = week.strftime('%d/%b/%Y') %}
+                    {% set formatted_week = week.strftime('%b %d, %Y') %}
                     {% set received_count = received_by_week[week] %}
                     <tr>
                         <td>Week of <strong>{{ formatted_week }}</strong></td>
@@ -70,8 +70,8 @@
             </thead>
             <tbody>
                 {% for week in sent_by_week.keys() %}
-                    {% set formatted_week = week.strftime('%d/%b/%Y') %}
-                    {% set sent_count = sent_by_week[week] %}
+                {% set formatted_week = week.strftime('%b %d, %Y') %}
+                {% set sent_count = sent_by_week[week] %}
                     <tr>
                         <td>Week of <strong>{{ formatted_week }}</strong></td>
                         <td><strong>{{ sent_count }}</strong></td>
@@ -129,7 +129,7 @@
         }
         const unixRangeStart = Math.floor(new Date($('#filter-date-start').val()).getTime() / 1000);
         const unixRangeEnd = Math.floor(new Date($('#filter-date-end').val()).getTime() / 1000);
-        window.location.href = '/legacy/' + username + '/' + unixRangeStart + '/' + unixRangeEnd;
+        if (username) window.location.href = '/legacy/' + username + '/' + unixRangeStart + '/' + unixRangeEnd;
     };
 
     const onDateFilterReset = (e) => {
