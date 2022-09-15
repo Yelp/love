@@ -7,17 +7,10 @@
 {% block body %}
 <div class="row">
   <div class="col-md-6">
-    <div id="love_received_plot" style="height:250px;"></div>
-  </div>
-  <div class="col-md-6">
-    <div id="love_sent_plot" style="height:250px;"></div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-6">
     <h1>Love Received</h1>
     {% if received_loves %}
       <div class="content-container">
+        <div id="love_received_plot" style="height:250px;margin-left:-80px;margin-right:50px;"></div>
       {% for love in received_loves %}
         {% set sender = love.sender_key.get() %}
         {% set recipient = love.recipient_key.get() %}
@@ -45,6 +38,7 @@
     <h1>Love Sent</h1>
     {% if sent_loves %}
       <div class="content-container">
+        <div id="love_sent_plot" style="height:250px;margin-left:-80px;margin-right:50px;"></div>
       {% for love in sent_loves %}
         {% set sender = love.sender_key.get() %}
         {% set recipient = love.recipient_key.get() %}
@@ -94,7 +88,14 @@
         name: "count"
       }
     ]
-    Plotly.newPlot('love_sent_plot', sent_plot)
-    Plotly.newPlot('love_received_plot', received_plot)
+    var layout = {
+    yaxis: {
+      tickmode: "linear",
+      tick0: 0,
+      dtick: 1
+    }
+  }
+    Plotly.newPlot('love_sent_plot', sent_plot, layout)
+    Plotly.newPlot('love_received_plot', received_plot, layout)
   </script>
 {% endblock %}
