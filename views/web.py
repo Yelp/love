@@ -66,8 +66,8 @@ def home():
 def me():
     current_employee = Employee.get_current_employee()
 
-    sent_love = logic.love.recent_sent_love(current_employee.key, limit=200).get_result()
-    received_love = logic.love.recent_received_love(current_employee.key, limit=200).get_result()
+    sent_love = logic.love.recent_sent_love(current_employee.key, limit=20).get_result()
+    received_love = logic.love.recent_received_love(current_employee.key, limit=20).get_result()
 
     sent_love_histogram = []
     for love in sent_love:
