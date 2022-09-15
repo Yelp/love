@@ -7,6 +7,14 @@
 {% block body %}
 <div class="row">
   <div class="col-md-6">
+    <div id="love_received_plot" style="height:250px;"></div>
+  </div>
+  <div class="col-md-6">
+    <div id="love_sent_plot" style="height:250px;"></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6">
     <h1>Love Received</h1>
     {% if received_loves %}
       <div class="content-container">
@@ -64,5 +72,29 @@
 {% block javascript %}
   <script type="text/javascript">
     $('#nav-me').addClass('active');
+  </script>
+
+  <script>
+    var sent_love_to_data = {{sent_love_histogram|safe}}
+    var sent_plot = [
+      {
+        histfunc: "count",
+        x: sent_love_to_data,
+        type: "histogram",
+        name: "count"
+      }
+    ]
+
+    var received_love_from_data = {{received_love_histogram|safe}}
+    var received_plot = [
+      {
+        histfunc: "count",
+        x: received_love_from_data,
+        type: "histogram",
+        name: "count"
+      }
+    ]
+    Plotly.newPlot('love_sent_plot', sent_plot)
+    Plotly.newPlot('love_received_plot', received_plot)
   </script>
 {% endblock %}

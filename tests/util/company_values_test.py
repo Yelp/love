@@ -55,7 +55,7 @@ class CompanyValuesUtilTest(unittest.TestCase):
     @mock.patch('util.company_values.config')
     def test_linkify_company_values(self, mock_config):
         mock_config.COMPANY_VALUES = []
-        love_text = u'who wants to #liveForever? 😭'
+        love_text = u'who wants to #liveForever?'
         linkified_value = util.company_values.linkify_company_values(love_text)
         # should be the same, because there's no hashtags.
         self.assertEqual(love_text, linkified_value)
