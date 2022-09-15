@@ -120,22 +120,25 @@
     // 1096614000 is the month Yelp was founded (Oct 2004). 3 extra zeros are added as milliseconds.
     const defaultDateStart = new Date(1096614000000);
 
+    const onDateFilterReset = (e) => {
+        $('#filter-date-start').val(defaultDateStart.toString('yyyy-MM-dd'));
+        $('#filter-date-end').val(new Date().toString('yyyy-MM-dd'));
+    };
+
     const onViewLegacy = (e) => {
         e.preventDefault();
         const username = $('.leaderboard-filter :input').val();
-        if ($('#filter-date-start').val() == null || $('#filter-date-start').val().length == 0 ||
-            $('#filter-date-end').val() == null || $('#filter-date-end').val().length == 0) {
+        if (!$('#filter-date-start').val() || !$('#filter-date-end').val()) {
             onDateFilterReset();
         }
         const unixRangeStart = Math.floor(new Date($('#filter-date-start').val()).getTime() / 1000);
         const unixRangeEnd = Math.floor(new Date($('#filter-date-end').val()).getTime() / 1000);
-        if (username) window.location.href = '/legacy/' + username + '/' + unixRangeStart + '/' + unixRangeEnd;
+        
+        if (username) {
+          const searchParams = new URLSearchParams({ start_date: unixRangeStart, end_date: unixRangeEnd });
+          window.location.href = '/legacy/' + username + '?' + searchParams.toString();
+        }
     };
-
-    const onDateFilterReset = (e) => {
-        $('#filter-date-start').val(defaultDateStart.toString('yyyy-MM-dd'));
-        $('#filter-date-end').val(new Date().toString('yyyy-MM-dd'));
-    }
 
     $(document).ready(function() {
         $('.leaderboard-filter button').on('click', onViewLegacy);

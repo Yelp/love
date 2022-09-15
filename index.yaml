@@ -91,3 +91,9 @@ indexes:
   ancestor: yes
   properties:
   - name: week_start
+
+- kind: LoveCount
+  ancestor: yes
+  properties:
+  - name: week_start
+    direction: desc

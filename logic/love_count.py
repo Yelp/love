@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+from collections import OrderedDict
 
 from google.appengine.api.runtime import memory_usage
 from google.appengine.ext import ndb
@@ -79,16 +80,20 @@ def rebuild_love_count():
     set_toggle_state(LOVE_SENDING_ENABLED, True)
 
 
-def get_love_counts_by_week(username, unixtime_range_start, unixtime_range_end):
+def get_love_counts_by_week(username, start_date = None, end_date = None):
     """Return the amount of love sent and received by a particular employee, broken down by week."""
 
     employee_key = Employee.get_key_for_username(username)
-    received_by_week, sent_by_week = {}, {}
+    received_by_week, sent_by_week = OrderedDict(), OrderedDict()
 
-    received_by_week, sent_by_week = {}, {}
-    for love_count in LoveCount.query(LoveCount.week_start >= datetime.datetime.fromtimestamp(unixtime_range_start),
-                                      LoveCount.week_start <= datetime.datetime.fromtimestamp(unixtime_range_end),
-                                      ancestor=employee_key).iter():
+    love_count_query = LoveCount.query(ancestor=employee_key)
+    if start_date:
+        love_count_query = love_count_query.filter(LoveCount.week_start >= start_date)
+    
+    if end_date:
+        love_count_query = love_count_query.filter(LoveCount.week_start <= end_date)
+    
+    for love_count in love_count_query.order(-LoveCount.week_start).iter():
         received_by_week[love_count.week_start] = love_count.received_count
         sent_by_week[love_count.week_start] = love_count.sent_count
 

@@ -245,11 +245,17 @@ def leaderboard():
 def legacy_index():
     return render_template('legacy.html')
 
-@app.route('/legacy/<string:username>/<int:unix_range_start>/<int:unix_range_end>', methods=['GET'])
+def to_datetime(timestamp): 
+    return datetime.fromtimestamp(float(timestamp))
+
+@app.route('/legacy/<string:username>', methods=['GET'])
 @user_required
-def legacy(username, unix_range_start, unix_range_end):
+def legacy(username):
     try:
-        received_by_week, sent_by_week = logic.love_count.get_love_counts_by_week(username, unix_range_start, unix_range_end)
+        start_date = request.args.get('start_date', default = None, type = to_datetime)
+        end_date = request.args.get('end_date', default = None, type = to_datetime)
+        
+        received_by_week, sent_by_week = logic.love_count.get_love_counts_by_week(username, start_date, end_date)
     except NoSuchEmployee:
         abort(404)
 
@@ -258,8 +264,8 @@ def legacy(username, unix_range_start, unix_range_end):
         username=username,
         received_by_week=received_by_week,
         sent_by_week=sent_by_week,
-        filter_date_start=datetime.fromtimestamp(unix_range_start).strftime('%Y-%m-%d'),
-        filter_date_end=datetime.fromtimestamp(unix_range_end).strftime('%Y-%m-%d')
+        filter_date_start=start_date.strftime('%Y-%m-%d') if start_date else None,
+        filter_date_end=end_date.strftime('%Y-%m-%d') if end_date else None
     )
 
 
