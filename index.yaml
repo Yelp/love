@@ -86,3 +86,8 @@ indexes:
   - name: week_start
   - name: sent_count
     direction: desc
+
+- kind: LoveCount
+  ancestor: yes
+  properties:
+  - name: week_start

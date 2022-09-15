@@ -25,6 +25,19 @@
 </div>
 
 <div class="row">
+  <div class="col-md-6">
+    <label>Filter from </label>
+    <input type="date" id="filter-date-start" value="{{ filter_date_start }}">
+    <label> to </label>
+    <input type="date" id="filter-date-end" value="{{ filter_date_end }}">
+    <button type="button" id="filter-date-reset" class="btn btn-default">Reset</button>
+  </div>
+  <div class="col-md-6">
+
+  </div>
+</div>
+
+<div class="row">
     <div class="col-md-6">
         <h2>Recieved love</h2>
         <table class="table">
@@ -85,21 +98,55 @@
       </form>
     </div>
 </div>
+
+<div class="row">
+  <div class="col-md-6">
+    <label>Filter from </label>
+    <input type="date" id="filter-date-start">
+    <label> to </label>
+    <input type="date" id="filter-date-end">
+    <button type="button" id="filter-date-reset" class="btn btn-default">Reset</button>
+  </div>
+  <div class="col-md-6">
+
+  </div>
+</div>
 {% endif %}
 
 {% endblock %}
 
 {% block javascript %}
   <script type="text/javascript">
+    // 1096614000 is the month Yelp was founded (Oct 2004). 3 extra zeros are added as milliseconds.
+    const defaultDateStart = new Date(1096614000000);
+
     const onViewLegacy = (e) => {
         e.preventDefault();
         const username = $('.leaderboard-filter :input').val();
-        if (username) window.location.href = '/legacy/' + username;
+        if ($('#filter-date-start').val() == null || $('#filter-date-start').val().length == 0 ||
+            $('#filter-date-end').val() == null || $('#filter-date-end').val().length == 0) {
+            onDateFilterReset();
+        }
+        const unixRangeStart = Math.floor(new Date($('#filter-date-start').val()).getTime() / 1000);
+        const unixRangeEnd = Math.floor(new Date($('#filter-date-end').val()).getTime() / 1000);
+        if (username) window.location.href = '/legacy/' + username + '/' + unixRangeStart + '/' + unixRangeEnd;
     };
+
+    const onDateFilterReset = (e) => {
+        $('#filter-date-start').val(defaultDateStart.toString('yyyy-MM-dd'));
+        $('#filter-date-end').val(new Date().toString('yyyy-MM-dd'));
+    }
 
     $(document).ready(function() {
         $('.leaderboard-filter button').on('click', onViewLegacy);
         $('form.leaderboard-filter').on('submit', onViewLegacy);
+        $('#filter-date-reset').on('click', onDateFilterReset);
+        if ($('#filter-date-start').val() == null || $('#filter-date-start').val().length == 0) {
+            $('#filter-date-start').val(defaultDateStart.toString('yyyy-MM-dd'));
+        }
+        if ($('#filter-date-end').val() == null || $('#filter-date-end').val().length == 0) {
+            $('#filter-date-end').val(new Date().toString('yyyy-MM-dd'));
+        }
     });
   </script>
 {% endblock %}
