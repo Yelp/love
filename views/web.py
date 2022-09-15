@@ -66,15 +66,26 @@ def home():
 def me():
     current_employee = Employee.get_current_employee()
 
-    sent_love = logic.love.recent_sent_love(current_employee.key, limit=20)
-    received_love = logic.love.recent_received_love(current_employee.key, limit=20)
+    sent_love = logic.love.recent_sent_love(current_employee.key, limit=20).get_result()
+    received_love = logic.love.recent_received_love(current_employee.key, limit=20).get_result()
 
+    sent_love_histogram = []
+    for love in sent_love:
+        receiver_username = love.recipient_key.get().username
+        sent_love_histogram.append(str(receiver_username))
+
+    received_love_histogram = []
+    for love in received_love:
+        from_username = love.sender_key.get().username
+        received_love_histogram.append(str(from_username))
     return render_template(
         'me.html',
         current_time=datetime.utcnow(),
         current_user=current_employee,
-        sent_loves=sent_love.get_result(),
-        received_loves=received_love.get_result()
+        sent_loves=sent_love,
+        received_loves=received_love,
+        sent_love_histogram=sent_love_histogram,
+        received_love_histogram=received_love_histogram
     )
 
 
