@@ -66,15 +66,26 @@ def home():
 def me():
     current_employee = Employee.get_current_employee()
 
-    sent_love = logic.love.recent_sent_love(current_employee.key, limit=20)
-    received_love = logic.love.recent_received_love(current_employee.key, limit=20)
+    sent_love = logic.love.recent_sent_love(current_employee.key, limit=20).get_result()
+    received_love = logic.love.recent_received_love(current_employee.key, limit=20).get_result()
 
+    sent_love_histogram = []
+    for love in sent_love:
+        receiver_username = love.recipient_key.get().username
+        sent_love_histogram.append(str(receiver_username))
+
+    received_love_histogram = []
+    for love in received_love:
+        from_username = love.sender_key.get().username
+        received_love_histogram.append(str(from_username))
     return render_template(
         'me.html',
         current_time=datetime.utcnow(),
         current_user=current_employee,
-        sent_loves=sent_love.get_result(),
-        received_loves=received_love.get_result()
+        sent_loves=sent_love,
+        received_loves=received_love,
+        sent_love_histogram=sent_love_histogram,
+        received_love_histogram=received_love_histogram
     )
 
 
@@ -238,6 +249,37 @@ def leaderboard():
         org_title=config.ORG_TITLE,
         teams_title=config.TEAMS_TITLE,
         offices_title=config.OFFICES_TITLE
+    )
+
+
+@app.route('/legacy', methods=['GET'])
+@user_required
+def legacy_index():
+    return render_template('legacy.html')
+
+
+def to_datetime(timestamp):
+    return datetime.fromtimestamp(float(timestamp))
+
+
+@app.route('/legacy/<string:username>', methods=['GET'])
+@user_required
+def legacy(username):
+    try:
+        start_date = request.args.get('start_date', default=None, type=to_datetime)
+        end_date = request.args.get('end_date', default=None, type=to_datetime)
+
+        received_by_week, sent_by_week = logic.love_count.get_love_counts_by_week(username, start_date, end_date)
+    except NoSuchEmployee:
+        abort(404)
+
+    return render_template(
+        'legacy.html',
+        username=username,
+        received_by_week=received_by_week,
+        sent_by_week=sent_by_week,
+        filter_date_start=start_date.strftime('%Y-%m-%d') if start_date else None,
+        filter_date_end=end_date.strftime('%Y-%m-%d') if end_date else None
     )
 
 

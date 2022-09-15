@@ -30,6 +30,7 @@
             {% if config.COMPANY_VALUES %}
             <li id="nav-values"><a href="/values">Values</a></li>
             {% endif %}
+            <li id="nav-values"><a href="/legacy">Legacy</a></li>
           </ul>
 
           {% if is_admin() %}
@@ -57,6 +58,7 @@
       </div>
     </div>
     <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
     <script src="{{ theme_static('js/jquery-ui-1.10.4.custom.min.js') }}"></script>

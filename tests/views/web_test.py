@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import mock
+import time
+from datetime import datetime, timedelta
 
 from webtest.app import AppError
 
@@ -8,6 +10,7 @@ import logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 from testing.factories import create_love
+from testing.factories import create_love_count
 from testing.factories import create_love_link
 from testing.factories import create_subscription
 from testing.util import LoggedInAdminBaseTest
@@ -36,6 +39,12 @@ class LoggedOutTest(YelpLoveTestCase):
 
     def test_leaderboard(self):
         self.assertRequiresLogin(self.app.get('/leaderboard'))
+
+    def test_legacy_index(self):
+        self.assertRequiresLogin(self.app.get('/legacy'))
+
+    def test_legacy(self):
+        self.assertRequiresLogin(self.app.get('/legacy/alice'))
 
     def test_keys(self):
         self.assertRequiresLogin(self.app.get('/keys'))
@@ -562,6 +571,47 @@ class LeaderboardTest(LoggedInUserBaseTest):
         self.assertIsNone(response.context['selected_dept'])
         self.assertIsNotNone(response.context['selected_timespan'])
         self.assertIsNone(response.context['selected_office'])
+
+
+class LegacyTest(LoggedInUserBaseTest):
+    """
+    Testing /legacy
+    """
+
+    def setUp(self):
+        super(LegacyTest, self).setUp()
+        user = create_employee(username='legacy-username')
+        parent_key = user.key
+        for i in range(10):
+            week_start, _ = logic.utc_week_limits(datetime.utcnow() - timedelta(days=7 * i))
+            create_love_count(parent_key, week_start=week_start)
+
+    def test_legacy_index(self):
+        response = self.app.get('/legacy')
+
+        self.assertEqual(response.status_int, 200)
+        self.assertIn('legacy.html', response.template)
+
+    def test_legacy(self):
+        response = self.app.get('/legacy/legacy-username')
+        self.assertEqual(response.context['username'], 'legacy-username')
+        self.assertEqual(len(response.context['sent_by_week'].keys()), 10)
+        self.assertEqual(len(response.context['received_by_week'].keys()), 10)
+        self.assertIsNone(response.context['filter_date_start'])
+        self.assertIsNone(response.context['filter_date_end'])
+
+    def test_legacy_with_date_filter(self):
+        week_start, _ = logic.utc_week_limits(datetime.utcnow())
+        one_week_ago, _ = logic.utc_week_limits(datetime.utcnow() - timedelta(days=7))
+        url = '/legacy/legacy-username?start_date=' \
+            + str(time.mktime(one_week_ago.timetuple())) \
+            + '&end_date=' + str(time.mktime(week_start.timetuple()))
+        response = self.app.get(url)
+        self.assertEqual(response.context['username'], 'legacy-username')
+        self.assertEqual(len(response.context['sent_by_week'].keys()), 2)
+        self.assertEqual(len(response.context['received_by_week'].keys()), 2)
+        self.assertEqual(response.context['filter_date_start'], one_week_ago.strftime('%Y-%m-%d'))
+        self.assertEqual(response.context['filter_date_end'], week_start.strftime('%Y-%m-%d'))
 
 
 class ExploreTest(LoggedInUserBaseTest):
