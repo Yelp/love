@@ -129,7 +129,7 @@
         }
         const unixRangeStart = Math.floor(new Date($('#filter-date-start').val()).getTime() / 1000);
         const unixRangeEnd = Math.floor(new Date($('#filter-date-end').val()).getTime() / 1000);
-        
+
         if (username) {
           const searchParams = new URLSearchParams({ start_date: unixRangeStart, end_date: unixRangeEnd });
           window.location.href = '/legacy/' + username + '?' + searchParams.toString();

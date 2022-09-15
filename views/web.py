@@ -251,21 +251,24 @@ def leaderboard():
         offices_title=config.OFFICES_TITLE
     )
 
+
 @app.route('/legacy', methods=['GET'])
 @user_required
 def legacy_index():
     return render_template('legacy.html')
 
-def to_datetime(timestamp): 
+
+def to_datetime(timestamp):
     return datetime.fromtimestamp(float(timestamp))
+
 
 @app.route('/legacy/<string:username>', methods=['GET'])
 @user_required
 def legacy(username):
     try:
-        start_date = request.args.get('start_date', default = None, type = to_datetime)
-        end_date = request.args.get('end_date', default = None, type = to_datetime)
-        
+        start_date = request.args.get('start_date', default=None, type=to_datetime)
+        end_date = request.args.get('end_date', default=None, type=to_datetime)
+
         received_by_week, sent_by_week = logic.love_count.get_love_counts_by_week(username, start_date, end_date)
     except NoSuchEmployee:
         abort(404)
