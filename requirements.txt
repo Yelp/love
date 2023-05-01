@@ -1,7 +1,7 @@
 # This requirements file lists all dependecies for this project.
 # Run 'make lib' to install these dependencies in this project's lib directory.
 boto==2.46.1
-Flask==1.0
+Flask==2.3.2
 Flask-Themes2==0.1.4
 itsdangerous==0.24
 Jinja2==2.11.3
