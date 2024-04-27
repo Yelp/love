@@ -20,5 +20,5 @@ def check_csrf_protection():
 
 def generate_csrf_token():
     if '_csrf_token' not in session:
-        session['_csrf_token'] = binascii.hexlify(os.urandom(16))
+        session['_csrf_token'] = str(binascii.hexlify(os.urandom(16)))
     return session['_csrf_token']
