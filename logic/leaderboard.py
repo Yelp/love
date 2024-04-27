@@ -41,6 +41,6 @@ def get_leaderboard_data(timespan, department, office=None):
     ]
 
     # get results for the futures set up previously
-    map(to_the_future, top_lover_dicts)
-    map(to_the_future, top_loved_dicts)
+    list(map(to_the_future, top_lover_dicts))
+    list(map(to_the_future, top_loved_dicts))
     return (top_lover_dicts, top_loved_dicts)

@@ -17,7 +17,7 @@ def chunk(iterable, chunk_size):
 
 
 def to_the_future(dict):
-    for k, v in dict.iteritems():
+    for k, v in dict.items():
         if issubclass(v.__class__, ndb.Future):
             dict[k] = v.get_result()
 
