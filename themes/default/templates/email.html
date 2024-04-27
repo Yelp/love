@@ -48,7 +48,7 @@
           <td style="margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;">
             <h4 style="margin: 0;padding: 0;font-family: Arial, sans-serif;line-height: 1.1;color: #000;font-weight: 900;font-size: 26px;"><a href="{{ config.APP_BASE_URL }}explore?user={{ sender.username }}" style="margin: 0;padding: 0;color: #3b65a7;">{{ sender.full_name }}</a></h4>
             <h5 style="margin: 0;padding: 0;font-family: Arial, sans-serif;line-height: 1.1;color: #555;font-weight: normal;font-size: 16px;margin-top: 2px;">{{ sender.department }}</h5>
-            <p class="love" style="margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;margin-bottom: 10px;font-weight: normal;font-size: 20px;line-height: 1.4;margin-top: 6px;">{{ love.message }}</p>
+            <p class="love" style="margin: 0;padding: 0;font-family: Arial, sans-serif;color: #333;margin-bottom: 10px;font-weight: normal;font-size: 20px;line-height: 1.4;margin-top: 6px;">{{ love.message|linkify_company_values }}</p>
             {% if love.secret %}
               <p><span style="font-family: Arial, sans-serif; padding: 6px 12px;font-size: 12px;font-weight: 700;color: #fff;white-space: nowrap;text-align: center;background-color: #bbb;border-radius: 12px;">Shh... sent secretly!</span></p>
             {% endif %}
