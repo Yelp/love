@@ -4,6 +4,7 @@
         "first_name": "John",
         "last_name": "Doe",
         "department": "",
+        "office": "",
         "photo_url": "https://placehold.it/100x100"
     },
     {
@@ -11,6 +12,7 @@
         "first_name": "Janet",
         "last_name": "Doe",
         "department": "",
+        "office": "",
         "photo_url": "https://placehold.it/100x100"
     }
 ]

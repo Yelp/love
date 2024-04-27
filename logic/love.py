@@ -228,7 +228,7 @@ def _get_company_values(new_love, message):
     hashtag_value_mapping = get_hashtag_value_mapping()
 
     matched_categories = set()
-    for hashtag, category in hashtag_value_mapping.iteritems():
+    for hashtag, category in hashtag_value_mapping.items():
         if hashtag in message.lower():
             matched_categories.add(category)
 

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from flask import Blueprint
 from flask import make_response
 from flask import request
 
@@ -8,7 +9,6 @@ from logic.love import get_love
 from logic.love import send_loves
 from logic.love_link import create_love_link
 from logic.leaderboard import get_leaderboard_data
-from main import app
 from models import Employee
 from util.decorators import api_key_required
 from util.recipient import sanitize_recipients
@@ -21,9 +21,12 @@ LOVE_FAILED_STATUS_CODE = 418  # I'm a Teapot
 LOVE_BAD_PARAMS_STATUS_CODE = 422  # Unprocessable Entity
 LOVE_NOT_FOUND_STATUS_CODE = 404  # Not Found
 
+api_app = Blueprint('api_app', __name__)
 
 # GET /api/love
-@app.route('/api/love', methods=['GET'])
+
+
+@api_app.route('/api/love', methods=['GET'])
 @api_key_required
 def api_get_love():
     sender = request.args.get('sender')
@@ -62,7 +65,7 @@ def api_get_love():
 # POST /api/love
 
 
-@app.route('/api/love', methods=['POST'])
+@api_app.route('/api/love', methods=['POST'])
 @api_key_required
 def api_send_loves():
     sender = request.form.get('sender')
@@ -88,7 +91,7 @@ def api_send_loves():
 # GET /api/leaderboard
 
 
-@app.route('/api/leaderboard', methods=['GET'])
+@api_app.route('/api/leaderboard', methods=['GET'])
 @api_key_required
 def api_get_leaderboard():
     department = request.args.get('department', None)
@@ -114,7 +117,7 @@ def api_get_leaderboard():
             'username': loved['employee'].username,
             'department': loved['employee'].department,
             'love_count': loved['num_received'],
-            'photo_url': lover['employee'].photo_url,
+            'photo_url': loved['employee'].photo_url,
         }
         for loved in top_loved_dicts
     ]
@@ -122,7 +125,7 @@ def api_get_leaderboard():
     return make_json_response(final_result)
 
 
-@app.route('/api/autocomplete', methods=['GET'])
+@api_app.route('/api/autocomplete', methods=['GET'])
 @api_key_required
 def autocomplete():
     return common.autocomplete(request)

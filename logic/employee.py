@@ -46,7 +46,7 @@ def _get_employee_info_from_csv():
 
 
 def _clear_index():
-    logging.info('Clearing index... {}MB'.format(memory_usage().current()))
+    logging.info('Clearing index... {}MB'.format(memory_usage().current))
     index = search.Index(name=INDEX_NAME)
     last_id = None
     while True:
@@ -70,7 +70,7 @@ def _clear_index():
         last_id = doc_ids[-1]
         index.delete(doc_ids)
 
-    logging.info('Done clearing index. {}MB'.format(memory_usage().current()))
+    logging.info('Done clearing index. {}MB'.format(memory_usage().current))
 
 
 def _generate_substrings(string):
@@ -80,14 +80,14 @@ def _generate_substrings(string):
     Example:
         _concatenate_substrings('arothman') => 'a ar aro arot aroth arothm arothma'
     """
-    return ' '.join([string[:i] for i in xrange(1, len(string))])
+    return ' '.join([string[:i] for i in range(1, len(string))])
 
 
 def _get_employee_info_from_s3():
     from boto import connect_s3
     from boto.s3.key import Key
 
-    logging.info('Reading employees file from S3... {}MB'.format(memory_usage().current()))
+    logging.info('Reading employees file from S3... {}MB'.format(memory_usage().current))
     key = Key(
         connect_s3(
             aws_access_key_id=get_secret('AWS_ACCESS_KEY_ID'),
@@ -96,12 +96,12 @@ def _get_employee_info_from_s3():
         'employees.json',
     )
     employee_dicts = json.loads(key.get_contents_as_string())
-    logging.info('Done reading employees file from S3. {}MB'.format(memory_usage().current()))
+    logging.info('Done reading employees file from S3. {}MB'.format(memory_usage().current))
     return employee_dicts
 
 
 def _index_employees(employees):
-    logging.info('Indexing employees... {}MB'.format(memory_usage().current()))
+    logging.info('Indexing employees... {}MB'.format(memory_usage().current))
     index = search.Index(name=INDEX_NAME)
     # According to appengine, put can handle a maximum of 200 documents,
     # and apparently batching is more efficient
@@ -118,12 +118,12 @@ def _index_employees(employees):
                 doc = search.Document(fields=[
                     # Full name is already unicode
                     search.TextField(name='full_name', value=employee.full_name),
-                    search.TextField(name='username', value=unicode(employee.username)),
+                    search.TextField(name='username', value=employee.username),
                     search.TextField(name='substrings', value=substrings),
                 ])
                 documents.append(doc)
         index.put(documents)
-    logging.info('Done indexing employees. {}MB'.format(memory_usage().current()))
+    logging.info('Done indexing employees. {}MB'.format(memory_usage().current))
 
 
 def _update_employees(employee_dicts):
@@ -135,7 +135,7 @@ def _update_employees(employee_dicts):
     """
     employee_dicts = list(employee_dicts)
 
-    logging.info('Updating employees... {}MB'.format(memory_usage().current()))
+    logging.info('Updating employees... {}MB'.format(memory_usage().current))
 
     db_employee_dict = {
         employee.username: employee
@@ -166,7 +166,7 @@ def _update_employees(employee_dicts):
 
         current_usernames.add(d['username'])
         if len(all_employees) % 200 == 0:
-            logging.info('Processed {} employees, {}MB'.format(len(all_employees), memory_usage().current()))
+            logging.info('Processed {} employees, {}MB'.format(len(all_employees), memory_usage().current))
     ndb.put_multi(all_employees)
 
     # Figure out if there are any employees in the DB that aren't in the S3
@@ -181,7 +181,7 @@ def _update_employees(employee_dicts):
         terminated_employees.append(employee)
     ndb.put_multi(terminated_employees)
 
-    logging.info('Done updating employees. {}MB'.format(memory_usage().current()))
+    logging.info('Done updating employees. {}MB'.format(memory_usage().current))
 
 
 def combine_employees(old_username, new_username):

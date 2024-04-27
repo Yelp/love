@@ -1,7 +1,8 @@
 service: worker
-runtime: python27
+runtime: python311
 api_version: 1
 threadsafe: true
+app_engine_apis: true
 
 handlers:
 - url: /tasks/.*
@@ -9,9 +10,6 @@ handlers:
   login: admin
   secure: always
 
-libraries:
-- name: ssl
-  version: latest
 
 skip_files:
 - ^(.*/)?#.*#$

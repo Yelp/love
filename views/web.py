@@ -6,6 +6,7 @@ import config
 from datetime import datetime
 
 from flask import abort
+from flask import Blueprint
 from flask import flash
 from flask import redirect
 from flask import request
@@ -25,11 +26,10 @@ from google.appengine.api import taskqueue
 from logic import TIMESPAN_THIS_WEEK
 from logic.love_link import create_love_link
 from logic.leaderboard import get_leaderboard_data
-from main import app
-from models import AccessKey
 from models import Alias
 from models import Employee
 from models import Subscription
+from models.access_key import AccessKey
 from util.decorators import admin_required
 from util.decorators import csrf_protect
 from util.decorators import user_required
@@ -43,8 +43,10 @@ from views import common
 from logic.office import get_all_offices
 from logic.department import get_all_departments
 
+web_app = Blueprint('web_app', __name__)
 
-@app.route('/', methods=['GET'])
+
+@web_app.route('/', methods=['GET'])
 @user_required
 def home():
     link_id = request.args.get('link_id', None)
@@ -61,7 +63,7 @@ def home():
     )
 
 
-@app.route('/me', methods=['GET'])
+@web_app.route('/me', methods=['GET'])
 @user_required
 def me():
     current_employee = Employee.get_current_employee()
@@ -78,7 +80,7 @@ def me():
     )
 
 
-@app.route('/<regex("[a-zA-Z]{3,30}"):user>', methods=['GET'])
+@web_app.route('/<regex("[a-zA-Z]{3,30}"):user>', methods=['GET'])
 @user_required
 def me_or_explore(user):
     current_employee = Employee.get_current_employee()
@@ -90,9 +92,9 @@ def me_or_explore(user):
         abort(404)
 
     if current_employee.key == user_key:
-        return redirect(url_for('me'))
+        return redirect(url_for('web_app.me'))
     else:
-        return redirect(url_for('explore', user=username))
+        return redirect(url_for('web_app.explore', user=username))
 
 
 def format_loves(loves):
@@ -109,12 +111,12 @@ def format_loves(loves):
     return loves_list_one, loves_list_two
 
 
-@app.route('/value/<string:company_value_id>', methods=['GET'])
+@web_app.route('/value/<string:company_value_id>', methods=['GET'])
 @user_required
 def single_company_value(company_value_id):
     company_value = get_company_value(company_value_id.upper())
     if not company_value:
-        return redirect(url_for('company_values'))
+        return redirect(url_for('web_app.company_values'))
 
     current_employee = Employee.get_current_employee()
 
@@ -132,7 +134,7 @@ def single_company_value(company_value_id):
     )
 
 
-@app.route('/values', methods=['GET'])
+@web_app.route('/values', methods=['GET'])
 @user_required
 def company_values():
     if not config.COMPANY_VALUES:
@@ -154,7 +156,7 @@ def company_values():
     )
 
 
-@app.route('/l/<string:link_id>', methods=['GET'])
+@web_app.route('/l/<string:link_id>', methods=['GET'])
 @user_required
 def love_link(link_id):
     try:
@@ -179,10 +181,10 @@ def love_link(link_id):
         )
     except (NoSuchLoveLink, NoSuchEmployee):
         flash('Sorry, that link ({}) is no longer valid.'.format(link_id), 'error')
-        return redirect(url_for('home'))
+        return redirect(url_for('web_app.home'))
 
 
-@app.route('/explore', methods=['GET'])
+@web_app.route('/explore', methods=['GET'])
 @user_required
 def explore():
     username = request.args.get('user', None)
@@ -203,7 +205,7 @@ def explore():
 
     if not user_key:
         flash('Sorry, "{}" is not a valid user.'.format(username), 'error')
-        return redirect(url_for('explore'))
+        return redirect(url_for('web_app.explore'))
 
     sent_love = logic.love.recent_sent_love(user_key, include_secret=False, limit=20)
     received_love = logic.love.recent_received_love(user_key, include_secret=False, limit=20)
@@ -217,7 +219,7 @@ def explore():
     )
 
 
-@app.route('/leaderboard', methods=['GET'])
+@web_app.route('/leaderboard', methods=['GET'])
 @user_required
 def leaderboard():
     timespan = request.args.get('timespan', TIMESPAN_THIS_WEEK)
@@ -241,7 +243,7 @@ def leaderboard():
     )
 
 
-@app.route('/sent', methods=['GET'])
+@web_app.route('/sent', methods=['GET'])
 @user_required
 def sent():
     link_id = request.args.get('link_id', None)
@@ -249,7 +251,7 @@ def sent():
     message = request.args.get('message', None)
 
     if not link_id or not recipients_str or not message:
-        return redirect(url_for('home'))
+        return redirect(url_for('web_app.home'))
 
     recipients = sanitize_recipients(recipients_str)
     loved = [
@@ -267,7 +269,7 @@ def sent():
     )
 
 
-@app.route('/keys', methods=['GET'])
+@web_app.route('/keys', methods=['GET'])
 @admin_required
 def keys():
     api_keys = AccessKey.query().fetch()
@@ -277,7 +279,7 @@ def keys():
     )
 
 
-@app.route('/keys/create', methods=['POST'])
+@web_app.route('/keys/create', methods=['POST'])
 @csrf_protect
 @admin_required
 def create_key():
@@ -285,10 +287,10 @@ def create_key():
     new_key = AccessKey.create(description)
 
     flash('Your API key {} has been created. Refresh the page to see it below.'.format(new_key.access_key))
-    return redirect(url_for('keys'))
+    return redirect(url_for('web_app.keys'))
 
 
-@app.route('/love', methods=['POST'])
+@web_app.route('/love', methods=['POST'])
 @csrf_protect
 @user_required
 def love():
@@ -300,20 +302,20 @@ def love():
 
     if not recipients:
         flash('Enter a name, lover.', 'error')
-        return redirect(url_for('home'))
+        return redirect(url_for('web_app.home'))
 
     recipients_display_str = ', '.join(recipients)
 
     if not message:
         flash('Enter a message, lover.', 'error')
-        return redirect(url_for('home', recipients=recipients_display_str))
+        return redirect(url_for('web_app.home', recipients=recipients_display_str))
 
     try:
         if action == 'create_link':
             _, real_recipients = logic.love.validate_love_recipients(recipients)
             real_display_str = ', '.join(real_recipients)
             hash_key = create_love_link(real_display_str, message).hash_key
-            return redirect(url_for('home', recipients=real_display_str, link_id=hash_key, message=message))
+            return redirect(url_for('web_app.home', recipients=real_display_str, link_id=hash_key, message=message))
         else:
             real_recipients = logic.love.send_loves(recipients, message, secret=secret)
             # actual recipients may have the sender stripped from the list
@@ -321,10 +323,10 @@ def love():
 
             if secret:
                 flash('Secret love sent to {}!'.format(real_display_str))
-                return redirect(url_for('home'))
+                return redirect(url_for('web_app.home'))
             else:
                 hash_key = link_id if link_id else create_love_link(real_display_str, message).hash_key
-                return redirect(url_for('sent', message=message, recipients=real_display_str, link_id=hash_key))
+                return redirect(url_for('web_app.sent', message=message, recipients=real_display_str, link_id=hash_key))
 
     except TaintedLove as exc:
         if exc.is_error:
@@ -332,23 +334,23 @@ def love():
         else:
             flash(exc.user_message)
 
-        return redirect(url_for('home', recipients=recipients_display_str, message=message))
+        return redirect(url_for('web_app.home', recipients=recipients_display_str, message=message))
 
 
-@app.route('/user/autocomplete', methods=['GET'])
+@web_app.route('/user/autocomplete', methods=['GET'])
 @user_required
 def autocomplete_web():
     return common.autocomplete(request)
 
 
-@app.route('/values/autocomplete', methods=['GET'])
+@web_app.route('/values/autocomplete', methods=['GET'])
 @user_required
 def autocomplete_company_values_web():
     matching_prefixes = values_matching_prefix(request.args.get('term', None))
     return make_json_response(matching_prefixes)
 
 
-@app.route('/subscriptions', methods=['GET'])
+@web_app.route('/subscriptions', methods=['GET'])
 @admin_required
 def subscriptions():
     return render_template(
@@ -358,7 +360,7 @@ def subscriptions():
     )
 
 
-@app.route('/subscriptions/create', methods=['POST'])
+@web_app.route('/subscriptions/create', methods=['POST'])
 @csrf_protect
 @admin_required
 def create_subscription():
@@ -375,19 +377,19 @@ def create_subscription():
     except ValueError:
         flash('Something went wrong. Please check your input.', 'error')
 
-    return redirect(url_for('subscriptions'))
+    return redirect(url_for('web_app.subscriptions'))
 
 
-@app.route('/subscriptions/<int:subscription_id>/delete', methods=['POST'])
+@web_app.route('/subscriptions/<int:subscription_id>/delete', methods=['POST'])
 @csrf_protect
 @admin_required
 def delete_subscription(subscription_id):
     logic.subscription.delete_subscription(subscription_id)
     flash('Subscription deleted. Refresh the page to see it\'s gone.', 'info')
-    return redirect(url_for('subscriptions'))
+    return redirect(url_for('web_app.subscriptions'))
 
 
-@app.route('/aliases', methods=['GET'])
+@web_app.route('/aliases', methods=['GET'])
 @admin_required
 def aliases():
     return render_template(
@@ -396,7 +398,7 @@ def aliases():
     )
 
 
-@app.route('/aliases', methods=['POST'])
+@web_app.route('/aliases', methods=['POST'])
 @csrf_protect
 @admin_required
 def create_alias():
@@ -409,19 +411,19 @@ def create_alias():
     except Exception as e:
         flash('Something went wrong: {}.'.format(e.message), 'error')
 
-    return redirect(url_for('aliases'))
+    return redirect(url_for('web_app.aliases'))
 
 
-@app.route('/aliases/<int:alias_id>/delete', methods=['POST'])
+@web_app.route('/aliases/<int:alias_id>/delete', methods=['POST'])
 @csrf_protect
 @admin_required
 def delete_alias(alias_id):
     logic.alias.delete_alias(alias_id)
     flash('Alias successfully deleted. Refresh the page to see it\'s gone.', 'info')
-    return redirect(url_for('aliases'))
+    return redirect(url_for('web_app.aliases'))
 
 
-@app.route('/employees', methods=['GET'])
+@web_app.route('/employees', methods=['GET'])
 @admin_required
 def employees():
     return render_template(
@@ -434,7 +436,7 @@ def employees():
     )
 
 
-@app.route('/employees/import', methods=['GET'])
+@web_app.route('/employees/import', methods=['GET'])
 @admin_required
 def import_employees_form():
     import_file_exists = os.path.isfile(logic.employee.csv_import_file())
@@ -444,9 +446,9 @@ def import_employees_form():
     )
 
 
-@app.route('/employees/import', methods=['POST'])
+@web_app.route('/employees/import', methods=['POST'])
 @admin_required
 def import_employees():
     flash('We started importing employee data in the background. Refresh the page to see it.', 'info')
     taskqueue.add(url='/tasks/employees/load/csv')
-    return redirect(url_for('employees'))
+    return redirect(url_for('web_app.employees'))

@@ -12,7 +12,7 @@ def autocomplete(request):
     users = [
         {
             'label': u'{} ({})'.format(full_name, username),
-            'value': unicode(username),
+            'value': username,
             'avatar_url': photo_url,
         }
         for full_name, username, photo_url

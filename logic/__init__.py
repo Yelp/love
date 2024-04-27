@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
-from itertools import izip_longest
+from itertools import zip_longest
 
 import pytz
 from google.appengine.ext import ndb
@@ -13,7 +13,7 @@ TIMESPAN_THIS_WEEK = 'this_week'
 def chunk(iterable, chunk_size):
     """Collect data into fixed-length chunks or blocks (http://docs.python.org/2/library/itertools.html#recipes)"""
     args = [iter(iterable)] * chunk_size
-    return izip_longest(*args)
+    return zip_longest(*args)
 
 
 def to_the_future(dict):

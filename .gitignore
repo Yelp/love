@@ -16,4 +16,5 @@ tmp
 import/*.csv
 import/*.json
 venv
+env
 .vscode
