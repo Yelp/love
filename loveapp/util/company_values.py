@@ -20,10 +20,10 @@ def get_company_value_link_pairs():
 
 def supported_hashtags():
     # Returns all supported hashtags
-    return map(
+    return list(map(
         lambda x: '#' + x,
         itertools.chain(*[value.hashtags for value in config.COMPANY_VALUES])
-    )
+    ))
 
 
 def get_hashtag_value_mapping():
