@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models import Employee
+from loveapp.models import Employee
 
 
 def create_employee(

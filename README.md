@@ -82,7 +82,7 @@ using the [Secret](models/secret.py) model. Locally you can open up the
 [interactive console](http://localhost:8000/console) and execute the following code:
 
 ```python
-from models import Secret
+from loveapp.models import Secret
 
 Secret(id='AWS_ACCESS_KEY_ID', value='change-me').put()
 Secret(id='AWS_SECRET_ACCESS_KEY', value='change-me').put()
@@ -94,7 +94,7 @@ or the [Remote API](https://cloud.google.com/appengine/docs/python/tools/remotea
 To kick off the final import you have to run:
 
 ```python
-from logic import employee
+from loveapp.logic import employee
 employee.load_employees()
 ```
 

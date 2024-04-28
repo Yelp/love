@@ -2,7 +2,7 @@
 import unittest
 
 
-from logic.department import get_all_departments
+from loveapp.logic.department import get_all_departments
 from testing.factories import create_employee
 
 DEPARTMENTS = [

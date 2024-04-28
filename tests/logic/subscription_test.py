@@ -2,8 +2,8 @@
 import mock
 import unittest
 
-import logic.subscription
-from models import Subscription
+import loveapp.logic.subscription
+from loveapp.models import Subscription
 from testing.factories import create_employee
 from testing.factories import create_subscription
 
@@ -18,6 +18,6 @@ class SubscriptionTest(unittest.TestCase):
         subscription = create_subscription()
         self.assertIsNotNone(Subscription.get_by_id(subscription.key.id()))
 
-        logic.subscription.delete_subscription(subscription.key.id())
+        loveapp.logic.subscription.delete_subscription(subscription.key.id())
 
         self.assertIsNone(Subscription.get_by_id(subscription.key.id()))

@@ -5,9 +5,9 @@ import unittest
 
 import mock
 
-import logic.employee
-import logic.love
-from models import AccessKey
+import loveapp.logic.employee
+import loveapp.logic.love
+from loveapp.models import AccessKey
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 from testing.util import YelpLoveTestCase
@@ -56,7 +56,7 @@ class AutocompleteTest(_ApiKeyRequiredTestCase):
         create_employee(username='bob')
         create_employee(username='carol')
         with mock.patch('logic.employee.memory_usage', autospec=True):
-            logic.employee.rebuild_index()
+            loveapp.logic.employee.rebuild_index()
         self.api_key = AccessKey.create('autocomplete key').access_key
 
     def test_autocomplete(self):
@@ -84,7 +84,7 @@ class GetLoveTest(_ApiKeyRequiredTestCase):
         super(GetLoveTest, self).setUp()
         create_employee(username='alice')
         create_employee(username='bob')
-        logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
+        loveapp.logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
 
     def do_request(self, api_key):
         query_params = {
@@ -156,7 +156,7 @@ class GetLeaderboardTest(_ApiKeyRequiredTestCase):
         super(GetLeaderboardTest, self).setUp()
         create_employee(username='alice')
         create_employee(username='bob')
-        logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
+        loveapp.logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
 
     def do_request(self, api_key):
         query_params = {

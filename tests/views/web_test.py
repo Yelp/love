@@ -4,7 +4,7 @@ import mock
 from webtest.app import AppError
 
 from config import CompanyValue
-import logic
+import loveapp.logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 from testing.factories import create_love
@@ -492,7 +492,7 @@ class AliasesTestCase(LoggedInAdminBaseTest):
         )
 
         self.assertEqual(response.status_int, 302)
-        self.assertIsNone(logic.alias.get_alias('foo'))
+        self.assertIsNone(loveapp.logic.alias.get_alias('foo'))
 
     @mock.patch('views.web.logic.alias', autospec=True)
     def test_deleting_alias(self, mock_logic_alias):
@@ -603,8 +603,8 @@ class AutocompleteTest(LoggedInUserBaseTest):
         create_employee(username='alex')
         create_employee(username='bob')
         create_employee(username='carol')
-        with mock.patch('logic.employee.memory_usage', autospec=True):
-            logic.employee.rebuild_index()
+        with mock.patch('loveapp.logic.employee.memory_usage', autospec=True):
+            loveapp.logic.employee.rebuild_index()
 
     def test_autocomplete(self):
         self._test_autocomplete('a', ['alice', 'alex'])

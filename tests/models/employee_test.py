@@ -5,7 +5,7 @@ import unittest
 from google.appengine.api import users
 
 from errors import NoSuchEmployee
-from models.employee import Employee
+from loveapp.models.employee import Employee
 from testing.factories import create_employee
 
 

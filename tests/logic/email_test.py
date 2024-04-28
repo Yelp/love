@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-import logic.email
+import loveapp.logic.email
 
 
 class EmailTest(unittest.TestCase):
@@ -19,8 +19,8 @@ class EmailTest(unittest.TestCase):
     def test_send_email_appengine(self, mock_config, mock_backends):
         mock_config.EMAIL_BACKEND = 'appengine'
         mock_backends['appengine'] = mock.Mock()
-        logic.email.send_email(self.sender, self.recipient, self.subject,
-                               self.html, self.text)
+        loveapp.logic.email.send_email(self.sender, self.recipient, self.subject,
+                                       self.html, self.text)
         mock_backends['appengine'].assert_called_once_with(
             self.sender, self.recipient, self.subject, self.html, self.text
         )
@@ -30,8 +30,8 @@ class EmailTest(unittest.TestCase):
     def test_send_email_sendgrid(self, mock_config, mock_backends):
         mock_config.EMAIL_BACKEND = 'sendgrid'
         mock_backends['sendgrid'] = mock.Mock()
-        logic.email.send_email(self.sender, self.recipient, self.subject,
-                               self.html, self.text)
+        loveapp.logic.email.send_email(self.sender, self.recipient, self.subject,
+                                       self.html, self.text)
         mock_backends['sendgrid'].assert_called_once_with(
             self.sender, self.recipient, self.subject, self.html, self.text
         )

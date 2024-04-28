@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from models.access_key import AccessKey
+from loveapp.models.access_key import AccessKey
 
 
 class AccessKeyTest(unittest.TestCase):

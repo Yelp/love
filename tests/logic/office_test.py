@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import unittest
 import mock
-from logic.office import REMOTE_OFFICE
-from logic.office import get_all_offices
-from logic.office import OfficeParser
+from loveapp.logic.office import REMOTE_OFFICE
+from loveapp.logic.office import get_all_offices
+from loveapp.logic.office import OfficeParser
 from testing.factories import create_employee
 
 OFFICES = {

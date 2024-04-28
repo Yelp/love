@@ -2,7 +2,7 @@
 import unittest
 
 from errors import NoSuchSecret
-from logic.secret import get_secret
+from loveapp.logic.secret import get_secret
 from testing.factories import create_secret
 
 
