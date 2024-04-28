@@ -4,7 +4,7 @@ from google.appengine.api import wrap_wsgi_app
 from flask import Flask
 from flask_themes2 import Themes
 
-import config
+import loveapp.config as config
 from loveapp.util.auth import is_admin
 from loveapp.util.converter import RegexConverter
 from loveapp.util.company_values import linkify_company_values

@@ -4,7 +4,7 @@ import json
 from flask_themes2 import render_theme_template
 from flask.helpers import make_response
 
-import config
+import loveapp.config as config
 
 
 def get_current_theme():

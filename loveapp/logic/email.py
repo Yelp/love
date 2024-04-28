@@ -2,7 +2,7 @@
 from google.appengine.api.mail import EmailMessage
 
 from loveapp.util.email import get_name_and_email
-import config
+import loveapp.config as config
 import loveapp.logic.secret
 
 if config.EMAIL_BACKEND == 'sendgrid':

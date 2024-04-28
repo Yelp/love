@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-from config import CompanyValue
+from loveapp.config import CompanyValue
 import loveapp.logic.love
 from errors import TaintedLove
 from testing.factories import create_alias_with_employee_username

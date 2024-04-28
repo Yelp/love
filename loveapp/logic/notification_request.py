@@ -5,7 +5,7 @@ import json
 import logging
 import urllib3
 
-import config
+import loveapp.config as config
 
 
 CONTENT_TYPE_JSON = 'application/json'

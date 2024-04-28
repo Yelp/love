@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os.path
 
-import config
+import loveapp.config as config
 
 from datetime import datetime
 

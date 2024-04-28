@@ -3,7 +3,7 @@ from time import mktime
 
 from google.appengine.ext import ndb
 
-import config
+import loveapp.config as config
 
 
 class LoveLink(ndb.Model):

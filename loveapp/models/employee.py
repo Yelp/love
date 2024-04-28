@@ -6,7 +6,7 @@ import functools
 from google.appengine.ext import ndb
 from google.appengine.api import users
 
-import config
+import loveapp.config
 from errors import NoSuchEmployee
 from loveapp.util.pagination import Pagination
 
@@ -52,7 +52,10 @@ class Employee(ndb.Model, Pagination):
     def create_from_dict(cls, d, persist=True):
         new_employee = cls()
         new_employee.username = d['username']
-        new_employee.user = users.User('{user}@{domain}'.format(user=new_employee.username, domain=config.DOMAIN))
+        new_employee.user = users.User(
+            '{user}@{domain}'.format(user=new_employee.username, domain=loveapp.config.DOMAIN),
+            _auth_domain=loveapp.config.DOMAIN
+        )
         new_employee.update_from_dict(d)
 
         if persist is True:
@@ -84,7 +87,7 @@ class Employee(ndb.Model, Pagination):
     def get_gravatar(self):
         """Creates gravatar URL from email address."""
         m = hashlib.md5()
-        m.update(self.user.email())
+        m.update(self.user.email().encode())
         encoded_hash = base64.b16encode(m.digest()).lower()
         return 'https://gravatar.com/avatar/{}?s=200'.format(encoded_hash)
 
@@ -92,9 +95,9 @@ class Employee(ndb.Model, Pagination):
         """Return an avatar photo URL (depending on Gravatar config). This still could
         be empty, in which case the theme needs to provide an alternate photo.
         """
-        if config.GRAVATAR == 'always':
+        if loveapp.config.GRAVATAR == 'always':
             return self.get_gravatar()
-        elif config.GRAVATAR == 'backup' and not self.photo_url:
+        elif loveapp.config.GRAVATAR == 'backup' and not self.photo_url:
             return self.get_gravatar()
         else:
             return self.photo_url

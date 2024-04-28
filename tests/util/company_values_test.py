@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-from config import CompanyValue
+from loveapp.config import CompanyValue
 import loveapp.util.company_values
 
 

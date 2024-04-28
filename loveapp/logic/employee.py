@@ -8,7 +8,7 @@ from google.appengine.api import search
 from google.appengine.api.runtime import memory_usage
 from google.appengine.ext import ndb
 
-import config
+import loveapp.config as config
 from errors import NoSuchEmployee
 from loveapp.logic import chunk
 from loveapp.logic.secret import get_secret

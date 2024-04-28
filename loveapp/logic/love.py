@@ -2,7 +2,7 @@
 from datetime import datetime
 from google.appengine.api import taskqueue
 
-import config
+import loveapp.config as config
 import loveapp.logic.alias
 import loveapp.logic.email
 import loveapp.logic.event

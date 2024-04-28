@@ -3,7 +3,7 @@ import mock
 
 from webtest.app import AppError
 
-from config import CompanyValue
+from loveapp.config import CompanyValue
 import loveapp.logic
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee

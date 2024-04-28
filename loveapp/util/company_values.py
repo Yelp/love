@@ -3,7 +3,7 @@ import itertools
 import markupsafe
 import re
 
-import config
+import loveapp.config as config
 
 
 def get_company_value(value_id):
