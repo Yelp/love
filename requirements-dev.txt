@@ -8,3 +8,4 @@ mock==4.0.3
 #NoseGAE==0.5.10
 pre-commit
 pyrsistent==0.16.1
+pytest==8.1.2

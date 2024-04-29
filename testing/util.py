@@ -1,28 +1,14 @@
 # -*- coding: utf-8 -*-
 import mock
-import os
 import unittest
+import pytest
 
-from flask_themes2 import Themes, load_themes_from
-from flask_webtest import TestApp
 
-import main
 from testing.factories import create_employee
 
 
-def get_test_app():
-
-    def test_loader(app):
-        return load_themes_from(os.path.join(os.path.dirname(__file__), '../themes/'))
-
-    Themes(main.app, app_identifier='yelplove', loaders=[test_loader])
-
-    return TestApp(main.app)
-
-
+@pytest.mark.usefixtures('gae_testbed', 'app')
 class YelpLoveTestCase(unittest.TestCase):
-
-    app = get_test_app()
 
     def assertRequiresLogin(self, response):
         self.assertEqual(response.status_int, 302)
