@@ -1,16 +1,14 @@
 appengine-python-standard>=1.0.0
 # This requirements file lists all dependecies for this project.
 # Run 'make lib' to install these dependencies in this project's lib directory.
-beautifulsoup4
-boto
-Flask
-Flask-Themes2
-ipdb
-itsdangerous
-Jinja2
-MarkupSafe
-pytz
-pyyaml
-urllib3
-Werkzeug
-wheel
+beautifulsoup4==4.12.3
+boto==2.49.0
+Flask==3.0.3
+Flask-Themes2==1.0.1
+itsdangerous==2.2.0
+Jinja2==3.1.3
+MarkupSafe==2.1.5
+pytz==2024.1
+pyyaml==6.0.1
+urllib3==1.26.18
+Werkzeug==3.0.0

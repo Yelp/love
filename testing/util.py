@@ -22,7 +22,7 @@ class YelpLoveTestCase():
         :param form: a form entry from response.forms
         :param session: response.session
         """
-        soup = BeautifulSoup(response.data)
+        soup = BeautifulSoup(response.data, 'html.parser')
         csrf_token = soup.find('form', class_=form_class).\
             find('input', attrs={'name': '_csrf_token'}).\
             get('value')

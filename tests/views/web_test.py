@@ -184,7 +184,7 @@ class TestHomepage(LoggedInUserBaseTest):
         assert response.status_code == 200
 
         template, response_context = recorded_templates[0]
-        soup = BeautifulSoup(response.data)
+        soup = BeautifulSoup(response.data, 'html.parser')
         send_love_form = soup.find('form', class_='send-love-form')
         assert response_context['recipients'] == 'janedoe'
 
