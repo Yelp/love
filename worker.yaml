@@ -1,14 +1,6 @@
 service: worker
 runtime: python311
-api_version: 1
-threadsafe: true
 app_engine_apis: true
-
-handlers:
-- url: /tasks/.*
-  script: main.app
-  login: admin
-  secure: always
 
 
 skip_files:

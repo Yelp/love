@@ -1,26 +1,8 @@
 service: default
 runtime: python311
-api_version: 1
-threadsafe: true
-
 app_engine_apis: true
 
 handlers:
-- url: /api/.*
-  script: main.app
-  secure: always
-- url: /keys/?.*
-  script: main.app
-  login: admin
-  secure: always
-- url: /subscriptions/?.*
-  script: main.app
-  login: admin
-  secure: always
-- url: /aliases/?.*
-  script: main.app
-  login: admin
-  secure: always
 - url: /robots.txt
   static_files: static/robots.txt
   upload: static/robots.txt
@@ -29,17 +11,11 @@ handlers:
   static_dir: static
   secure: always
 - url: /_themes/(.*)/img/(.*)
-  static_files: themes/\1/static/img/\2
+  static_files: loveapp/themes/\1/static/img/\2
   upload: themes/(.*)/static/img/(.*)
   secure: always
   login: optional
-- url: .* # Anything not explicitly listed above
-  script: main.app
-  login: required
-  secure: always
 
-builtins:
-- remote_api: on
 
 skip_files:
 - ^(.*/)?#.*#$
