@@ -1,6 +1,7 @@
 appengine-python-standard>=1.0.0
 # This requirements file lists all dependecies for this project.
 # Run 'make lib' to install these dependencies in this project's lib directory.
+beautifulsoup4
 boto
 Flask
 Flask-Themes2

@@ -13,5 +13,6 @@ def create_love_link(
         message=message,
         recipient_list=recipient_list,
     )
+    new_love_link.put()
 
     return new_love_link

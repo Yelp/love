@@ -14,7 +14,7 @@ from testing.factories import create_employee
 
 
 @pytest.fixture
-def api_key(gae_testbed_class_scope):
+def api_key(gae_testbed):
     return AccessKey.create('autocomplete key').access_key
 
 
@@ -36,8 +36,8 @@ class _ApiKeyRequiredTestCase():
 
 
 class TestAutocomplete(_ApiKeyRequiredTestCase):
-    @pytest.fixture(scope='class', autouse=True)
-    def create_employees(self, gae_testbed_class_scope):
+    @pytest.fixture(autouse=True)
+    def create_employees(self, gae_testbed):
         create_employee(username='alice')
         create_employee(username='alex')
         create_employee(username='bob')
@@ -59,7 +59,7 @@ class TestAutocomplete(_ApiKeyRequiredTestCase):
         ('', []),
         ('stupidprefix', []),
     ])
-    def test_autocomplete(gae_testbed_class_scope, client, api_key, prefix, expected_values):
+    def test_autocomplete(gae_testbed, client, api_key, prefix, expected_values):
         api_key = AccessKey.create('autocomplete key').access_key
         response = client.get('/api/autocomplete', query_string={'term': prefix}, data={'api_key': api_key})
         received_values = set(item['value'] for item in response.json)
@@ -84,7 +84,7 @@ class TestGetLove(_ApiKeyRequiredTestCase):
             data={'api_key': api_key}
         )
 
-    def test_get_love(self, gae_testbed_class_scope, client, api_key):
+    def test_get_love(self, gae_testbed, client, api_key):
         with mock.patch('loveapp.logic.event.add_event'):
             loveapp.logic.love.send_loves(['bob', ], 'Care Bear Stare!', 'alice')
         response = self.do_request(client, api_key)
@@ -113,11 +113,11 @@ class TestSendLove(_ApiKeyRequiredTestCase):
             response = client.post('/api/love', data=form_values)
         return response
 
-    def test_send_love(self, gae_testbed_class_scope, client, api_key):
+    def test_send_love(self, gae_testbed, client, api_key):
         response = self.do_request(client, api_key)
         assert 'Love sent to bob! Share:' in response.data.decode()
 
-    def test_send_loves_with_alias_and_username_for_same_user(self, gae_testbed_class_scope, client, api_key):
+    def test_send_loves_with_alias_and_username_for_same_user(self, gae_testbed, client, api_key):
         create_alias_with_employee_username(name='bobby', username='bob')
         form_values = {
             'sender': 'alice',
@@ -149,7 +149,7 @@ class TestGetLeaderboard(_ApiKeyRequiredTestCase):
             data={'api_key': api_key}
         )
 
-    def test_get_leaderboard(self, gae_testbed_class_scope, client, api_key):
+    def test_get_leaderboard(self, gae_testbed, client, api_key):
         response_data = self.do_request(client, api_key).json
         top_loved = response_data.get('top_loved')
         top_lover = response_data.get('top_lover')

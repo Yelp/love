@@ -5,6 +5,7 @@ import mock
 import pytest
 
 from flask_themes2 import load_themes_from
+from flask import template_rendered
 
 from google.appengine.ext import testbed
 from loveapp import create_app
@@ -14,7 +15,7 @@ from loveapp import create_app
 def app():  # noqa
     # do we need this? for what?
     def test_loader(app):
-        return load_themes_from(os.path.join(os.path.dirname(__file__), '../themes/'))
+        return load_themes_from(os.path.join(os.path.dirname(__file__), '../loveapp/themes/'))
     app = create_app(theme_loaders=[test_loader])
 
     with app.app_context():
@@ -25,6 +26,20 @@ def app():  # noqa
 def client(app):
     with app.test_client() as test_client:
         yield test_client
+
+
+@pytest.fixture
+def recorded_templates(app):
+    recorded = []
+
+    def record(sender, template, context, **extra):
+        recorded.append((template, context))
+
+    template_rendered.connect(record, app)
+    try:
+        yield recorded
+    finally:
+        template_rendered.disconnect(record, app)
 
 
 @pytest.fixture
@@ -42,23 +57,8 @@ def gae_testbed():
     tb.init_datastore_v3_stub()
     tb.init_search_stub()
     tb.init_taskqueue_stub()
+    tb.init_user_stub()
 
-    yield
-
-    tb.deactivate()
-
-# TODO cleanup - this is a nice test-speed optimisation, but not entirely necessary
-
-
-@pytest.fixture(scope='class')
-def gae_testbed_class_scope():
-    tb = testbed.Testbed()
-    tb.activate()
-    tb.init_memcache_stub()
-    tb.init_datastore_v3_stub()
-    tb.init_search_stub()
-    tb.init_taskqueue_stub()
-
-    yield
+    yield tb
 
     tb.deactivate()

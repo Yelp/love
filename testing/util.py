@@ -1,71 +1,57 @@
 # -*- coding: utf-8 -*-
+from bs4 import BeautifulSoup
 import mock
-import unittest
 import pytest
-
 
 from testing.factories import create_employee
 
 
-@pytest.mark.usefixtures('gae_testbed', 'app')
-class YelpLoveTestCase(unittest.TestCase):
+class YelpLoveTestCase():
 
     def assertRequiresLogin(self, response):
-        self.assertEqual(response.status_int, 302)
-        self.assert_(
-            response.headers['Location'].startswith('https://www.google.com/accounts/Login'),
-            'Unexpected Location header: {0}'.format(response.headers['Location']),
-        )
+        assert response.status_code == 302
+        assert response.headers['Location'].startswith('https://www.google.com/accounts/Login'), \
+            'Unexpected Location header: {0}'.format(response.headers['Location'])
 
     def assertRequiresAdmin(self, response):
-        self.assertEqual(response.status_int, 401)
+        response.status_code == 401
 
-    def assertHasCsrf(self, form, session):
+    def assertHasCsrf(self, response, form_class, session):
         """Make sure the response form contains the correct CSRF token.
 
         :param form: a form entry from response.forms
         :param session: response.session
         """
-        self.assertIsNotNone(form.get('_csrf_token'))
-        self.assertEqual(
-            form['_csrf_token'].value, session['_csrf_token'],
-        )
+        soup = BeautifulSoup(response.data)
+        csrf_token = soup.find('form', class_=form_class).\
+            find('input', attrs={'name': '_csrf_token'}).\
+            get('value')
+        assert csrf_token is not None
+        assert csrf_token == session['_csrf_token']
 
-    def addCsrfTokenToSession(self):
+    def addCsrfTokenToSession(self, client):
         csrf_token = 'MY_TOKEN'
-        with self.app.session_transaction() as session:
+        with client.session_transaction() as session:
             session['_csrf_token'] = csrf_token
         return csrf_token
 
 
 class LoggedInUserBaseTest(YelpLoveTestCase):
 
-    nosegae_datastore_v3 = True
-    nosegae_datastore_v3_kwargs = {
-        'datastore_file': '/tmp/nosegae.sqlite3',
-        'use_sqlite': True
-    }
-
-    nosegae_user = True
-    nosegae_user_kwargs = dict(
-        USER_ID='johndoe',
-        USER_EMAIL='johndoe@example.com',
-        USER_IS_ADMIN='0',
-    )
-
-    @mock.patch('models.employee.config')
-    def setUp(self, mock_config):
-        mock_config.DOMAIN = 'example.com'
-        self.current_user = create_employee(username='johndoe')
-
-    def tearDown(self):
-        self.current_user.key.delete()
+    @pytest.fixture(autouse=True)
+    def logged_in_user(self, gae_testbed):
+        self.logged_in_employee = create_employee(username='johndoe')
+        with mock.patch('loveapp.util.decorators.users.get_current_user') as mock_get_current_user:
+            mock_get_current_user.return_value = self.logged_in_employee.user
+            yield self.logged_in_employee
+        self.logged_in_employee.key.delete()
 
 
 class LoggedInAdminBaseTest(LoggedInUserBaseTest):
-
-    nosegae_user_kwargs = dict(
-        USER_ID='johndoe',
-        USER_EMAIL='johndoe@example.com',
-        USER_IS_ADMIN='1',
-    )
+    @pytest.fixture(autouse=True)
+    def logged_in_admin(self, gae_testbed):
+        self.logged_in_employee = create_employee(username='johndoe')
+        with mock.patch('loveapp.util.decorators.users.is_current_user_admin') as mock_is_current_user_admin:
+            mock_is_current_user_admin.return_value = True
+            yield self.logged_in_employee
+        self.logged_in_employee.key.delete()

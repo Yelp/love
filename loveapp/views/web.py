@@ -409,7 +409,7 @@ def create_alias():
         )
         flash('New alias successfully saved. Refresh the page to see it.')
     except Exception as e:
-        flash('Something went wrong: {}.'.format(e.message), 'error')
+        flash('Something went wrong: {}.'.format(str(e)), 'error')
 
     return redirect(url_for('web_app.aliases'))
 
