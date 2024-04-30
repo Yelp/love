@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from loveapp.models import Alias
 from loveapp.models import Employee
 

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, print_function
-
-import pytest
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import mock
+import pytest
 
 import loveapp.logic.employee
 import loveapp.logic.love

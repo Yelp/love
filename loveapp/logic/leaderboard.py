@@ -2,10 +2,10 @@
 from datetime import datetime
 from datetime import timedelta
 
+import loveapp.logic.love_count
 from loveapp.logic import TIMESPAN_LAST_WEEK
 from loveapp.logic import to_the_future
 from loveapp.logic import utc_week_limits
-import loveapp.logic.love_count
 
 
 def get_leaderboard_data(timespan, department, office=None):

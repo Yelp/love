@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+
 from google.appengine.api import taskqueue
 
 import loveapp.config as config
 import loveapp.logic.alias
 import loveapp.logic.email
 import loveapp.logic.event
-
 from errors import TaintedLove
 from loveapp.logic.toggle import get_toggle_state
 from loveapp.models import Employee

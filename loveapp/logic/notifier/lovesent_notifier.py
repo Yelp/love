@@ -2,7 +2,6 @@
 from google.appengine.ext import ndb
 
 import loveapp.logic.event
-
 from loveapp.logic.notification_request import NotificationRequest
 from loveapp.models.love import Love
 from loveapp.models.subscription import Subscription

@@ -6,10 +6,10 @@ from google.appengine.api import taskqueue
 from google.appengine.ext import ndb
 
 import loveapp.logic.employee
-import loveapp.logic.notifier
 import loveapp.logic.love
 import loveapp.logic.love_count
 import loveapp.logic.love_link
+import loveapp.logic.notifier
 from loveapp.models import Love
 
 tasks_app = Blueprint('tasks_app', __name__)

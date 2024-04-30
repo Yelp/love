@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-import mock
 import unittest
+
+import mock
 
 import loveapp.logic.email
 

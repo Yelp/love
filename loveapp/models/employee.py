@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import base64
-import hashlib
 import functools
+import hashlib
 
-from google.appengine.ext import ndb
 from google.appengine.api import users
+from google.appengine.ext import ndb
 
 import loveapp.config
 from errors import NoSuchEmployee

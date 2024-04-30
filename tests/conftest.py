@@ -3,11 +3,10 @@ import os
 
 import mock
 import pytest
-
-from flask_themes2 import load_themes_from
 from flask import template_rendered
-
+from flask_themes2 import load_themes_from
 from google.appengine.ext import testbed
+
 from loveapp import create_app
 
 

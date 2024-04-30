@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import mock
 import unittest
 
-from loveapp.config import CompanyValue
+import mock
+
 import loveapp.logic.love
 from errors import TaintedLove
+from loveapp.config import CompanyValue
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 

@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
-
-from google.appengine.api import wrap_wsgi_app
-from flask import Flask
+import flask_themes2
 from flask import Blueprint
 from flask import current_app
-import flask_themes2
+from flask import Flask
 from flask_themes2 import Themes
 from flask_themes2 import ThemeTemplateLoader
+from google.appengine.api import wrap_wsgi_app
 
 import loveapp.config as config
-from loveapp.util.auth import is_admin
-from loveapp.util.converter import RegexConverter
-from loveapp.util.company_values import linkify_company_values
-from loveapp.util.csrf import generate_csrf_token
-
 from loveapp import views
+from loveapp.util.auth import is_admin
+from loveapp.util.company_values import linkify_company_values
+from loveapp.util.converter import RegexConverter
+from loveapp.util.csrf import generate_csrf_token
 
 
 def create_app(theme_loaders=()):

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from loveapp.models.access_key import AccessKey
 
 

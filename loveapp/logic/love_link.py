@@ -4,12 +4,12 @@ import logging
 import random
 import string
 
+from google.appengine.ext import ndb
+
 import loveapp.logic.alias
 from errors import NoSuchLoveLink
-from loveapp.models import LoveLink
 from loveapp.models import Employee
-
-from google.appengine.ext import ndb
+from loveapp.models import LoveLink
 
 
 def get_love_link(hash_key):

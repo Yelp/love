@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import csv
 import json
-import os.path
 import logging
+import os.path
 
 from google.appengine.api import search
 from google.appengine.api.runtime import memory_usage
@@ -11,13 +11,13 @@ from google.appengine.ext import ndb
 import loveapp.config as config
 from errors import NoSuchEmployee
 from loveapp.logic import chunk
+from loveapp.logic.office import OfficeParser
 from loveapp.logic.secret import get_secret
 from loveapp.logic.toggle import set_toggle_state
 from loveapp.models import Employee
 from loveapp.models import Love
 from loveapp.models import LoveCount
 from loveapp.models.toggle import LOVE_SENDING_ENABLED
-from loveapp.logic.office import OfficeParser
 
 
 INDEX_NAME = 'employees'

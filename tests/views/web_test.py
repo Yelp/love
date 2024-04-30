@@ -3,8 +3,8 @@ import mock
 import pytest
 from bs4 import BeautifulSoup
 
-from loveapp.config import CompanyValue
 import loveapp.logic
+from loveapp.config import CompanyValue
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 from testing.factories import create_love

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-import yaml
 from collections import Counter
 from collections import defaultdict
+
+import yaml
 
 REMOTE_OFFICE = 'Remote'
 OTHER_OFFICE = 'Other'

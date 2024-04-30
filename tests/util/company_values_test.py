@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-import mock
 import unittest
 
-from loveapp.config import CompanyValue
+import mock
+
 import loveapp.util.company_values
+from loveapp.config import CompanyValue
 
 
 class CompanyValuesUtilTest(unittest.TestCase):

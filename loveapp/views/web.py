@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import os.path
-
-import loveapp.config as config
-
 from datetime import datetime
 
 from flask import abort
@@ -11,37 +8,38 @@ from flask import flash
 from flask import redirect
 from flask import request
 from flask import url_for
+from google.appengine.api import taskqueue
 
+import loveapp.config as config
 import loveapp.logic.alias
 import loveapp.logic.employee
 import loveapp.logic.event
 import loveapp.logic.love
-import loveapp.logic.love_link
 import loveapp.logic.love_count
+import loveapp.logic.love_link
 import loveapp.logic.subscription
 from errors import NoSuchEmployee
 from errors import NoSuchLoveLink
 from errors import TaintedLove
-from google.appengine.api import taskqueue
 from loveapp.logic import TIMESPAN_THIS_WEEK
-from loveapp.logic.love_link import create_love_link
+from loveapp.logic.department import get_all_departments
 from loveapp.logic.leaderboard import get_leaderboard_data
+from loveapp.logic.love_link import create_love_link
+from loveapp.logic.office import get_all_offices
 from loveapp.models import Alias
 from loveapp.models import Employee
 from loveapp.models import Subscription
 from loveapp.models.access_key import AccessKey
+from loveapp.util.company_values import get_company_value
+from loveapp.util.company_values import get_company_value_link_pairs
+from loveapp.util.company_values import values_matching_prefix
 from loveapp.util.decorators import admin_required
 from loveapp.util.decorators import csrf_protect
 from loveapp.util.decorators import user_required
 from loveapp.util.recipient import sanitize_recipients
-from loveapp.util.render import render_template
 from loveapp.util.render import make_json_response
-from loveapp.util.company_values import get_company_value
-from loveapp.util.company_values import get_company_value_link_pairs
-from loveapp.util.company_values import values_matching_prefix
+from loveapp.util.render import render_template
 from loveapp.views import common
-from loveapp.logic.office import get_all_offices
-from loveapp.logic.department import get_all_departments
 
 web_app = Blueprint('web_app', __name__)
 

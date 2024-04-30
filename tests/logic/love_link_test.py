@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-import unittest
 import datetime
+import unittest
 
 import loveapp.logic.love
 import loveapp.logic.love_link
 from errors import NoSuchLoveLink
-from testing.factories import create_love_link
-
 from testing.factories import create_employee
+from testing.factories import create_love_link
 
 
 class LoveLinkTest(unittest.TestCase):

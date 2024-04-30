@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-
 from loveapp.logic.department import get_all_departments
 from testing.factories import create_employee
 

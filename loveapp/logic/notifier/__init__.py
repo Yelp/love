@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import loveapp.logic.event
-
 from errors import UnknownEvent
 from loveapp.logic.notifier.lovesent_notifier import LovesentNotifier
 

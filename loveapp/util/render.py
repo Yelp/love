@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
-from flask_themes2 import render_theme_template
 from flask.helpers import make_response
+from flask_themes2 import render_theme_template
 
 import loveapp.config as config
 

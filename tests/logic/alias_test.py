@@ -2,7 +2,6 @@
 import unittest
 
 import loveapp.logic.alias
-
 from loveapp.models import Alias
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee

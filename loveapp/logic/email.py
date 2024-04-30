@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from google.appengine.api.mail import EmailMessage
 
-from loveapp.util.email import get_name_and_email
 import loveapp.config as config
 import loveapp.logic.secret
+from loveapp.util.email import get_name_and_email
 
 if config.EMAIL_BACKEND == 'sendgrid':
     # a bit of a hack here so that we can avoid adding dependencies unless

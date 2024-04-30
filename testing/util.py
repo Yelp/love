@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from bs4 import BeautifulSoup
 import mock
 import pytest
+from bs4 import BeautifulSoup
 
 from testing.factories import create_employee
 

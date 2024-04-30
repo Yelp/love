@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import mock
 import pytest
-
 from google.appengine.api import users
 
 from errors import NoSuchEmployee

@@ -5,10 +5,10 @@ from flask import request
 
 from errors import TaintedLove
 from loveapp.logic import TIMESPAN_THIS_WEEK
+from loveapp.logic.leaderboard import get_leaderboard_data
 from loveapp.logic.love import get_love
 from loveapp.logic.love import send_loves
 from loveapp.logic.love_link import create_love_link
-from loveapp.logic.leaderboard import get_leaderboard_data
 from loveapp.models import Employee
 from loveapp.util.decorators import api_key_required
 from loveapp.util.recipient import sanitize_recipients

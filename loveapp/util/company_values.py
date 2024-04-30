@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import itertools
-import markupsafe
 import re
+
+import markupsafe
 
 import loveapp.config as config
 
