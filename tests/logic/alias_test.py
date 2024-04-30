@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+import pytest
+
 import loveapp.logic.alias
 from loveapp.models import Alias
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 
 
+@pytest.mark.usefixtures('gae_testbed')
 class AliasTest(unittest.TestCase):
-    nosegae_datastore_v3 = True
 
     def test_get_alias(self):
         create_employee(username='fuz')

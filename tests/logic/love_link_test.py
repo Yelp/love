@@ -2,6 +2,8 @@
 import datetime
 import unittest
 
+import pytest
+
 import loveapp.logic.love
 import loveapp.logic.love_link
 from errors import NoSuchLoveLink
@@ -9,10 +11,8 @@ from testing.factories import create_employee
 from testing.factories import create_love_link
 
 
+@pytest.mark.usefixtures('gae_testbed')
 class LoveLinkTest(unittest.TestCase):
-    nosegae_taskqueue = True
-    nosegae_memcache = True
-    nosegae_datastore_v3 = True
 
     def setUp(self):
         self.link = create_love_link(hash_key='HeLLo', recipient_list='johndoe,janedoe', message='well hello there')

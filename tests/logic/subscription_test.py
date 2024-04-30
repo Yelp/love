@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import unittest
-
 import mock
 
 import loveapp.logic.subscription
@@ -9,16 +7,13 @@ from testing.factories import create_employee
 from testing.factories import create_subscription
 
 
-class SubscriptionTest(unittest.TestCase):
-    nosegae_datastore_v3 = True
+@mock.patch('loveapp.models.subscription.Employee', autospec=True)
+def test_delete_subscription(mock_model_employee, gae_testbed):
+    mock_model_employee.get_current_employee.return_value = create_employee()
 
-    @mock.patch('models.subscription.Employee', autospec=True)
-    def test_delete_subscription(self, mock_model_employee):
-        mock_model_employee.get_current_employee.return_value = create_employee()
+    subscription = create_subscription()
+    assert Subscription.get_by_id(subscription.key.id()) is not None
 
-        subscription = create_subscription()
-        self.assertIsNotNone(Subscription.get_by_id(subscription.key.id()))
+    loveapp.logic.subscription.delete_subscription(subscription.key.id())
 
-        loveapp.logic.subscription.delete_subscription(subscription.key.id())
-
-        self.assertIsNone(Subscription.get_by_id(subscription.key.id()))
+    assert Subscription.get_by_id(subscription.key.id()) is None
