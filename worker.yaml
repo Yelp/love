@@ -1,15 +1,3 @@
 service: worker
 runtime: python311
 app_engine_apis: true
-
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*/RCS/.*$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*~$
-- ^(.*/)?\..*$
-- ^YelpLove.egg-info(/.*)?$
-- ^google_appengine(/.*)?$
-- ^tmp(/.*)?$
-- ^virtualenv_.*$

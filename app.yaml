@@ -10,21 +10,3 @@ handlers:
 - url: /static
   static_dir: static
   secure: always
-- url: /_themes/(.*)/img/(.*)
-  static_files: loveapp/themes/\1/static/img/\2
-  upload: themes/(.*)/static/img/(.*)
-  secure: always
-  login: optional
-
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*/RCS/.*$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*~$
-- ^(.*/)?\..*$
-- ^YelpLove.egg-info(/.*)?$
-- ^config-example.py$
-- ^google_appengine(/.*)?$
-- ^tmp(/.*)?$
-- ^virtualenv_.*$
