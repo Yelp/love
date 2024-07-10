@@ -2,9 +2,9 @@
 # Unit testing tools, mocking frameworks, debuggers, proxies, ...
 # These will be used for tox and other testing environments.
 -r requirements.txt
-Flask-WebTest==0.0.8
+Flask-WebTest==0.1.4
 ipdb
-mock==2.0.0
-NoseGAE==0.5.10
-pre-commit==0.13.3
-pyrsistent==0.16.1
+mock==4.0.3
+pre-commit
+pytest==8.1.2
+tox==4.15.0

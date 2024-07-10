@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models import LoveLink
+from loveapp.models import LoveLink
 
 
 def create_love_link(

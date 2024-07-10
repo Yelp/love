@@ -1,24 +1,8 @@
 service: default
-runtime: python27
-api_version: 1
-threadsafe: true
+runtime: python311
+app_engine_apis: true
 
 handlers:
-- url: /api/.*
-  script: main.app
-  secure: always
-- url: /keys/?.*
-  script: main.app
-  login: admin
-  secure: always
-- url: /subscriptions/?.*
-  script: main.app
-  login: admin
-  secure: always
-- url: /aliases/?.*
-  script: main.app
-  login: admin
-  secure: always
 - url: /robots.txt
   static_files: static/robots.txt
   upload: static/robots.txt
@@ -26,31 +10,3 @@ handlers:
 - url: /static
   static_dir: static
   secure: always
-- url: /_themes/(.*)/img/(.*)
-  static_files: themes/\1/static/img/\2
-  upload: themes/(.*)/static/img/(.*)
-  secure: always
-  login: optional
-- url: .* # Anything not explicitly listed above
-  script: main.app
-  login: required
-  secure: always
-
-builtins:
-- remote_api: on
-
-libraries:
-- name: ssl
-  version: latest
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*/RCS/.*$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*~$
-- ^(.*/)?\..*$
-- ^YelpLove.egg-info(/.*)?$
-- ^config-example.py$
-- ^google_appengine(/.*)?$
-- ^tmp(/.*)?$
-- ^virtualenv_.*$

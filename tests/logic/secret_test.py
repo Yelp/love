@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+import pytest
+
 from errors import NoSuchSecret
-from logic.secret import get_secret
+from loveapp.logic.secret import get_secret
 from testing.factories import create_secret
 
 
+@pytest.mark.usefixtures('gae_testbed')
 class SecretTest(unittest.TestCase):
-    nosegae_datastore_v3 = True
 
     def test_existing_secret(self):
         create_secret('FOO', value='bar')

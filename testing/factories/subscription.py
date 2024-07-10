@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models import Subscription
+from loveapp.models import Subscription
 
 
 def create_subscription(

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from models import Alias
-from models import Employee
+from loveapp.models import Alias
+from loveapp.models import Employee
 
 
 def create_alias_with_employee_username(

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import mock
+import pytest
+from bs4 import BeautifulSoup
 
-from webtest.app import AppError
-
-from config import CompanyValue
-import logic
+import loveapp.logic
+from loveapp.config import CompanyValue
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 from testing.factories import create_love
@@ -15,415 +15,316 @@ from testing.util import LoggedInUserBaseTest
 from testing.util import YelpLoveTestCase
 
 
-class LoggedOutTest(YelpLoveTestCase):
+@pytest.mark.usefixtures('gae_testbed')
+class TestLoggedOut(YelpLoveTestCase):
     """
     Testing access to pages when no user is logged in.
     """
-    nosegae_user = True
-    nosegae_user_kwargs = dict(USER_EMAIL='')
 
-    def test_homepage(self):
-        self.assertRequiresLogin(self.app.get('/'))
+    @pytest.mark.parametrize('url', [
+        '/',
+        '/me',
+        '/explore',
+        '/johnd',
+        '/leaderboard',
+        '/keys',
+        '/user/autocomplete',
+        '/values/autocomplete',
+        '/value/test',
+        '/values',
+        '/sent',
+        '/subscriptions',
+        '/aliases',
+        '/employees',
+        '/employees/import'
+    ])
+    def test_get_requires_login(self, client, url):
+        self.assertRequiresLogin(client.get(url))
 
-    def test_me(self):
-        self.assertRequiresLogin(self.app.get('/me'))
-
-    def test_explore(self):
-        self.assertRequiresLogin(self.app.get('/explore'))
-
-    def test_user_shortcut(self):
-        self.assertRequiresLogin(self.app.get('/johnd'))
-
-    def test_leaderboard(self):
-        self.assertRequiresLogin(self.app.get('/leaderboard'))
-
-    def test_keys(self):
-        self.assertRequiresLogin(self.app.get('/keys'))
-
-    def test_autocomplete(self):
-        self.assertRequiresLogin(self.app.get('/user/autocomplete'))
-
-    def test_values_autocomplete(self):
-        self.assertRequiresLogin(self.app.get('/values/autocomplete'))
-
-    def test_single_company_value(self):
-        self.assertRequiresLogin(self.app.get('/value/test'))
-
-    def test_company_values(self):
-        self.assertRequiresLogin(self.app.get('/values'))
-
-    def test_sent(self):
-        self.assertRequiresLogin(self.app.get('/sent'))
-
-    def test_create_key(self):
-        csrf_token = self.addCsrfTokenToSession()
+    @pytest.mark.parametrize('url, data', [
+        ('/keys/create', dict(description='My Api Key')),
+        ('/love', dict(recipients='jenny', message='Love')),
+        ('/subscriptions/create', dict(
+            request_url='http://localhost.com/foo',
+            event='lovesent',
+            active='true',
+            secret='mysecret')
+         ),
+        ('/subscriptions/1/delete', dict()),
+        ('/aliases', dict(alias='johnny', username='john')),
+        ('/aliases/1/delete', dict()),
+        ('/employees/import', dict())
+    ])
+    def test_post_requires_login(self, client, url, data):
+        data['_csrf_token'] = self.addCsrfTokenToSession(client)
         self.assertRequiresLogin(
-            self.app.post(
-                '/keys/create',
-                dict(
-                    description='My API Key',
-                    _csrf_token=csrf_token,
-                ),
-            ),
-        )
-
-    def test_post_love(self):
-        csrf_token = self.addCsrfTokenToSession()
-        self.assertRequiresLogin(
-            self.app.post(
-                '/love',
-                dict(
-                    recipients='jenny',
-                    message='Love',
-                    _csrf_token=csrf_token,
-                ),
-            ),
-        )
-
-    def test_subscriptions(self):
-        self.assertRequiresLogin(self.app.get('/subscriptions'))
-
-    def test_create_subscription(self):
-        csrf_token = self.addCsrfTokenToSession()
-        self.assertRequiresLogin(
-            self.app.post(
-                '/subscriptions/create',
-                dict(
-                    request_url='http://localhost.com/foo',
-                    event='lovesent',
-                    active='true',
-                    secret='mysecret',
-                    _csrf_token=csrf_token,
-                ),
-            ),
-        )
-
-    def test_delete_subscription(self):
-        csrf_token = self.addCsrfTokenToSession()
-        self.assertRequiresLogin(
-            self.app.post(
-                '/subscriptions/1/delete',
-                dict(_csrf_token=csrf_token),
-            ),
-        )
-
-    def test_listing_aliases(self):
-        self.assertRequiresLogin(self.app.get('/aliases'))
-
-    def test_create_alias(self):
-        csrf_token = self.addCsrfTokenToSession()
-        self.assertRequiresLogin(
-            self.app.post(
-                '/aliases',
-                dict(
-                    alias='johnny',
-                    username='john',
-                    _csrf_token=csrf_token,
-                ),
-            ),
-        )
-
-    def test_delete_alias(self):
-        csrf_token = self.addCsrfTokenToSession()
-        self.assertRequiresLogin(
-            self.app.post(
-                '/aliases/1/delete',
-                dict(_csrf_token=csrf_token),
-            ),
-        )
-
-    def test_employees(self):
-        self.assertRequiresLogin(self.app.get('/employees'))
-
-    def test_import_employees_form(self):
-        self.assertRequiresLogin(self.app.get('/employees/import'))
-
-    def test_import_employees(self):
-        csrf_token = self.addCsrfTokenToSession()
-        self.assertRequiresLogin(
-            self.app.post(
-                '/employees/import',
-                dict(_csrf_token=csrf_token),
+            client.post(
+                url,
+                data=data
             )
         )
 
 
-class AdminResourcesTest(LoggedInUserBaseTest):
+class TestAdminResources(LoggedInUserBaseTest):
     # Managing API Keys
 
-    def test_keys(self):
+    def test_keys(self, client):
         self.assertRequiresAdmin(
-            self.app.get('/keys', expect_errors=True),
+            client.get('/keys')
         )
 
-    def test_create_key(self):
-        csrf_token = self.addCsrfTokenToSession()
+    def test_create_key(self, client):
+        csrf_token = self.addCsrfTokenToSession(client)
         self.assertRequiresAdmin(
-            self.app.post(
+            client.post(
                 '/keys/create',
-                dict(
+                data=dict(
                     description='My API Key',
-                    _csrf_token=csrf_token,
-                ),
-                expect_errors=True,
+                    _csrf_token=csrf_token
+                )
             ),
         )
 
     # Managing Webhook Subscriptions
-    def test_subscriptions(self):
+    def test_subscriptions(self, client):
         self.assertRequiresAdmin(
-            self.app.get('/subscriptions', expect_errors=True),
+            client.get('/subscriptions')
         )
 
-    def test_create_subscription(self):
-        csrf_token = self.addCsrfTokenToSession()
+    def test_create_subscription(self, client):
+        csrf_token = self.addCsrfTokenToSession(client)
         self.assertRequiresAdmin(
-            self.app.post(
+            client.post(
                 '/subscriptions/create',
-                dict(
+                data=dict(
                     request_url='http://localhost.com/foo',
                     event='lovesent',
                     active='true',
                     secret='mysecret',
-                    _csrf_token=csrf_token,
-                ),
-                expect_errors=True,
+                    _csrf_token=csrf_token
+                )
             ),
         )
 
-    def test_delete_subscription(self):
-        csrf_token = self.addCsrfTokenToSession()
+    def test_delete_subscription(self, client):
+        csrf_token = self.addCsrfTokenToSession(client)
         self.assertRequiresAdmin(
-            self.app.post(
+            client.post(
                 '/subscriptions/1/delete',
-                dict(_csrf_token=csrf_token),
-                expect_errors=True,
+                data=dict(_csrf_token=csrf_token)
             ),
         )
 
     # Managing Aliases
-    def test_aliases(self):
+    def test_aliases(self, client):
         self.assertRequiresAdmin(
-            self.app.get('/aliases', expect_errors=True),
+            client.get('/aliases'),
         )
 
-    def test_create_alias(self):
-        csrf_token = self.addCsrfTokenToSession()
+    def test_create_alias(self, client):
+        csrf_token = self.addCsrfTokenToSession(client)
         self.assertRequiresAdmin(
-            self.app.post(
+            client.post(
                 '/aliases',
-                dict(
+                data=dict(
                     alias='johnny',
                     username='john',
-                    _csrf_token=csrf_token,
-                ),
-                expect_errors=True,
-            ),
+                    _csrf_token=csrf_token
+                )
+            )
         )
 
-    def test_delete_alias(self):
-        csrf_token = self.addCsrfTokenToSession()
+    def test_delete_alias(self, client):
+        csrf_token = self.addCsrfTokenToSession(client)
         self.assertRequiresAdmin(
-            self.app.post(
+            client.post(
                 '/aliases/1/delete',
-                dict(_csrf_token=csrf_token),
-                expect_errors=True,
-            ),
+                data=dict(_csrf_token=csrf_token)
+            )
         )
 
-    def test_employees(self):
+    def test_employees(self, client):
         self.assertRequiresAdmin(
-            self.app.get('/employees', expect_errors=True)
+            client.get('/employees')
         )
 
-    def test_import_employees_form(self):
+    def test_import_employees_form(self, client):
         self.assertRequiresAdmin(
-            self.app.get('/employees/import', expect_errors=True)
+            client.get('/employees/import')
         )
 
-    def test_import_employees(self):
-        csrf_token = self.addCsrfTokenToSession()
+    def test_import_employees(self, client):
+        csrf_token = self.addCsrfTokenToSession(client)
         self.assertRequiresAdmin(
-            self.app.post(
+            client.post(
                 '/employees/import',
-                dict(_csrf_token=csrf_token),
-                expect_errors=True,
+                data=dict(_csrf_token=csrf_token)
             )
         )
 
 
-class HomepageTest(LoggedInUserBaseTest):
+class TestHomepage(LoggedInUserBaseTest):
     """
     Testing the homepage
     """
 
-    def test_index(self):
-        response = self.app.get('/')
+    def test_index(self, client, recorded_templates):
+        response = client.get('/')
+        assert response.status_code == 200
+        template, response_context = recorded_templates[0]
+        assert 'home.html' in template.name
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('home.html', response.template)
+        assert response_context['current_time'] is not None
+        assert response_context['current_user'] == self.logged_in_employee
+        assert response_context['recipients'] is None
+        self.assertHasCsrf(response, 'send-love-form', response_context['session'])
 
-        self.assertIsNotNone(response.context['current_time'])
-        self.assertEqual(response.context['current_user'], self.current_user)
-        self.assertIsNone(response.context['recipients'])
-        self.assertHasCsrf(response.forms['send-love-form'], response.session)
+    def test_index_with_recipient_and_message(self, client, recorded_templates):
+        response = client.get('/', query_string=dict(recipients='janedoe', message='hi'))
+        assert response.status_code == 200
 
-    def test_index_with_recipient_and_message(self):
-        response = self.app.get('/', dict(recipients='janedoe', message='hi'))
+        template, response_context = recorded_templates[0]
+        soup = BeautifulSoup(response.data, 'html.parser')
+        send_love_form = soup.find('form', class_='send-love-form')
+        assert response_context['recipients'] == 'janedoe'
 
-        self.assertEqual(response.context['recipients'], 'janedoe')
-        self.assertEqual(
-            response.forms['send-love-form'].get('recipients').value,
-            'janedoe',
-        )
-        self.assertEqual(
-            response.forms['send-love-form'].get('message').value,
-            'hi',
-        )
-        self.assertHasCsrf(response.forms['send-love-form'], response.session)
+        assert send_love_form.find('input', {'name': 'recipients'}).get('value') == 'janedoe'
+        assert send_love_form.textarea.text == 'hi'
+        self.assertHasCsrf(response, 'send-love-form', response_context['session'])
 
 
-class SentTest(LoggedInUserBaseTest):
+class TestSent(LoggedInUserBaseTest):
     """
     Testing the sent page
     """
 
-    def setUp(self):
-        super(SentTest, self).setUp()
-        self.recipient = create_employee(username='janedoe')
+    def test_missing_args_is_redirect(self, client):
+        response = client.get('/sent')
+        assert response.status_code == 302
 
-    def tearDown(self):
-        self.recipient.key.delete()
-        super(SentTest, self).tearDown()
-
-    def test_missing_args_is_redirect(self):
-        response = self.app.get('/sent')
-
-        self.assertEqual(response.status_int, 302)
-
-    @mock.patch('views.web.config')
-    def test_sent_with_args(self, mock_config):
+    @mock.patch('loveapp.config')
+    def test_sent_with_args(self, mock_config, client, recorded_templates):
         mock_config.APP_BASE_URL = 'http://foo.io/'
+        mock_config.DOMAIN = 'example.com'
 
-        response = self.app.get('/sent', dict(recipients='janedoe', message='hi', link_id='cn23sx'))
-        self.assertIsNotNone(response.context['current_time'])
-        self.assertEqual(response.context['current_user'], self.current_user)
-        self.assertIsNotNone(response.context['loved'])
-        self.assertEqual(response.context['url'], 'http://foo.io/l/cn23sx')
+        create_employee('janedoe')
+        client.get('/sent', query_string=dict(recipients='janedoe', message='hi', link_id='cn23sx'))
+
+        _, response_context = recorded_templates[0]
+        assert response_context['current_time'] is not None
+        response_context['current_user'] == self.logged_in_employee
+        assert response_context['loved'] is not None
+        response_context['url'] == 'http://foo.io/l/cn23sx'
 
 
-class LoveLinkTest(LoggedInUserBaseTest):
+class TestLoveLink(LoggedInUserBaseTest):
     """
     Testing the sent page
     """
 
-    def setUp(self):
-        super(LoveLinkTest, self).setUp()
-        self.recipient = create_employee(username='janedoe')
-        self.link = create_love_link('lOvEr', 'i love you!', 'janedoe')
+    def test_bad_hash(self, client):
+        response = client.get('/l/badId')
+        assert response.status_code == 302
 
-    def tearDown(self):
-        self.recipient.key.delete()
-        super(LoveLinkTest, self).tearDown()
+    def test_good_hash(self, client, recorded_templates):
+        create_employee(username='janedoe')
+        create_love_link('lOvEr', 'i love you!', 'janedoe')
+        client.get('/l/lOvEr')
 
-    def test_bad_hash(self):
-        response = self.app.get('/l/badId')
+        _, response_context = recorded_templates[0]
 
-        self.assertEqual(response.status_int, 302)
-
-    def test_good_hash(self):
-        response = self.app.get('/l/lOvEr')
-        self.assertIsNotNone(response.context['current_time'])
-        self.assertEqual(response.context['current_user'], self.current_user)
-        self.assertIsNotNone(response.context['loved'])
-        self.assertEqual(response.context['recipients'], 'janedoe')
-        self.assertEqual(response.context['message'], 'i love you!')
-        self.assertEqual(response.context['link_id'], 'lOvEr')
+        assert response_context['current_time'] is not None
+        assert response_context['current_user'] == self.logged_in_employee
+        assert response_context['loved'] is not None
+        assert response_context['recipients'] == 'janedoe'
+        assert response_context['message'] == 'i love you!'
+        assert response_context['link_id'] == 'lOvEr'
 
 
-class SendLoveTest(LoggedInUserBaseTest):
+class TestSendLove(LoggedInUserBaseTest):
 
-    def setUp(self):
-        super(SendLoveTest, self).setUp()
-        self.recipient = create_employee(username='jenny')
+    @pytest.fixture
+    def jenny(self):
+        jenny = create_employee(username='jenny')
+        yield jenny
+        jenny.key.delete()
 
-    def tearDown(self):
-        self.recipient.key.delete()
-        super(SendLoveTest, self).tearDown()
+    @mock.patch('loveapp.logic.love.send_loves', autospec=True)
+    def test_send_love_without_csrf(self, mock_send_loves, client, jenny):
+        response = client.post('/love', data={'recipients': 'jenny', 'message': 'Love'}, )
 
-    @mock.patch('logic.love.send_loves', autospec=True)
-    def test_send_love_without_csrf(self, mock_send_loves):
-        response = self.app.post('/love', {'recipients': 'jenny', 'message': 'Love'}, expect_errors=True)
+        assert response.status_code == 403
+        assert mock_send_loves.called is False
 
-        self.assertEqual(response.status_int, 403)
-        self.assertFalse(mock_send_loves.called)
+    @mock.patch('loveapp.logic.love.send_loves', autospec=True)
+    def test_send_love(self, mock_send_loves, client, jenny):
+        csrf_token = self.addCsrfTokenToSession(client)
+        response = client.post('/love', data={'recipients': 'jenny', 'message': 'Love', '_csrf_token': csrf_token})
 
-    @mock.patch('logic.love.send_loves', autospec=True)
-    def test_send_love(self, mock_send_loves):
-        csrf_token = self.addCsrfTokenToSession()
-        response = self.app.post('/love', {'recipients': 'jenny', 'message': 'Love', '_csrf_token': csrf_token})
-
-        self.assertEqual(response.status_int, 302)
+        assert response.status_code == 302
         mock_send_loves.assert_called_once_with(set([u'jenny']), u'Love', secret=False)
 
 
-class MeTest(LoggedInUserBaseTest):
+class TestMe(LoggedInUserBaseTest):
     """
     Testing /me
     """
 
-    def test_me(self):
-        response = self.app.get('/me')
+    def test_me(self, client, recorded_templates):
+        response = client.get('/me')
+        template, response_context = recorded_templates[0]
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('me.html', response.template)
+        assert response.status_code == 200
+        assert 'me.html' in template.name
 
-        self.assertIsNotNone(response.context['current_time'])
-        self.assertEqual(response.context['current_user'], self.current_user)
-        self.assertEqual(response.context['sent_loves'], [])
-        self.assertIn('Give and ye shall receive!', response.body)
-        self.assertEqual(response.context['received_loves'], [])
-        self.assertIn('You haven\'t sent any love yet.', response.body)
+        assert response_context['current_time'] is not None
+        assert response_context['current_user'] == self.logged_in_employee
+        assert response_context['sent_loves'] == []
+        assert 'Give and ye shall receive!' in response.data.decode()
+        assert response_context['received_loves'] == []
+        assert 'You haven\'t sent any love yet.' in response.data.decode()
 
-    def test_me_with_loves(self):
+    def test_me_with_loves(self, client, recorded_templates):
         dude = create_employee(username='dude')
         sent_love = create_love(
-            sender_key=self.current_user.key,
+            sender_key=self.logged_in_employee.key,
             recipient_key=dude.key,
             message='Well done.'
         )
         received_love = create_love(
             sender_key=dude.key,
-            recipient_key=self.current_user.key,
+            recipient_key=self.logged_in_employee.key,
             message='Awesome work.'
         )
-        response = self.app.get('/me')
+        response = client.get('/me')
+        _, response_context = recorded_templates[0]
 
-        self.assertEqual(response.context['sent_loves'], [sent_love])
-        self.assertIn('Well done.', response.body)
-        self.assertEqual(response.context['received_loves'], [received_love])
-        self.assertIn('Awesome work.', response.body)
+        assert response_context['sent_loves'] == [sent_love]
+        assert 'Well done.' in response.data.decode()
+        assert response_context['received_loves'] == [received_love]
+        assert 'Awesome work.' in response.data.decode()
 
         dude.key.delete()
 
 
-class SubscriptionsTestCase(LoggedInAdminBaseTest):
+class TestSubscriptions(LoggedInAdminBaseTest):
     """
     Testing /subscriptions
     """
 
-    def test_subscriptions(self):
-        response = self.app.get('/subscriptions')
+    def test_subscriptions(self, client, recorded_templates):
+        response = client.get('/subscriptions')
+        template, response_context = recorded_templates[0]
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('subscriptions.html', response.template)
+        assert response.status_code == 200
+        assert 'subscriptions.html' in template.name
 
-    @mock.patch('views.web.Subscription', autospec=True)
-    def test_create_subscription(self, mock_model_subscription):
-        csrf_token = self.addCsrfTokenToSession()
-        response = self.app.post(
+    @mock.patch('loveapp.views.web.Subscription', autospec=True)
+    def test_create_subscription(self, mock_model_subscription, client):
+        csrf_token = self.addCsrfTokenToSession(client)
+        response = client.post(
             '/subscriptions/create',
-            dict(
+            data=dict(
                 request_url='http://example.org',
                 event='lovesent',
                 active='true',
@@ -432,7 +333,7 @@ class SubscriptionsTestCase(LoggedInAdminBaseTest):
             )
         )
 
-        self.assertEqual(response.status_int, 302)
+        assert response.status_code == 302
         mock_model_subscription.create_from_dict.assert_called_once_with(
             dict(
                 request_url='http://example.org',
@@ -442,205 +343,201 @@ class SubscriptionsTestCase(LoggedInAdminBaseTest):
             )
         )
 
-    @mock.patch('views.web.logic.subscription', autospec=True)
-    def test_deleting_alias(self, mock_logic_subscription):
-        csrf_token = self.addCsrfTokenToSession()
+    @mock.patch('loveapp.logic.subscription', autospec=True)
+    def test_deleting_alias(self, mock_logic_subscription, client):
+        csrf_token = self.addCsrfTokenToSession(client)
         subscription = create_subscription()
-        response = self.app.post(
+        response = client.post(
             '/subscriptions/{id}/delete'.format(id=subscription.key.id()),
-            dict(_csrf_token=csrf_token),
+            data=dict(_csrf_token=csrf_token),
         )
 
-        self.assertEqual(response.status_int, 302)
+        assert response.status_code == 302
         mock_logic_subscription.delete_subscription.assert_called_once_with(subscription.key.id())
 
 
-class AliasesTestCase(LoggedInAdminBaseTest):
+class TestAliases(LoggedInAdminBaseTest):
     """
     Testing /aliases
     """
 
-    def test_listing_aliases(self):
-        response = self.app.get('/aliases')
+    def test_listing_aliases(self, client, recorded_templates):
+        response = client.get('/aliases')
+        assert response.status_code == 200
+        template, response_context = recorded_templates[0]
+        assert 'aliases.html' in template.name
+        self.assertHasCsrf(response, 'alias-form', response_context['session'])
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('aliases.html', response.template)
-        self.assertHasCsrf(response.forms['alias-form'], response.session)
-
-    @mock.patch('views.web.logic.alias', autospec=True)
-    def test_saving_alias(self, mock_logic_alias):
+    @mock.patch('loveapp.logic.alias', autospec=True)
+    def test_saving_alias(self, mock_logic_alias, client):
         create_employee(username='dude')
-        csrf_token = self.addCsrfTokenToSession()
+        csrf_token = self.addCsrfTokenToSession(client)
 
-        response = self.app.post(
+        response = client.post(
             '/aliases',
-            {'alias': 'duden', 'username': 'dude', '_csrf_token': csrf_token},
+            data={'alias': 'duden', 'username': 'dude', '_csrf_token': csrf_token},
         )
 
-        self.assertEqual(response.status_int, 302)
+        assert response.status_code == 302
         mock_logic_alias.save_alias.assert_called_once_with(
             'duden',
             'dude',
         )
 
-    def test_saving_alias_all_empty(self):
-        csrf_token = self.addCsrfTokenToSession()
+    def test_saving_alias_all_empty(self, client):
+        csrf_token = self.addCsrfTokenToSession(client)
 
-        response = self.app.post(
+        response = client.post(
             '/aliases',
-            {'alias': '', 'username': '', '_csrf_token': csrf_token},
+            data={'alias': '', 'username': '', '_csrf_token': csrf_token}
         )
 
-        self.assertEqual(response.status_int, 302)
-        self.assertIsNone(logic.alias.get_alias('foo'))
+        assert response.status_code == 302
+        assert loveapp.logic.alias.get_alias('foo') is None
 
-    @mock.patch('views.web.logic.alias', autospec=True)
-    def test_deleting_alias(self, mock_logic_alias):
+    @mock.patch('loveapp.logic.alias', autospec=True)
+    def test_deleting_alias(self, mock_logic_alias, client):
         create_employee(username='man')
-        csrf_token = self.addCsrfTokenToSession()
+        csrf_token = self.addCsrfTokenToSession(client)
 
         alias = create_alias_with_employee_username(name='mano', username='man')
-        response = self.app.post(
+        response = client.post(
             '/aliases/{id}/delete'.format(id=alias.key.id()),
-            {'_csrf_token': csrf_token},
+            data={'_csrf_token': csrf_token},
         )
 
-        self.assertEqual(response.status_int, 302)
+        assert response.status_code == 302
         mock_logic_alias.delete_alias.assert_called_once_with(alias.key.id())
 
 
-class MeOrExploreTest(LoggedInUserBaseTest):
+class TestMeOrExplore(LoggedInUserBaseTest):
     """
     Testing redirect to /me or /explore?user=johnd
     """
 
-    def test_no_such_employee(self):
-        with self.assertRaises(AppError) as caught:
-            self.app.get('/panda')
+    def test_no_such_employee(self, client):
+        response = client.get('/panda')
+        assert response.status_code == 404
 
-        self.assert_(
-            caught.exception.message.startswith('Bad response: 404'),
-            'Expected request for unknown employee to return 404',
-        )
+    def test_redirect_to_me(self, client):
+        response = client.get('/{username}'.format(username=self.logged_in_employee.username))
+        assert response.status_code == 302
+        assert '/me' in response.headers.get('location')
 
-    def test_redirect_to_me(self):
-        response = self.app.get('/{username}'.format(username=self.current_user.username))
-
-        self.assertEqual(response.status_int, 302)
-        self.assertIn('/me', response.location)
-
-    def test_redirect_to_explore(self):
+    def test_redirect_to_explore(self, client):
         create_employee(username='buddy')
-        response = self.app.get('/buddy')
+        response = client.get('/buddy')
 
-        self.assertEqual(response.status_int, 302)
-        self.assertIn('/explore?user=buddy', response.location)
+        assert response.status_code == 302
+        assert '/explore?user=buddy' in response.headers.get('location')
 
-    def test_with_alias(self):
+    def test_with_alias(self, client):
         create_employee(username='buddy')
         create_alias_with_employee_username(name='buddyalias', username='buddy')
-        response = self.app.get('/buddyalias')
+        response = client.get('/buddyalias')
 
-        self.assertEqual(response.status_int, 302)
-        self.assertIn('/explore?user=buddy', response.location)
+        assert response.status_code == 302
+        assert '/explore?user=buddy' in response.headers.get('location')
 
 
-class LeaderboardTest(LoggedInUserBaseTest):
+class TestLeaderboard(LoggedInUserBaseTest):
     """
     Testing /leaderboard
     """
 
-    def test_leaderboard(self):
-        response = self.app.get('/leaderboard')
+    def test_leaderboard(self, client, recorded_templates):
+        response = client.get('/leaderboard')
+        template, response_context = recorded_templates[0]
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('leaderboard.html', response.template)
-        self.assertIsNotNone(response.context['top_loved'])
-        self.assertIsNotNone(response.context['top_lovers'])
-        self.assertIsNotNone(response.context['departments'])
-        self.assertIsNotNone(response.context['offices'])
-        self.assertIsNone(response.context['selected_dept'])
-        self.assertIsNotNone(response.context['selected_timespan'])
-        self.assertIsNone(response.context['selected_office'])
+        assert response.status_code == 200
+        assert 'leaderboard.html' in template.name
+        assert response_context['top_loved'] is not None
+        assert response_context['top_lovers'] is not None
+        assert response_context['departments'] is not None
+        assert response_context['offices'] is not None
+        assert response_context['selected_dept'] is None
+        assert response_context['selected_timespan'] is not None
+        assert response_context['selected_office'] is None
 
 
-class ExploreTest(LoggedInUserBaseTest):
+class TestExplore(LoggedInUserBaseTest):
     """
     Testing /explore
     """
 
-    def test_explore(self):
-        response = self.app.get('/explore')
+    def test_explore(self, client, recorded_templates):
+        response = client.get('/explore')
+        template, response_context = recorded_templates[0]
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('explore.html', response.template)
-        self.assertIsNotNone(response.context['current_time'])
-        self.assertIsNone(response.context['user'])
+        assert response.status_code == 200
+        assert 'explore.html' in template.name
+        assert response_context['current_time'] is not None
+        assert response_context['user'] is None
 
-    def test_explore_with_user(self):
+    def test_explore_with_user(self, client, recorded_templates):
         create_employee(username='buddy')
-        response = self.app.get('/explore?user=buddy')
+        response = client.get('/explore?user=buddy')
+        template, response_context = recorded_templates[0]
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('explore.html', response.template)
-        self.assertIsNotNone(response.context['current_time'])
-        self.assertEqual('buddy', response.context['user'].username)
+        assert response.status_code == 200
+        assert 'explore.html' in template.name
+        assert response_context['current_time'] is not None
+        assert 'buddy' == response_context['user'].username
 
-    def test_explore_with_unkown_user(self):
-        response = self.app.get('/explore?user=noone')
+    def test_explore_with_unkown_user(self, client):
+        response = client.get('/explore?user=noone')
 
-        self.assertEqual(response.status_int, 302)
-        self.assertIn('/explore', response.location)
+        assert response.status_code == 302
+        assert '/explore' in response.headers.get('location')
 
 
-class AutocompleteTest(LoggedInUserBaseTest):
-    nosegae_memcache = True
-    nosegae_search = True
+class TestAutocomplete(LoggedInUserBaseTest):
 
-    def setUp(self):
-        super(AutocompleteTest, self).setUp()
+    @pytest.fixture(autouse=True)
+    def create_employees(self, gae_testbed):
         create_employee(username='alice')
         create_employee(username='alex')
         create_employee(username='bob')
         create_employee(username='carol')
-        with mock.patch('logic.employee.memory_usage', autospec=True):
-            logic.employee.rebuild_index()
+        with mock.patch('loveapp.logic.employee.memory_usage', autospec=True):
+            loveapp.logic.employee.rebuild_index()
 
-    def test_autocomplete(self):
-        self._test_autocomplete('a', ['alice', 'alex'])
-        self._test_autocomplete('b', ['bob'])
-        self._test_autocomplete('c', ['carol'])
-        self._test_autocomplete('stupidprefix', [])
-        self._test_autocomplete('', [])
+    @pytest.mark.parametrize('prefix, expected_values', [
+        ('a', ['alice', 'alex']),
+        ('b', ['bob']),
+        ('c', ['carol']),
+        ('stupidprefix', []),
+        ('', [])
 
-    def _test_autocomplete(self, prefix, expected_values):
-        response = self.app.get('/user/autocomplete', {'term': prefix})
+    ])
+    def test_autocomplete(self, client, prefix, expected_values):
+        response = client.get('/user/autocomplete', query_string={'term': prefix})
         received_values = set(item['value'] for item in response.json)
-        self.assertEqual(set(expected_values), received_values)
+        assert set(expected_values) == received_values
 
 
-class ValuesAutocompleteTest(LoggedInUserBaseTest):
+class TestValuesAutocomplete(LoggedInUserBaseTest):
 
-    @mock.patch('util.company_values.config')
-    def test_autocomplete(self, mock_config):
-        mock_config.COMPANY_VALUES = [
-            CompanyValue('AWESOME', 'awesome', ['awesome', 'awesometacular', 'superAwesome']),
-        ]
-        self._test_autocomplete('#aw', ['#awesome', '#awesometacular'])
-        self._test_autocomplete('#su', ['#superAwesome'])
-        self._test_autocomplete('#derp', [])
+    @pytest.mark.parametrize('prefix, expected_values', [
+        ('#aw', ['#awesome', '#awesometacular']),
+        ('#su', ['#superAwesome']),
+        ('#derp', [])
+    ])
+    def test_autocomplete(self, client, prefix, expected_values):
+        with mock.patch('loveapp.util.company_values.config') as mock_config:
+            mock_config.COMPANY_VALUES = [
+                CompanyValue('AWESOME', 'awesome', ['awesome', 'awesometacular', 'superAwesome']),
+            ]
 
-    def _test_autocomplete(self, prefix, expected_values):
-        response = self.app.get('/values/autocomplete', {'term': prefix})
-        received_values = set(item for item in response.json)
-        self.assertEqual(set(expected_values), received_values)
+            response = client.get('/values/autocomplete', query_string={'term': prefix})
+            received_values = set(item for item in response.json)
+            assert set(expected_values) == received_values
 
 
-class ValuesTest(LoggedInUserBaseTest):
+class TestValues(LoggedInUserBaseTest):
 
-    def setUp(self):
-        super(ValuesTest, self).setUp()
-
+    @pytest.fixture(autouse=True)
+    def create_loves(self, gae_testbed):
         receiver = create_employee(username='receiver')
         sender = create_employee(username='sender')
 
@@ -679,57 +576,62 @@ class ValuesTest(LoggedInUserBaseTest):
             company_values=[]
         )
 
-    @mock.patch('util.company_values.config')
-    @mock.patch('logic.love.config')
-    def test_single_value_page(self, mock_util_config, mock_logic_config):
+    @mock.patch('loveapp.util.company_values.config')
+    @mock.patch('loveapp.logic.love.config')
+    def test_single_value_page(self, mock_util_config, mock_logic_config, client, recorded_templates):
         mock_util_config.COMPANY_VALUES = mock_logic_config.COMPANY_VALUES = [
             CompanyValue('AWESOME', 'awesome', ['awesome']),
             CompanyValue('COOL', 'cool', ['cool'])
         ]
 
-        response = self.app.get('/value/cool')
-        self.assertIn('really cool', response.body)
-        self.assertIn('really quite cool', response.body)
+        response = client.get('/value/cool')
+        template, response_context = recorded_templates[0]
+        assert 'really cool' in response.data.decode()
+        assert 'really quite cool' in response.data.decode()
 
         # check linkification of hashtags
-        self.assertIn('<a href="/value/cool">#cool</a>', response.body)
+        assert '<a href="/value/cool">#cool</a>' in response.data.decode()
 
         # check only relevant hashtags are linkified
-        self.assertIn('#notcool', response.body)
-        self.assertNotIn('<a href="/value/cool">#notcool</a>', response.body)
+        assert '#notcool' in response.data.decode()
+        assert '<a href="/value/cool">#notcool</a>' not in response.data.decode()
 
-        self.assertNotIn('jk really awesome', response.body)
+        assert 'jk really awesome' not in response.data.decode()
 
-    @mock.patch('util.company_values.config')
-    @mock.patch('logic.love.config')
-    def test_all_values_page(self, mock_util_config, mock_logic_config):
+    @mock.patch('loveapp.util.company_values.config')
+    @mock.patch('loveapp.logic.love.config')
+    def test_all_values_page(self, mock_util_config, mock_logic_config, client, recorded_templates):
         mock_util_config.COMPANY_VALUES = mock_logic_config.COMPANY_VALUES = [
             CompanyValue('AWESOME', 'awesome', ['awesome']),
             CompanyValue('COOL', 'cool', ['cool'])
         ]
 
-        response = self.app.get('/values')
-        self.assertIn('really cool', response.body)
-        self.assertIn('jk really awesome', response.body)
-        self.assertNotIn('bogus', response.body)
+        response = client.get('/values')
+        template, response_context = recorded_templates[0]
+
+        assert 'really cool' in response.data.decode()
+        assert 'jk really awesome' in response.data.decode()
+        assert 'bogus' not in response.data.decode()
 
 
-class EmployeeTestCase(LoggedInAdminBaseTest):
+class TestEmployee(LoggedInAdminBaseTest):
     """
     Testing /employees
     """
 
-    def test_employees(self):
+    def test_employees(self, client, recorded_templates):
         create_employee(username='buddy')
-        response = self.app.get('/employees')
+        response = client.get('/employees')
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('employees.html', response.template)
-        self.assertIsNotNone(response.context['pagination_result'])
+        assert response.status_code == 200
+        template, response_context = recorded_templates[0]
+        assert 'employees.html' in template.name
+        assert response_context['pagination_result'] is not None
 
-    def test_employees_import_form(self):
-        response = self.app.get('/employees/import')
+    def test_employees_import_form(self, client, recorded_templates):
+        response = client.get('/employees/import')
 
-        self.assertEqual(response.status_int, 200)
-        self.assertIn('import.html', response.template)
-        self.assertIsNotNone(response.context['import_file_exists'])
+        assert response.status_code == 200
+        template, response_context = recorded_templates[0]
+        assert 'import.html' in template.name
+        assert response_context['import_file_exists'] is not None

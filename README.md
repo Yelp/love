@@ -24,7 +24,7 @@ To get an idea what Yelp Love looks like go and check out the [screenshots](/scr
 
 Yelp Love runs on [Google App Engine](https://appengine.google.com/).
 In order to install Yelp Love you will need a Google account and the
-[Google App Engine SDK for Python 2.7](https://cloud.google.com/appengine/docs/standard/python/download).
+[Google App Engine SDK for Python](https://cloud.google.com/appengine/docs/standard/python/download).
 
 ### Create a new project
 
@@ -78,23 +78,23 @@ fields Yelp Love requires for an employee.
 The S3 bucket name must be configured in config.py.
 
 In order to access the S3 bucket you have to save AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
-using the [Secret](models/secret.py) model. Locally you can open up the
-[interactive console](http://localhost:8000/console) and execute the following code:
+using the [Secret](models/secret.py) model. Locally, you can temporarily add an endpoint inside loveapp/views/web.py and then navigate to it in your browser (e.g., http://localhost:8080/create_secrets):
 
 ```python
-from models import Secret
-
-Secret(id='AWS_ACCESS_KEY_ID', value='change-me').put()
-Secret(id='AWS_SECRET_ACCESS_KEY', value='change-me').put()
+@web_app.route('/create_secrets')
+def create_secrets():
+    from loveapp.models import Secret
+    Secret(id='AWS_ACCESS_KEY_ID', value='change-me').put()
+    Secret(id='AWS_SECRET_ACCESS_KEY', value='change-me').put()  
+    return "please delete me now"
 ```
 
-In production you can either use the [Datastore UI](https://console.cloud.google.com/datastore/entities/)
-or the [Remote API](https://cloud.google.com/appengine/docs/python/tools/remoteapi).
+In production you can use the [Datastore UI](https://console.cloud.google.com/datastore/entities/).
 
 To kick off the final import you have to run:
 
 ```python
-from logic import employee
+from loveapp.logic import employee
 employee.load_employees()
 ```
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from util.recipient import sanitize_recipients
+from loveapp.util.recipient import sanitize_recipients
 
 
 class SanitizeRecipientsTest(unittest.TestCase):

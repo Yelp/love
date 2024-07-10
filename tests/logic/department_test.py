@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import unittest
-
-
-from logic.department import get_all_departments
+from loveapp.logic.department import get_all_departments
 from testing.factories import create_employee
 
 DEPARTMENTS = [
@@ -15,12 +12,8 @@ DEPARTMENTS = [
 ]
 
 
-class DepartmentTest(unittest.TestCase):
-    # enable the datastore stub
-    nosegae_datastore_v3 = True
+def test_get_all_departments(gae_testbed):
+    for department in DEPARTMENTS:
+        create_employee(department=department, username='{}-{}'.format('username', department))
 
-    def test_get_all_departments(self):
-        for department in DEPARTMENTS:
-            create_employee(department=department, username='{}-{}'.format('username', department))
-
-        self.assertEqual(set(DEPARTMENTS), set(get_all_departments()))
+    assert set(DEPARTMENTS) == set(get_all_departments())

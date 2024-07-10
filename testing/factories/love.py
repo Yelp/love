@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models import Love
+from loveapp.models import Love
 
 DEFAULT_LOVE_MESSAGE = 'So Long, and Thanks For All the Fish'
 

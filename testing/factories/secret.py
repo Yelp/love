@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from models import Secret
+from loveapp.models import Secret
 
 
 def create_secret(id, value='secret'):

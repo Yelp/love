@@ -1,5 +1,6 @@
+repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks.git
-    sha: v0.7.1
+    rev: v0.7.1
     hooks:
     -   id: autopep8-wrapper
     -   id: check-added-large-files
@@ -15,15 +16,20 @@
     -   id: double-quote-string-fixer
     -   id: end-of-file-fixer
     -   id: flake8
-        language_version: python2.7
+        language_version: python3.11
     -   id: fix-encoding-pragma
     -   id: name-tests-test
     -   id: pretty-format-json
         args: ['--autofix']
     -   id: requirements-txt-fixer
     -   id: trailing-whitespace
+-   repo: https://github.com/asottile/reorder-python-imports
+    rev: v3.12.0
+    hooks:
+    -   id: reorder-python-imports
+
 -   repo: https://github.com/Yelp/detect-secrets
-    sha: 0.9.1
+    rev: 0.9.1
     hooks:
     -   id: detect-secrets
         args: ['--baseline', '.secrets.baseline']

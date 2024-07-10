@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-import mock
 import unittest
 
-from config import CompanyValue
-import logic.love
+import mock
+import pytest
+
+import loveapp.logic.love
 from errors import TaintedLove
+from loveapp.config import CompanyValue
 from testing.factories import create_alias_with_employee_username
 from testing.factories import create_employee
 
 
-class SendLovesTest(unittest.TestCase):
-    nosegae_taskqueue = True
-    nosegae_memcache = True
-    nosegae_datastore_v3 = True
+@pytest.mark.usefixtures('gae_testbed')
+class TestSendLoves(unittest.TestCase):
 
     def setUp(self):
         self.alice = create_employee(username='alice')
@@ -20,48 +20,50 @@ class SendLovesTest(unittest.TestCase):
         self.carol = create_employee(username='carol')
         self.message = 'hallo'
 
-    def test_send_loves(self):
-        logic.love.send_loves(
+    @mock.patch('google.appengine.api.taskqueue.add', autospec=True)
+    def test_send_loves(self, mock_taskqueue_add):
+        loveapp.logic.love.send_loves(
             set(['bob', 'carol']),
             self.message,
             sender_username='alice',
         )
 
-        loves_for_bob = logic.love.get_love(None, 'bob').get_result()
+        loves_for_bob = loveapp.logic.love.get_love(None, 'bob').get_result()
         self.assertEqual(len(loves_for_bob), 1)
         self.assertEqual(loves_for_bob[0].sender_key, self.alice.key)
         self.assertEqual(loves_for_bob[0].message, self.message)
 
-        loves_for_carol = logic.love.get_love(None, 'carol').get_result()
+        loves_for_carol = loveapp.logic.love.get_love(None, 'carol').get_result()
         self.assertEqual(len(loves_for_carol), 1)
         self.assertEqual(loves_for_carol[0].sender_key, self.alice.key)
         self.assertEqual(loves_for_carol[0].message, self.message)
 
     def test_invalid_sender(self):
         with self.assertRaises(TaintedLove):
-            logic.love.send_loves(
+            loveapp.logic.love.send_loves(
                 set(['alice']),
                 'hallo',
                 sender_username='wwu',
             )
 
-    def test_sender_is_a_recipient(self):
-        logic.love.send_loves(
+    @mock.patch('google.appengine.api.taskqueue.add', autospec=True)
+    def test_sender_is_a_recipient(self, mock_taskqueue_add):
+        loveapp.logic.love.send_loves(
             set(['bob', 'alice']),
             self.message,
             sender_username='alice',
         )
 
-        loves_for_bob = logic.love.get_love('alice', 'bob').get_result()
+        loves_for_bob = loveapp.logic.love.get_love('alice', 'bob').get_result()
         self.assertEqual(len(loves_for_bob), 1)
         self.assertEqual(loves_for_bob[0].message, self.message)
 
-        loves_for_alice = logic.love.get_love(None, 'alice').get_result()
+        loves_for_alice = loveapp.logic.love.get_love(None, 'alice').get_result()
         self.assertEqual(loves_for_alice, [])
 
     def test_sender_is_only_recipient(self):
         with self.assertRaises(TaintedLove):
-            logic.love.send_loves(
+            loveapp.logic.love.send_loves(
                 set(['alice']),
                 self.message,
                 sender_username='alice',
@@ -69,22 +71,23 @@ class SendLovesTest(unittest.TestCase):
 
     def test_invalid_recipient(self):
         with self.assertRaises(TaintedLove):
-            logic.love.send_loves(
+            loveapp.logic.love.send_loves(
                 set(['bob', 'dean']),
                 'hallo',
                 sender_username='alice',
             )
 
-        loves_for_bob = logic.love.get_love('alice', 'bob').get_result()
+        loves_for_bob = loveapp.logic.love.get_love('alice', 'bob').get_result()
         self.assertEqual(loves_for_bob, [])
 
-    def test_send_loves_with_alias(self):
+    @mock.patch('google.appengine.api.taskqueue.add', autospec=True)
+    def test_send_loves_with_alias(self, mock_taskqueue_add):
         message = 'Loving your alias'
         create_alias_with_employee_username(name='bobby', username=self.bob.username)
 
-        logic.love.send_loves(['bobby'], message, sender_username=self.carol.username)
+        loveapp.logic.love.send_loves(['bobby'], message, sender_username=self.carol.username)
 
-        loves_for_bob = logic.love.get_love('carol', 'bob').get_result()
+        loves_for_bob = loveapp.logic.love.get_love('carol', 'bob').get_result()
         self.assertEqual(len(loves_for_bob), 1)
         self.assertEqual(loves_for_bob[0].sender_key, self.carol.key)
         self.assertEqual(loves_for_bob[0].message, message)
@@ -93,20 +96,21 @@ class SendLovesTest(unittest.TestCase):
         create_alias_with_employee_username(name='bobby', username=self.bob.username)
 
         with self.assertRaises(TaintedLove):
-            logic.love.send_loves(['bob', 'bobby'], 'hallo', sender_username='alice')
+            loveapp.logic.love.send_loves(['bob', 'bobby'], 'hallo', sender_username='alice')
 
-        loves_for_bob = logic.love.get_love('alice', 'bob').get_result()
+        loves_for_bob = loveapp.logic.love.get_love('alice', 'bob').get_result()
         self.assertEqual(loves_for_bob, [])
 
-    @mock.patch('util.company_values.config')
-    def test_send_love_with_value_hashtag(self, mock_config):
+    @mock.patch('loveapp.util.company_values.config')
+    @mock.patch('google.appengine.api.taskqueue.add', autospec=True)
+    def test_send_love_with_value_hashtag(self, mock_taskqueue_add, mock_config):
         mock_config.COMPANY_VALUES = [
             CompanyValue('AWESOME', 'awesome', ['awesome'])
         ]
         message = 'Loving your alias #Awesome'
         create_alias_with_employee_username(name='bobby', username=self.bob.username)
-        logic.love.send_loves(['bobby'], message, sender_username=self.carol.username)
+        loveapp.logic.love.send_loves(['bobby'], message, sender_username=self.carol.username)
 
-        loves_for_bob = logic.love.get_love('carol', 'bob').get_result()
+        loves_for_bob = loveapp.logic.love.get_love('carol', 'bob').get_result()
         self.assertEqual(len(loves_for_bob), 1)
         self.assertEqual(loves_for_bob[0].company_values, ['AWESOME'])

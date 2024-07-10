@@ -1,0 +1,13 @@
+google_appengine
+virtualenv_
+lib
+.tox
+env
+.git
+tmp
+loveapp/config-example.py
+YelpLove.egg-info
+*.pyc
+tests/
+testing/
+.pytest_cache

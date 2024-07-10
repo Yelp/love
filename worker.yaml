@@ -1,25 +1,3 @@
 service: worker
-runtime: python27
-api_version: 1
-threadsafe: true
-
-handlers:
-- url: /tasks/.*
-  script: main.app
-  login: admin
-  secure: always
-
-libraries:
-- name: ssl
-  version: latest
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*/RCS/.*$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*~$
-- ^(.*/)?\..*$
-- ^YelpLove.egg-info(/.*)?$
-- ^google_appengine(/.*)?$
-- ^tmp(/.*)?$
-- ^virtualenv_.*$
+runtime: python311
+app_engine_apis: true
