@@ -14,7 +14,7 @@ class YelpLoveTestCase():
             'Unexpected Location header: {0}'.format(response.headers['Location'])
 
     def assertRequiresAdmin(self, response):
-        response.status_code == 401
+        assert response.status_code == 401
 
     def assertHasCsrf(self, response, form_class, session):
         """Make sure the response form contains the correct CSRF token.

@@ -65,7 +65,7 @@ class TestLoggedOut(YelpLoveTestCase):
         )
 
 
-class TestAdminResources(YelpLoveTestCase):
+class TestAdminResources(LoggedInUserBaseTest):
     # Managing API Keys
 
     def test_keys(self, client):
