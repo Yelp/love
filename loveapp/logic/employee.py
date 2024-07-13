@@ -4,6 +4,7 @@ import json
 import logging
 import os.path
 
+import boto3
 from google.appengine.api import search
 from google.appengine.api.runtime import memory_usage
 from google.appengine.ext import ndb
@@ -84,18 +85,15 @@ def _generate_substrings(string):
 
 
 def _get_employee_info_from_s3():
-    from boto import connect_s3
-    from boto.s3.key import Key
-
     logging.info('Reading employees file from S3... {}MB'.format(memory_usage().current))
-    key = Key(
-        connect_s3(
-            aws_access_key_id=get_secret('AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=get_secret('AWS_SECRET_ACCESS_KEY'),
-        ).get_bucket(config.S3_BUCKET),
-        'employees.json',
+    session = boto3.Session(
+        aws_access_key_id=get_secret('AWS_ACCESS_KEY_ID'),
+        aws_secret_access_key=get_secret('AWS_SECRET_ACCESS_KEY'),
     )
-    employee_dicts = json.loads(key.get_contents_as_string())
+    s3 = session.resource('s3')
+    bucket = s3.Bucket(config.S3_BUCKET)
+    obj = bucket.Object('employees_appeng.json')
+    employee_dicts = json.loads(obj.get()['Body'].read().decode('utf-8'))   
     logging.info('Done reading employees file from S3. {}MB'.format(memory_usage().current))
     return employee_dicts
 

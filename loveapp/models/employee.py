@@ -53,8 +53,7 @@ class Employee(ndb.Model, Pagination):
         new_employee = cls()
         new_employee.username = d['username']
         new_employee.user = users.User(
-            '{user}@{domain}'.format(user=new_employee.username, domain=loveapp.config.DOMAIN),
-            _auth_domain=loveapp.config.DOMAIN
+            '{user}@{domain}'.format(user=new_employee.username, domain=loveapp.config.DOMAIN)
         )
         new_employee.update_from_dict(d)
 
