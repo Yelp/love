@@ -36,6 +36,7 @@ from loveapp.util.company_values import values_matching_prefix
 from loveapp.util.decorators import admin_required
 from loveapp.util.decorators import csrf_protect
 from loveapp.util.decorators import user_required
+from loveapp.util.formatting import format_loves
 from loveapp.util.recipient import sanitize_recipients
 from loveapp.util.render import make_json_response
 from loveapp.util.render import render_template
@@ -93,20 +94,6 @@ def me_or_explore(user):
         return redirect(url_for('web_app.me'))
     else:
         return redirect(url_for('web_app.explore', user=username))
-
-
-def format_loves(loves):
-    # organise loves into two roughly equal lists for displaying
-    if len(loves) < 20:
-        loves_list_one = loves
-        loves_list_two = []
-    else:
-        loves_list_one = loves[:len(loves)/2]
-        loves_list_two = loves[len(loves)/2:]
-
-        if len(loves_list_one) < len(loves_list_two):
-            loves_list_one.append(loves_list_two.pop())
-    return loves_list_one, loves_list_two
 
 
 @web_app.route('/value/<string:company_value_id>', methods=['GET'])
