@@ -24,3 +24,4 @@
 * Matthew Bentley [matthewbentley](https://github.com/matthewbentley)
 * Kevin Hock [KevinHock](https://github.com/KevinHock)
 * Duncan Cook [theletterd](https://github.com/theletterd)
+* Billy Montgomery [billyxs](https://github.com/billyxs)

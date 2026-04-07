@@ -5,6 +5,8 @@ from google.appengine.ext import ndb
 
 from loveapp.models import Employee
 
+import loveapp.config as config
+
 
 class Love(ndb.Model):
     """Models an instance of sent love."""
@@ -18,3 +20,12 @@ class Love(ndb.Model):
     @property
     def seconds_since_epoch(self):
         return int(mktime(self.timestamp.timetuple()))
+
+    @property
+    def emote(self) -> str | None:
+        message = self.message
+        for message_substring, emoji in config.MESSAGE_EMOTES.items():
+            if message and message_substring.lower() in message.lower():
+                return emoji
+
+        return None

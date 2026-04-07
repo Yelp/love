@@ -1,6 +1,6 @@
 {% extends theme("layout.html") %}
 
-{% import theme("parts/love_message.html") as love_message %}
+{% import theme("parts/grouped_love_message.html") as grouped_love_message %} "
 {% import theme("parts/photobox.html") as photobox %}
 {% import theme("parts/flash.html") as flash %}
 
@@ -36,20 +36,19 @@
 <div class="row" id="explore-messages">
   <div class="col-md-6">
     <h1>Love Sent</h1>
-    {% if sent_loves %}
+    {% if grouped_sent_loves %}
       <div class="content-container">
-      {% for love in sent_loves %}
-        {% set sender = love.sender_key.get() %}
-        {% set recipient = love.recipient_key.get() %}
-        {{ love_message.love(
-          sender.first_name,
-          sender.username,
-          recipient.full_name,
-          recipient.username,
-          recipient,
-          love.message,
-          love.seconds_since_epoch)
-        }}
+        {% for grouped_love in grouped_sent_loves %}
+        {{ grouped_love_message.love(
+          "To",
+          current_user,
+          grouped_love.senders,
+          grouped_love.recipients,
+          grouped_love.content,
+          grouped_love.most_recent_love_timestamp,
+          grouped_love.is_secret,
+          grouped_love.emote
+        )}}
       {% endfor %}
       </div>
     {% else %}
@@ -60,20 +59,19 @@
   </div>
   <div class="col-md-6">
     <h1>Love Received</h1>
-    {% if received_loves %}
+    {% if grouped_received_loves %}
       <div class="content-container">
-        {% for love in received_loves %}
-          {% set sender = love.sender_key.get() %}
-          {% set recipient = love.recipient_key.get() %}
-          {{ love_message.love(
-            sender.full_name,
-            sender.username,
-            recipient.first_name,
-            recipient.username,
-            sender,
-            love.message,
-            love.seconds_since_epoch)
-          }}
+        {% for grouped_love in grouped_received_loves %}
+          {{ grouped_love_message.love(
+            "From",
+            current_user,
+            grouped_love.senders,
+            grouped_love.recipients,
+            grouped_love.content,
+            grouped_love.most_recent_love_timestamp,
+            grouped_love.is_secret,
+            grouped_love.emote
+          )}}
         {% endfor %}
       </div>
     {% else %}

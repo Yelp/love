@@ -16,6 +16,37 @@
         loved
         <strong>{% if display_recipient_link %}<a href="/explore?user={{ recipient_username }}">{% endif %}{{ recipient_name }}</a></strong>
         <span class="nicetime">{{ ts * 1000 }}</span>
+        <div class="plus-one-container" style="display: inline;">
+            <button type="button" class="btn btn-link love-plus-one" title="Send this message" onclick="togglePlusOneButton(this)">
+                <span class="circle">+1</span>
+            </button>
+            <form action="/love" method="post" style="display: none;" class="plus-one-confirm">
+                <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+                <input type="hidden" name="recipients" value="{{ recipient_username }}">
+                <input type="hidden" name="message" value="{{ message }}">
+                <button type="submit" class="btn btn-primary btn-xs" style="padding: 2px 7px; height: 23px;" title="Confirm +1">
+                    Send
+                </button>
+                <button type="button" class="btn btn-light btn-xs" style="padding: 2px 7px; height: 23px;" title="Cancel" onclick="togglePlusOneButton(this)">
+                    Cancel
+                </button>
+            </form>
+        </div>
+        <script>
+            function togglePlusOneButton(element) {
+                const container = element.closest('.plus-one-container');
+                const plusOneBtn = container.querySelector('.love-plus-one');
+                const confirmForm = container.querySelector('.plus-one-confirm');
+
+                if (confirmForm.style.display === 'none') {
+                    plusOneBtn.style.display = 'none';
+                    confirmForm.style.display = 'inline-block';
+                } else {
+                    plusOneBtn.style.display = 'inline-block';
+                    confirmForm.style.display = 'none';
+                }
+            }
+        </script>
     </div>
 </div>
 {% endmacro %}

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
 
 from google.appengine.api import taskqueue
 
@@ -27,8 +28,82 @@ def _love_query(start_dt, end_dt, include_secret):
         query = query.filter(Love.secret == False)  # noqa
     return query
 
+def cluster_loves_by_time(loves, time_window_days=None):
+    time_window_days = time_window_days or config.LOVE_CLUSTERING_TIME_WINDOW_DAYS
+    # Phase 1: group by content and secrecy
+    groups = defaultdict(list)
+    for love in loves:
+        # key is a combo of message and secret status, since secret loves 
+        # shouldn't be grouped with non-secret ones
+        key = love.message.strip().lower() + f"_secret={love.secret}"
+        groups[key].append(love)
+      
+    # Phase 2: within each group, do temporal clustering
+    clustered_groups = []
+    threshold = timedelta(days=time_window_days)
+    
+    for loves in groups.values():
+        # Sort by timestamp
+        loves.sort(key=lambda l: l.timestamp)
+        current_cluster = []
+        last_time = None
+        for love in loves:
+            if not current_cluster:
+                current_cluster.append(love)
+                last_time = love.timestamp
+            else:
+                if love.timestamp - last_time > threshold:
+                    # Finish old cluster, start new one
+                    clustered_groups.append(current_cluster)
+                    current_cluster = [love]
+                else:
+                    current_cluster.append(love)
+                last_time = love.timestamp
+        if current_cluster:
+            clustered_groups.append(current_cluster)
+    
+    # Annotate each cluster with its representative timestamp and collect unique senders and recipients
+    results = []
+    for cluster in clustered_groups:
+        newest_time = max(love.seconds_since_epoch for love in cluster)
+        
+        # Use ordered data structures to preserve the order of appearance
+        unique_sender_keys = []
+        unique_recipient_keys = []
+        
+        # First pass - collect unique keys while preserving order
+        for love in cluster:
+            # Add sender key if not already in the list
+            if love.sender_key not in unique_sender_keys and love.sender_key:
+                unique_sender_keys.insert(0, love.sender_key)
+            
+            # Add recipient key if not already in the list
+            if love.recipient_key not in unique_recipient_keys and love.recipient_key:
+                unique_recipient_keys.insert(0, love.recipient_key)
+        
+        # Second pass - get the actual objects
+        senders = [key.get() for key in unique_sender_keys]
+        recipients = [key.get() for key in unique_recipient_keys]
+                
+        results.append({
+            'content': cluster[0].message,
+            'emote': cluster[0].emote,
+            'is_secret': cluster[0].secret,  # Add is_secret flag to result
+            'senders': senders,
+            'recipients': recipients,
+            'sender_count': len(senders),
+            'recipient_count': len(recipients),
+            'most_recent_love_timestamp': newest_time,
+        })
+    
+    # Sort by most recent timestamp
+    results.sort(key=lambda x: x['most_recent_love_timestamp'], reverse=True)
+    # Return the sorted list of clusters
+    return results
+
 
 def _sent_love_query(employee_key, start_dt, end_dt, include_secret):
+
     return _love_query(start_dt, end_dt, include_secret).filter(Love.sender_key == employee_key)
 
 

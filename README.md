@@ -34,7 +34,7 @@ to set up billing and give Cloud Build permission to deploy your app.
 
 ### Prepare for deployment
 
-Copy the [example config](config-example.py) file to config.py and change the
+Copy the [example config](loveapp/config-example.py) file to config.py and change the
 settings. Don't forget to specify your own SECRET_KEY.
 
 ### Initial deployment
@@ -85,7 +85,7 @@ using the [Secret](models/secret.py) model. Locally, you can temporarily add an 
 def create_secrets():
     from loveapp.models import Secret
     Secret(id='AWS_ACCESS_KEY_ID', value='change-me').put()
-    Secret(id='AWS_SECRET_ACCESS_KEY', value='change-me').put()  
+    Secret(id='AWS_SECRET_ACCESS_KEY', value='change-me').put()
     return "please delete me now"
 ```
 
@@ -110,11 +110,67 @@ your favorite packet manager.
 
 ### Running the application locally
 
-* Check out the application code: <code>git clone git@github.com:Yelp/love.git</code>
-* Follow the [Prepare for deployment](#prepare-for-deployment) section
-* Run the app: <code>make run-dev</code> will start both [Yelp Love](http://localhost:8080) as well as the [Admin server](http://localhost:8000)
-* Follow the [CSV import](#csv) section to locally import user data
-* Make your changes
+Check out the application code and cd to the directory
+```
+$ git clone git@github.com:Yelp/love.git
+$ cd love
+```
+
+Create the virtual environment and activate it
+```
+$ python3 -m venv env
+$ source env/bin/activate
+```
+
+Install the requisite libraries
+```
+$ pip install -r requirements-dev.txt
+```
+
+Make a copy of loveapp/config.py
+```
+$ cp loveapp/config-example.py loveapp/config.py
+```
+
+Make a copy of employees.csv.example
+```
+cp import/employees.csv.example import/employees.csv
+```
+
+
+Edit employees.csv to add your own test data
+```
+username,first_name,last_name,department,office,photo_url
+michael,Michael,Scott,,,https://placehold.co/100x100
+jim,Jim,Halpert,,,https://placehold.co/100x100
+pam,Pamela,Beesly,,,https://placehold.co/100x100
+dwight,Dwight,Schrute,,,https://placehold.co/100x100
+angela,Angela,Martin,,,https://placehold.co/100x100
+ryan,Ryan,Howard,,,https://placehold.co/100x100
+stanley,Stanley,Hudson,,,https://placehold.co/100x100
+kelly,Kelly,Kapoor,,,https://placehold.co/100x100
+oscar,Oscar,Martinez,,,https://placehold.co/100x100
+creed,Creed,Bratton,,,https://placehold.co/100x100
+kevin,Kevin,Malone,,,https://placehold.co/100x100
+toby,Toby,Flenderson,,,https://placehold.co/100x100
+phyllis,Phyllis,Lapin,,,https://placehold.co/100x100
+meredith,Meredith,Palmer,,,https://placehold.co/100x100
+andy,Andy,Bernard,,,https://placehold.co/100x100
+bobvance,Vance,Refrigeration,,,https://placehold.co/100x100
+```
+
+Run the application
+```
+$ make run-dev
+```
+
+Go to http://localhost:8080/ and login as michael@example.com (or something matching a username in employees.csv), check the "Sign in as administrator" box. 
+You'll probably get an error, but that's ok.
+
+Go to http://localhost:8080/employees/import
+click "Import"
+
+You're done!
 
 ## Deployment
 
@@ -218,14 +274,25 @@ curl "https://project_id.appspot.com/api/autocomplete?term=ha&api_key=secret"
 
 ## Original Authors and Contributors
 
-* [adamrothman](https://github.com/adamrothman)
-* [amartinezfonts](https://github.com/amartinezfonts)
-* [benasher44](https://github.com/benasher44)
-* [jetze](https://github.com/jetze)
-* [KurtisFreedland](https://github.com/KurtisFreedland)
-* [mesozoic](https://github.com/mesozoic)
-* [michalczapko](https://github.com/michalczapko)
-* [wuhuwei](https://github.com/wuhuwei)
+* Adam Rothman [adamrothman](https://github.com/adamrothman)
+* Ben Asher [benasher44](https://github.com/benasher44)
+* Andrew Martinez-Fonts [amartinezfonts](https://github.com/amartinezfonts)
+* Wei Wu [wuhuwei](https://github.com/wuhuwei)
+* Alex Levy [mesozoic](https://github.com/mesozoic)
+* Anthony Sottile [asottile](https://github.com/asottile)
+* Jenny Lemmnitz [jetze](https://github.com/jetze)
+* Kurtis Freedland [KurtisFreedland](https://github.com/KurtisFreedland)
+* Michał Czapko [michalczapko](https://github.com/michalczapko)
+* Prayag Verma [pra85](https://github.com/pra85)
+* Stephen Brennan [brenns10](https://github.com/brenns10)
+* Wayne Crasta [waynecrasta](https://github.com/waynecrasta)
+* Dennis Coldwell [dencold](https://github.com/dencold)
+* Andrew Lau [ajlau](https://github.com/ajlau)
+* Alina Rada [transcedentalia](https://github.com/transcedentalia)
+* Matthew Bentley [matthewbentley](https://github.com/matthewbentley)
+* Kevin Hock [KevinHock](https://github.com/KevinHock)
+* Duncan Cook [theletterd](https://github.com/theletterd)
+* Billy Montgomery [billyxs](https://github.com/billyxs)
 
 For more info check out the [Authors](AUTHORS.md) file.
 

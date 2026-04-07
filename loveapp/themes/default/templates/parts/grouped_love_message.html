@@ -1,0 +1,84 @@
+{% import theme("parts/photobox.html") as photobox %}
+
+{% macro love(to_from_flag, current_user, senders, recipients, message, ts, secret, emote) %}
+    <div class="love-message-container">
+        {% if to_from_flag == "To" %}
+            {% set user_list = recipients %}
+        {% else %}
+            {% set user_list = senders %}
+        {% endif %}
+
+        {% set first_user = user_list[0] %}
+        {{ photobox.user_icon(first_user) }}
+        {% if emote %}
+            <div style="position: absolute; top: -10px; left: 25px;">{{ emote }}</div>
+        {% endif %}
+        <div class="love-byline">
+            {{ to_from_flag }}
+            <strong><a href="/explore?user={{ first_user.username }}">{{ first_user.full_name }}</a></strong>
+            {% if user_list|length > 1 %}
+                and {{ user_list|length - 1 }} others
+            {% endif %}
+            •
+            <span class="nicetime">{{ ts * 1000 }}</span>
+            {% if secret %}
+            <span class="badge">SECRET</span>
+            {% endif %} 
+        </div>
+
+
+        <div class="love-plus-one-container" style="display: inline;">
+            {#
+                Checks if the current user's username is not present in the list of senders' usernames and they are not the only recipient.
+                If this is the case, disable the plus one button.
+            #}
+            {% set already_sent_this_love = current_user.username in senders | map(attribute='username') | list %}
+            {% set already_received_this_love = (recipients|length == 1 and recipients[0].username == current_user.username) %}
+            {% set tooltip_text = '' %}
+            {% if already_sent_this_love %}
+                {% set tooltip_text = "You already sent this!" %}
+            {% elif already_received_this_love %}
+                {% set tooltip_text = "You can't send love to yourself!" %}
+            {% else %}
+                {% set tooltip_text = "Add your love!" %}
+            {% endif %}
+            {% set disable_plus_one = already_sent_this_love or already_received_this_love %}        
+            <a
+                class="love-plus-one{% if disable_plus_one %} disabled{% endif %}"
+                {% if disable_plus_one %}
+                    tabindex="-1" 
+                    aria-disabled="true"
+                    onclick="return false;"
+                {% else %}
+                    href="/?recipients={{ recipients | map(attribute='username') | join(',') }}&message={{ message | urlencode }}"
+                {% endif %}
+            >
+                <span class="circle">+1</span>
+                <span class="custom-tooltip">{{ tooltip_text }}</span>
+            </a>
+        </div>    
+
+        <div class="love-message">
+            {{ message|linkify_company_values }}
+            
+        {% if user_list|length > 1 %}
+            <div class="user-list" tabindex="0">
+                {% for user in user_list %}
+                    <a href="/explore?user={{ user.username }}" class="badge">{{ user.full_name }}</a>
+                {% endfor %}
+                <button
+                    class="user-list-expander"
+                    type="button"
+                    aria-expanded="false"
+                    onclick="toggleUserList(this)"
+                >
+                    <span class="chevron"></span>
+                    <span class="sr-only">Show all recipients</span>
+                </button>
+                <div class="user-list-gradient"></div>
+            </div>
+         {% endif %}
+        </div>
+    </div>
+
+{% endmacro %}

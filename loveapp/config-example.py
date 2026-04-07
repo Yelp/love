@@ -53,3 +53,15 @@ COMPANY_VALUES = [
     CompanyValue('BE_EXCELLENT', 'Be excellent to each other', ('excellent', 'BeExcellent', 'WyldStallyns')),
     CompanyValue('DUST_IN_THE_WIND', 'All we are is dust in the wind, dude.', ('woah', 'whoa', 'DustInTheWind'))
 ]
+
+# Highlight a user's avatar when their message contains a word or phrase that matches one of the options.
+# If a match is found, the emoji you provide will be added on the user's avatar.
+MESSAGE_EMOTES = {
+    "happy workiversary": "🥳",
+    "happy birthday": "🎉",
+}
+
+# Temporaral separation of clustered loves.
+# i.e., if two loves have the same content but are sent more than this time apart,
+# they will be considered separate clusters.
+LOVE_CLUSTERING_TIME_WINDOW_DAYS = 7

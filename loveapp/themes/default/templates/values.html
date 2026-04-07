@@ -1,6 +1,7 @@
 {% extends theme("layout.html") %}
 
-{% import theme("parts/love_message.html") as love_message %}
+{% import theme("parts/grouped_love_message.html") as grouped_love_message %}
+
 
 {% block title %}Love with company values{% endblock %}
 
@@ -20,38 +21,20 @@
     </div>
   </div>
 
-  {% if loves_first_list %}
-  <div class="col-md-6">
-    <div class="content-container">
-      {% for love in loves_first_list %}
-        {% set sender = love.sender_key.get() %}
-        {% set recipient = love.recipient_key.get() %}
-        {{ love_message.love(
-          sender.full_name,
-          sender.username,
-          recipient.first_name,
-          recipient.username,
-          sender,
-          love.message,
-          love.seconds_since_epoch)
-        }}
-      {% endfor %}
-    </div>
-  </div>  <div class="col-md-6">
-    <div class="content-container">
-      {% for love in loves_second_list %}
-        {% set sender = love.sender_key.get() %}
-        {% set recipient = love.recipient_key.get() %}
-        {{ love_message.love(
-          sender.full_name,
-          sender.username,
-          recipient.first_name,
-          recipient.username,
-          sender,
-          love.message,
-          love.seconds_since_epoch)
-        }}
-      {% endfor %}
+  {% if grouped_loves %}
+  <div class="col-md-12">
+    <div class="content-container loves-columns">
+      {% for grouped_love in grouped_loves %}
+      {{ grouped_love_message.love(
+        "To",
+        current_user,
+        grouped_love.senders,
+        grouped_love.recipients,
+        grouped_love.content,
+        grouped_love.most_recent_love_timestamp,
+        grouped_love.is_secret
+      )}}
+    {% endfor %}
     </div>
   </div>
   {% else %}
